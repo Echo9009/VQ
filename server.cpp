@@ -30,6 +30,8 @@
 #include <arpa/inet.h>
 #endif
 
+extern void start_server_workers(int port, int num_workers);
+
 int server_on_timer_multi(conn_info_t &conn_info)  // for server. called when a timer is ready in epoll.for server,there will be one timer for every connection
 // there is also a global timer for server,but its not handled here
 {
