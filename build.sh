@@ -27,7 +27,5 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Build completed successfully!"
-echo "The executable is located at: build/udp2raw"
-
-cd ..
+echo "The executable is located at: udp2raw"
 echo "Done!" 
