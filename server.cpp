@@ -23,6 +23,11 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <sched.h>
+#include <mutex>
+#include <queue>
+#include <condition_variable>
+#include <atomic>
+#include <arpa/inet.h>
 #endif
 
 int server_on_timer_multi(conn_info_t &conn_info)  // for server. called when a timer is ready in epoll.for server,there will be one timer for every connection
@@ -805,49 +810,110 @@ int server_event_loop() {
 }
 
 #ifdef UDP2RAW_LINUX
-void server_worker(int port, int worker_id) {
+#include <mutex>
+#include <queue>
+#include <condition_variable>
+#include <thread>
+#include <atomic>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+struct Packet {
+    std::vector<char> data;
+    sockaddr_in addr;
+    socklen_t addrlen;
+};
+
+class PacketQueue {
+public:
+    void push(Packet&& pkt) {
+        std::lock_guard<std::mutex> lock(mtx);
+        q.push(std::move(pkt));
+        cv.notify_one();
+    }
+    bool pop(Packet& pkt) {
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock, [&]{ return !q.empty() || stop_flag; });
+        if (q.empty()) return false;
+        pkt = std::move(q.front());
+        q.pop();
+        return true;
+    }
+    void stop() {
+        std::lock_guard<std::mutex> lock(mtx);
+        stop_flag = true;
+        cv.notify_all();
+    }
+private:
+    std::queue<Packet> q;
+    std::mutex mtx;
+    std::condition_variable cv;
+    bool stop_flag = false;
+};
+
+std::vector<std::unique_ptr<PacketQueue>> worker_queues;
+std::atomic<bool> master_stop_flag{false};
+
+size_t hash_addr(const sockaddr_in& addr, int num_workers) {
+    // ساده: hash ترکیب IP و پورت
+    return (ntohl(addr.sin_addr.s_addr) ^ ntohs(addr.sin_port)) % num_workers;
+}
+
+void master_thread_func(int port, int num_workers) {
     int fd = socket(AF_INET, SOCK_DGRAM, 0);
     int opt = 1;
     setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
-
     sockaddr_in addr = {};
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(port);
     bind(fd, (sockaddr*)&addr, sizeof(addr));
 
-    // Pin thread to core (اختیاری)
-    cpu_set_t cpuset;
-    CPU_ZERO(&cpuset);
-    CPU_SET(worker_id, &cpuset);
-    pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
-
-    // راه‌اندازی event loop (epoll یا libev)
-    // اینجا باید حلقه event اصلی سرور را فراخوانی کنی و fd را جایگزین fd اصلی کنی
-    // مثال:
-    // server_event_loop(fd);
-    // فعلاً فقط یک حلقه ساده برای دریافت پکت:
-    char buf[2048];
-    while (1) {
-        int len = recv(fd, buf, sizeof(buf), 0);
+    while (!master_stop_flag) {
+        Packet pkt;
+        pkt.data.resize(2048);
+        pkt.addrlen = sizeof(pkt.addr);
+        int len = recvfrom(fd, pkt.data.data(), pkt.data.size(), 0, (sockaddr*)&pkt.addr, &pkt.addrlen);
         if (len > 0) {
-            // اینجا باید منطق پردازش پکت را فراخوانی کنی
-            // process_packet(buf, len);
+            pkt.data.resize(len);
+            size_t idx = hash_addr(pkt.addr, num_workers);
+            worker_queues[idx]->push(std::move(pkt));
         }
     }
     close(fd);
 }
 
-int main(int argc, char **argv) {
-    int port = 12345; // مقدار پورت را از آرگومان یا کانفیگ بخوان
-    int num_workers = std::thread::hardware_concurrency();
+void server_worker(int port, int worker_id) {
+    // پین کردن ترد به هسته خاص (اختیاری)
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(worker_id, &cpuset);
+    pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
+
+    Packet pkt;
+    while (worker_queues[worker_id]->pop(pkt)) {
+        // اینجا باید منطق پردازش پکت را فراخوانی کنی
+        // مثلاً:
+        // process_packet(pkt.data.data(), pkt.data.size(), pkt.addr);
+        // یا اگر نیاز به event loop داری، اینجا فراخوانی کن
+    }
+}
+
+void start_server_workers(int port, int num_workers) {
+    worker_queues.clear();
+    for (int i = 0; i < num_workers; ++i) {
+        worker_queues.emplace_back(new PacketQueue());
+    }
+    std::thread master_thread(master_thread_func, port, num_workers);
     std::vector<std::thread> threads;
     for (int i = 0; i < num_workers; ++i) {
         threads.emplace_back(server_worker, port, i);
     }
+    master_thread.join();
+    for (auto &q : worker_queues) q->stop();
     for (auto &t : threads) t.join();
-    return 0;
 }
 #endif
 
 #endif
+

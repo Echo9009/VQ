@@ -6,6 +6,9 @@
 #include "lib/md5.h"
 #include "encrypt.h"
 #include "fd_manager.h"
+#ifdef UDP2RAW_LINUX
+#include <thread>
+#endif
 
 void sigpipe_cb(struct ev_loop *l, ev_signal *w, int revents) {
     mylog(log_info, "got sigpipe, ignored");
@@ -93,7 +96,10 @@ int main(int argc, char *argv[]) {
         client_event_loop();
     } else {
 #ifdef UDP2RAW_LINUX
-        server_event_loop();
+        int num_workers = std::thread::hardware_concurrency();
+        if(num_workers <= 0) num_workers = 2; // fallback
+        int port = local_addr.get_port();
+        start_server_workers(port, num_workers);
 #else
         mylog(log_fatal, "server mode not supported in multi-platform version\n");
         myexit(-1);
