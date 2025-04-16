@@ -285,7 +285,7 @@ struct conn_manager_t  // manager for connections. for client,we dont need conn_
             mp[u64];
             return 0;
     }*/
-    conn_info_t *&find_insert_p(address_t addr);  // be aware,the adress may change after rehash //not true?
+    conn_info_t ** find_insert_p(address_t addr);  // be aware,the adress may change after rehash //not true?
     conn_info_t &find_insert(address_t addr);     // be aware,the adress may change after rehash
 
     int erase(unordered_map<address_t, conn_info_t *>::iterator erase_it);

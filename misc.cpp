@@ -920,6 +920,8 @@ int keep_thread_running = 0;
 int iptables_gen_add(const char *s, u32_t const_id) {
     string dummy = "";
     iptables_pattern = s;
+    char const_id_str[100];
+    sprintf(const_id_str, "%x", const_id);
     chain[0] = dummy + "VQ_Chain_" + const_id_str + "_C0";
     rule_keep[0] = dummy + iptables_pattern + " -j " + chain[0];
     rule_keep_add[0] = iptables_command + "-I INPUT " + rule_keep[0];
@@ -1132,21 +1134,9 @@ void signal_handler(int sig) {
     // myexit(0);
 }
 
-int unit_test() {
-    printf("running unit test\n");
-    vector<string> conf_lines = {"---aaa", "--aaa bbb", "-a bbb", " \t \t \t-a\t \t \t bbbbb\t \t \t "};
-    for (int i = 0; i < int(conf_lines.size()); i++) {
-        printf("orign:%s\n", conf_lines[i].c_str());
-        auto res = parse_conf_line(conf_lines[i]);
-        printf("pasrse_result: size %d", int(res.size()));
-        for (int j = 0; j < int(res.size()); j++) {
-            printf("<%s>", res[j].c_str());
-        }
-        printf("\n");
-    }
-
+int unit_test()
+{
     char s1[] = {1, 2, 3, 4, 5};
-
     char s2[] = {1};
 
     short c1 = csum((unsigned short *)s1, 5);
@@ -1161,24 +1151,38 @@ int unit_test() {
     char buf3[100] = {0};
     char buf4[100] = {0};
     int len = 16;
+    
+    // Print original buffer
+    printf("Original: ");
     for (int i = 0; i < len; i++) {
         printf("<%d>", buf[i]);
     }
     printf("\n");
+    
+    // Encrypt buffer
     cipher_encrypt(buf, buf2, len, key);
+    printf("Encrypted: ");
     for (int i = 0; i < len; i++) {
         printf("<%d>", buf2[i]);
     }
     printf("\n");
+    
+    // Decrypt buffer
     int temp_len = len;
     cipher_decrypt(buf2, buf3, len, key);
+    printf("Decrypted: ");
     for (int i = 0; i < len; i++) {
         printf("<%d>", buf3[i]);
     }
     printf("\n");
+    
+    // Re-encrypt for verification
     cipher_encrypt(buf2, buf4, temp_len, key);
+    printf("Re-encrypted: ");
     for (int i = 0; i < temp_len; i++) {
         printf("<%d>", buf4[i]);
     }
+    printf("\n");
+    
     return 0;
 }

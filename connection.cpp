@@ -187,12 +187,8 @@ int insert(uint32_t ip,uint16_t port)
         mp[u64];
         return 0;
 }*/
-conn_info_t *&conn_manager_t::find_insert_p(address_t addr)  // be aware,the adress may change after rehash
+conn_info_t ** conn_manager_t::find_insert_p(address_t addr)  // be aware,the adress may change after rehash
 {
-    // u64_t u64=0;
-    // u64=ip;
-    // u64<<=32u;
-    // u64|=port;
     unordered_map<address_t, conn_info_t *>::iterator it = mp.find(addr);
     if (it == mp.end()) {
         mp[addr] = new conn_info_t;
@@ -200,7 +196,7 @@ conn_info_t *&conn_manager_t::find_insert_p(address_t addr)  // be aware,the adr
     } else {
         // lru.update(addr);
     }
-    return mp[addr];
+    return &(mp[addr]);
 }
 conn_info_t &conn_manager_t::find_insert(address_t addr)  // be aware,the adress may change after rehash
 {
