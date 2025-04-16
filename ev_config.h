@@ -1,0 +1,1 @@
+#define EV_STANDALONE 1

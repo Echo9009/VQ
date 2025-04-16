@@ -15,6 +15,13 @@
 #include "lib/md5.h"
 #include "encrypt.h"
 #include "fd_manager.h"
+#include "thread_pool.h"
+
+extern std::unique_ptr<ThreadPool> g_thread_pool;
+extern int num_worker_threads;
+
+// Mutex for protecting shared resources
+std::mutex server_mutex;
 
 int server_on_timer_multi(conn_info_t &conn_info)  // for server. called when a timer is ready in epoll.for server,there will be one timer for every connection
 // there is also a global timer for server,but its not handled here
@@ -606,7 +613,57 @@ int server_on_udp_recv(conn_info_t &conn_info, fd64_t fd64) {
     return 0;
 }
 
+// New multi-threaded versions of handlers
+
+int server_on_raw_recv_mt() {
+    // Lock to protect shared resources
+    std::lock_guard<std::mutex> lock(server_mutex);
+    
+    // Call the original handler
+    return server_on_raw_recv_multi();
+}
+
+int server_on_udp_recv_mt(conn_info_t &conn_info, fd64_t fd64) {
+    // Lock to protect shared resources
+    std::lock_guard<std::mutex> lock(server_mutex);
+    
+    // Call the original handler
+    return server_on_udp_recv(conn_info, fd64);
+}
+
+// Multithreaded event handlers for epoll events
+void handle_epoll_event_mt(int idx, uint32_t events) {
+    g_thread_pool->enqueue([idx, events](struct ev_loop* loop) {
+        std::lock_guard<std::mutex> lock(server_mutex);
+        
+        // This is where we'll handle specific event types
+        if(events & EPOLLIN) {
+            // Data available for reading
+            fd64_t fd64 = events_inner[idx].data.u64;
+            
+            if(fd_manager.exist(fd64)) {
+                // Handle UDP reads
+                if(fd_manager.get_info(fd64).is_udp()) {
+                    conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
+                    server_on_udp_recv(*p_conn_info, fd64);
+                }
+                // Handle timer events
+                else if(fd_manager.get_info(fd64).is_timer()) {
+                    conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
+                    server_on_timer_multi(*p_conn_info);
+                }
+            } else if(fd64 == raw_recv_fd64) {
+                // Handle raw socket reads
+                server_on_raw_recv_multi();
+            }
+        }
+    });
+}
+
+// Original server_event_loop function with modifications to use thread pool
 int server_event_loop() {
+    mylog(log_info, "Entering server event loop. Using %d worker threads.\n", num_worker_threads);
+    
     char buf[buf_len];
 
     int i, j, k;

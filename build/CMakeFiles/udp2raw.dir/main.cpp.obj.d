@@ -405,4 +405,38 @@ CMakeFiles/udp2raw.dir/main.cpp.obj: G:\VQ\VQ\main.cpp G:\VQ\VQ\common.h \
  c:\mingw64\include\c++\12.2.0\bits\allocated_ptr.h \
  c:\mingw64\include\c++\12.2.0\bits\list.tcc G:\VQ\VQ\network.h \
  G:\VQ\VQ\connection.h G:\VQ\VQ\log.h G:\VQ\VQ\misc.h G:\VQ\VQ\lib/md5.h \
- G:\VQ\VQ\encrypt.h G:\VQ\VQ\fd_manager.h
+ G:\VQ\VQ\encrypt.h G:\VQ\VQ\fd_manager.h G:\VQ\VQ\thread_pool.h \
+ c:\mingw64\include\c++\12.2.0\thread \
+ c:\mingw64\include\c++\12.2.0\bits\std_thread.h \
+ c:\mingw64\include\c++\12.2.0\bits\unique_ptr.h \
+ c:\mingw64\include\c++\12.2.0\bits\this_thread_sleep.h \
+ c:\mingw64\include\c++\12.2.0\bits\chrono.h \
+ c:\mingw64\include\c++\12.2.0\ratio c:\mingw64\include\c++\12.2.0\limits \
+ c:\mingw64\include\c++\12.2.0\ctime \
+ c:\mingw64\include\c++\12.2.0\bits\parse_numbers.h \
+ c:\mingw64\include\c++\12.2.0\mutex \
+ c:\mingw64\include\c++\12.2.0\bits\std_mutex.h \
+ c:\mingw64\include\c++\12.2.0\bits\unique_lock.h \
+ c:\mingw64\include\c++\12.2.0\condition_variable \
+ c:\mingw64\include\c++\12.2.0\bits\shared_ptr.h \
+ c:\mingw64\include\c++\12.2.0\bits\shared_ptr_base.h \
+ c:\mingw64\include\c++\12.2.0\ext\concurrence.h \
+ c:\mingw64\include\c++\12.2.0\queue c:\mingw64\include\c++\12.2.0\deque \
+ c:\mingw64\include\c++\12.2.0\bits\stl_deque.h \
+ c:\mingw64\include\c++\12.2.0\bits\deque.tcc \
+ c:\mingw64\include\c++\12.2.0\bits\stl_heap.h \
+ c:\mingw64\include\c++\12.2.0\bits\stl_queue.h \
+ c:\mingw64\include\c++\12.2.0\functional \
+ c:\mingw64\include\c++\12.2.0\bits\std_function.h \
+ c:\mingw64\include\c++\12.2.0\atomic \
+ c:\mingw64\include\c++\12.2.0\bits\atomic_base.h \
+ c:\mingw64\include\c++\12.2.0\bits\atomic_lockfree_defines.h \
+ c:\mingw64\include\c++\12.2.0\future \
+ c:\mingw64\include\c++\12.2.0\bits\atomic_futex.h \
+ c:\mingw64\include\c++\12.2.0\memory \
+ c:\mingw64\include\c++\12.2.0\bits\stl_tempbuf.h \
+ c:\mingw64\include\c++\12.2.0\bits\stl_raw_storage_iter.h \
+ c:\mingw64\include\c++\12.2.0\bits\align.h \
+ c:\mingw64\include\c++\12.2.0\bit \
+ c:\mingw64\include\c++\12.2.0\bits\shared_ptr_atomic.h \
+ c:\mingw64\include\c++\12.2.0\backward\auto_ptr.h
