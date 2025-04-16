@@ -1,1 +1,1 @@
-const char *gitversion = ""; 
+const char *gitversion = "cross-platform-version";

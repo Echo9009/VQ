@@ -25,12 +25,11 @@ int client_on_timer(conn_info_t &conn_info)  // for client. called when a timer 
     packet_info_t &recv_info = conn_info.raw_info.recv_info;
     raw_info_t &raw_info = conn_info.raw_info;
     conn_info.blob->conv_manager.c.clear_inactive();
+    mylog(log_trace, "timer!\n");
 
-    mylog(log_info, "timer!\n");
+    mylog(log_trace, "roller my %d,oppsite %d,%lld\n", int(conn_info.my_roller), int(conn_info.oppsite_roller), conn_info.last_oppsite_roller_time);
 
-    mylog(log_info, "roller my %d,oppsite %d,%lld\n", int(conn_info.my_roller), int(conn_info.oppsite_roller), conn_info.last_oppsite_roller_time);
-
-    mylog(log_info, "<client_on_timer,send_info.ts_ack= %u>\n", send_info.ts_ack);
+    mylog(log_trace, "<client_on_timer,send_info.ts_ack= %u>\n", send_info.ts_ack);
 
 #ifdef UDP2RAW_MP
     // mylog(log_debug,"pcap cnt :%d\n",pcap_cnt);
@@ -277,7 +276,7 @@ int client_on_timer(conn_info_t &conn_info)  // for client. called when a timer 
         return 0;
     } else if (conn_info.state.client_current_state == client_ready) {
         fail_time_counter = 0;
-        mylog(log_info, "time %llu,%llu\n", get_current_time(), conn_info.last_state_time);
+        mylog(log_trace, "time %llu,%llu\n", get_current_time(), conn_info.last_state_time);
 
         if (get_current_time() - conn_info.last_hb_recv_time > client_conn_timeout) {
             conn_info.state.client_current_state = client_idle;
@@ -332,7 +331,7 @@ int client_on_raw_recv_hs2_or_ready(conn_info_t &conn_info, char type, char *dat
         conn_info.last_hb_recv_time = get_current_time();
         return 0;
     } else if (data_len >= int(sizeof(u32_t)) && type == 'd') {
-        mylog(log_info, "received a data from fake tcp,len:%d\n", data_len);
+        mylog(log_trace, "received a data from fake tcp,len:%d\n", data_len);
 
         if (hb_mode == 0)
             conn_info.last_hb_recv_time = get_current_time();
@@ -379,7 +378,7 @@ int client_on_raw_recv(conn_info_t &conn_info)  // called when raw fd received a
 
     raw_info_t &raw_info = conn_info.raw_info;
 
-    mylog(log_info, "<client_on_raw_recv,send_info.ts_ack= %u>\n", send_info.ts_ack);
+    mylog(log_trace, "<client_on_raw_recv,send_info.ts_ack= %u>\n", send_info.ts_ack);
 
 #ifdef UDP2RAW_LINUX
     if (pre_recv_raw_packet() < 0) return -1;
@@ -875,7 +874,7 @@ int client_event_loop() {
     ev_timer_init(&clear_timer, clear_timer_cb, 0, timer_interval / 1000.0);
     ev_timer_start(loop, &clear_timer);
 
-    mylog(log_info, "send_raw : from %s %d  to %s %d\n", send_info.new_src_ip.get_str1(), send_info.src_port, send_info.new_dst_ip.get_str2(), send_info.dst_port);
+    mylog(log_debug, "send_raw : from %s %d  to %s %d\n", send_info.new_src_ip.get_str1(), send_info.src_port, send_info.new_dst_ip.get_str2(), send_info.dst_port);
 
     int fifo_fd = -1;
 

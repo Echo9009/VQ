@@ -62,11 +62,11 @@ struct conv_manager_t  // manage the udp connections
         return conv_to_data.size();
     }
     void reserve() {
-        data_to_conv.reserve(16);
-        conv_to_data.reserve(16);
+        data_to_conv.reserve(10007);
+        conv_to_data.reserve(10007);
         // conv_last_active_time.reserve(10007);
 
-        lru.mp.reserve(16);
+        lru.mp.reserve(10007);
     }
     void clear() {
         if (disable_conv_clear) return;

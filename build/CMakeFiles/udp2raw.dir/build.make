@@ -52,10 +52,10 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = G:\VG
+CMAKE_SOURCE_DIR = G:\VQ\VQ
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = G:\VG\build
+CMAKE_BINARY_DIR = G:\VQ\VQ\build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/udp2raw.dir/depend.make
@@ -73,258 +73,258 @@ CMakeFiles/udp2raw.dir/codegen:
 
 CMakeFiles/udp2raw.dir/main.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/main.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/main.cpp.obj: G:/VG/main.cpp
+CMakeFiles/udp2raw.dir/main.cpp.obj: G:/VQ/VQ/main.cpp
 CMakeFiles/udp2raw.dir/main.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/udp2raw.dir/main.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/main.cpp.obj -MF CMakeFiles\udp2raw.dir\main.cpp.obj.d -o CMakeFiles\udp2raw.dir\main.cpp.obj -c G:\VG\main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/udp2raw.dir/main.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/main.cpp.obj -MF CMakeFiles\udp2raw.dir\main.cpp.obj.d -o CMakeFiles\udp2raw.dir\main.cpp.obj -c G:\VQ\VQ\main.cpp
 
 CMakeFiles/udp2raw.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/main.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\main.cpp > CMakeFiles\udp2raw.dir\main.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\main.cpp > CMakeFiles\udp2raw.dir\main.cpp.i
 
 CMakeFiles/udp2raw.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/main.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\main.cpp -o CMakeFiles\udp2raw.dir\main.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\main.cpp -o CMakeFiles\udp2raw.dir\main.cpp.s
 
 CMakeFiles/udp2raw.dir/lib/md5.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/lib/md5.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/lib/md5.cpp.obj: G:/VG/lib/md5.cpp
+CMakeFiles/udp2raw.dir/lib/md5.cpp.obj: G:/VQ/VQ/lib/md5.cpp
 CMakeFiles/udp2raw.dir/lib/md5.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/udp2raw.dir/lib/md5.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/lib/md5.cpp.obj -MF CMakeFiles\udp2raw.dir\lib\md5.cpp.obj.d -o CMakeFiles\udp2raw.dir\lib\md5.cpp.obj -c G:\VG\lib\md5.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/udp2raw.dir/lib/md5.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/lib/md5.cpp.obj -MF CMakeFiles\udp2raw.dir\lib\md5.cpp.obj.d -o CMakeFiles\udp2raw.dir\lib\md5.cpp.obj -c G:\VQ\VQ\lib\md5.cpp
 
 CMakeFiles/udp2raw.dir/lib/md5.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/lib/md5.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\lib\md5.cpp > CMakeFiles\udp2raw.dir\lib\md5.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\lib\md5.cpp > CMakeFiles\udp2raw.dir\lib\md5.cpp.i
 
 CMakeFiles/udp2raw.dir/lib/md5.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/lib/md5.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\lib\md5.cpp -o CMakeFiles\udp2raw.dir\lib\md5.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\lib\md5.cpp -o CMakeFiles\udp2raw.dir\lib\md5.cpp.s
 
 CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj: G:/VG/lib/pbkdf2-sha1.cpp
+CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj: G:/VQ/VQ/lib/pbkdf2-sha1.cpp
 CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj -MF CMakeFiles\udp2raw.dir\lib\pbkdf2-sha1.cpp.obj.d -o CMakeFiles\udp2raw.dir\lib\pbkdf2-sha1.cpp.obj -c G:\VG\lib\pbkdf2-sha1.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj -MF CMakeFiles\udp2raw.dir\lib\pbkdf2-sha1.cpp.obj.d -o CMakeFiles\udp2raw.dir\lib\pbkdf2-sha1.cpp.obj -c G:\VQ\VQ\lib\pbkdf2-sha1.cpp
 
 CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\lib\pbkdf2-sha1.cpp > CMakeFiles\udp2raw.dir\lib\pbkdf2-sha1.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\lib\pbkdf2-sha1.cpp > CMakeFiles\udp2raw.dir\lib\pbkdf2-sha1.cpp.i
 
 CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\lib\pbkdf2-sha1.cpp -o CMakeFiles\udp2raw.dir\lib\pbkdf2-sha1.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\lib\pbkdf2-sha1.cpp -o CMakeFiles\udp2raw.dir\lib\pbkdf2-sha1.cpp.s
 
 CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj: G:/VG/lib/pbkdf2-sha256.cpp
+CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj: G:/VQ/VQ/lib/pbkdf2-sha256.cpp
 CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj -MF CMakeFiles\udp2raw.dir\lib\pbkdf2-sha256.cpp.obj.d -o CMakeFiles\udp2raw.dir\lib\pbkdf2-sha256.cpp.obj -c G:\VG\lib\pbkdf2-sha256.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj -MF CMakeFiles\udp2raw.dir\lib\pbkdf2-sha256.cpp.obj.d -o CMakeFiles\udp2raw.dir\lib\pbkdf2-sha256.cpp.obj -c G:\VQ\VQ\lib\pbkdf2-sha256.cpp
 
 CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\lib\pbkdf2-sha256.cpp > CMakeFiles\udp2raw.dir\lib\pbkdf2-sha256.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\lib\pbkdf2-sha256.cpp > CMakeFiles\udp2raw.dir\lib\pbkdf2-sha256.cpp.i
 
 CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\lib\pbkdf2-sha256.cpp -o CMakeFiles\udp2raw.dir\lib\pbkdf2-sha256.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\lib\pbkdf2-sha256.cpp -o CMakeFiles\udp2raw.dir\lib\pbkdf2-sha256.cpp.s
 
 CMakeFiles/udp2raw.dir/encrypt.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/encrypt.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/encrypt.cpp.obj: G:/VG/encrypt.cpp
+CMakeFiles/udp2raw.dir/encrypt.cpp.obj: G:/VQ/VQ/encrypt.cpp
 CMakeFiles/udp2raw.dir/encrypt.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/udp2raw.dir/encrypt.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/encrypt.cpp.obj -MF CMakeFiles\udp2raw.dir\encrypt.cpp.obj.d -o CMakeFiles\udp2raw.dir\encrypt.cpp.obj -c G:\VG\encrypt.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/udp2raw.dir/encrypt.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/encrypt.cpp.obj -MF CMakeFiles\udp2raw.dir\encrypt.cpp.obj.d -o CMakeFiles\udp2raw.dir\encrypt.cpp.obj -c G:\VQ\VQ\encrypt.cpp
 
 CMakeFiles/udp2raw.dir/encrypt.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/encrypt.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\encrypt.cpp > CMakeFiles\udp2raw.dir\encrypt.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\encrypt.cpp > CMakeFiles\udp2raw.dir\encrypt.cpp.i
 
 CMakeFiles/udp2raw.dir/encrypt.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/encrypt.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\encrypt.cpp -o CMakeFiles\udp2raw.dir\encrypt.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\encrypt.cpp -o CMakeFiles\udp2raw.dir\encrypt.cpp.s
 
 CMakeFiles/udp2raw.dir/log.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/log.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/log.cpp.obj: G:/VG/log.cpp
+CMakeFiles/udp2raw.dir/log.cpp.obj: G:/VQ/VQ/log.cpp
 CMakeFiles/udp2raw.dir/log.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/udp2raw.dir/log.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/log.cpp.obj -MF CMakeFiles\udp2raw.dir\log.cpp.obj.d -o CMakeFiles\udp2raw.dir\log.cpp.obj -c G:\VG\log.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/udp2raw.dir/log.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/log.cpp.obj -MF CMakeFiles\udp2raw.dir\log.cpp.obj.d -o CMakeFiles\udp2raw.dir\log.cpp.obj -c G:\VQ\VQ\log.cpp
 
 CMakeFiles/udp2raw.dir/log.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/log.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\log.cpp > CMakeFiles\udp2raw.dir\log.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\log.cpp > CMakeFiles\udp2raw.dir\log.cpp.i
 
 CMakeFiles/udp2raw.dir/log.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/log.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\log.cpp -o CMakeFiles\udp2raw.dir\log.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\log.cpp -o CMakeFiles\udp2raw.dir\log.cpp.s
 
 CMakeFiles/udp2raw.dir/network.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/network.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/network.cpp.obj: G:/VG/network.cpp
+CMakeFiles/udp2raw.dir/network.cpp.obj: G:/VQ/VQ/network.cpp
 CMakeFiles/udp2raw.dir/network.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/udp2raw.dir/network.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/network.cpp.obj -MF CMakeFiles\udp2raw.dir\network.cpp.obj.d -o CMakeFiles\udp2raw.dir\network.cpp.obj -c G:\VG\network.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/udp2raw.dir/network.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/network.cpp.obj -MF CMakeFiles\udp2raw.dir\network.cpp.obj.d -o CMakeFiles\udp2raw.dir\network.cpp.obj -c G:\VQ\VQ\network.cpp
 
 CMakeFiles/udp2raw.dir/network.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/network.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\network.cpp > CMakeFiles\udp2raw.dir\network.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\network.cpp > CMakeFiles\udp2raw.dir\network.cpp.i
 
 CMakeFiles/udp2raw.dir/network.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/network.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\network.cpp -o CMakeFiles\udp2raw.dir\network.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\network.cpp -o CMakeFiles\udp2raw.dir\network.cpp.s
 
 CMakeFiles/udp2raw.dir/common.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/common.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/common.cpp.obj: G:/VG/common.cpp
+CMakeFiles/udp2raw.dir/common.cpp.obj: G:/VQ/VQ/common.cpp
 CMakeFiles/udp2raw.dir/common.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/udp2raw.dir/common.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/common.cpp.obj -MF CMakeFiles\udp2raw.dir\common.cpp.obj.d -o CMakeFiles\udp2raw.dir\common.cpp.obj -c G:\VG\common.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/udp2raw.dir/common.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/common.cpp.obj -MF CMakeFiles\udp2raw.dir\common.cpp.obj.d -o CMakeFiles\udp2raw.dir\common.cpp.obj -c G:\VQ\VQ\common.cpp
 
 CMakeFiles/udp2raw.dir/common.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/common.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\common.cpp > CMakeFiles\udp2raw.dir\common.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\common.cpp > CMakeFiles\udp2raw.dir\common.cpp.i
 
 CMakeFiles/udp2raw.dir/common.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/common.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\common.cpp -o CMakeFiles\udp2raw.dir\common.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\common.cpp -o CMakeFiles\udp2raw.dir\common.cpp.s
 
 CMakeFiles/udp2raw.dir/connection.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/connection.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/connection.cpp.obj: G:/VG/connection.cpp
+CMakeFiles/udp2raw.dir/connection.cpp.obj: G:/VQ/VQ/connection.cpp
 CMakeFiles/udp2raw.dir/connection.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/udp2raw.dir/connection.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/connection.cpp.obj -MF CMakeFiles\udp2raw.dir\connection.cpp.obj.d -o CMakeFiles\udp2raw.dir\connection.cpp.obj -c G:\VG\connection.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/udp2raw.dir/connection.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/connection.cpp.obj -MF CMakeFiles\udp2raw.dir\connection.cpp.obj.d -o CMakeFiles\udp2raw.dir\connection.cpp.obj -c G:\VQ\VQ\connection.cpp
 
 CMakeFiles/udp2raw.dir/connection.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/connection.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\connection.cpp > CMakeFiles\udp2raw.dir\connection.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\connection.cpp > CMakeFiles\udp2raw.dir\connection.cpp.i
 
 CMakeFiles/udp2raw.dir/connection.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/connection.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\connection.cpp -o CMakeFiles\udp2raw.dir\connection.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\connection.cpp -o CMakeFiles\udp2raw.dir\connection.cpp.s
 
 CMakeFiles/udp2raw.dir/misc.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/misc.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/misc.cpp.obj: G:/VG/misc.cpp
+CMakeFiles/udp2raw.dir/misc.cpp.obj: G:/VQ/VQ/misc.cpp
 CMakeFiles/udp2raw.dir/misc.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/udp2raw.dir/misc.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/misc.cpp.obj -MF CMakeFiles\udp2raw.dir\misc.cpp.obj.d -o CMakeFiles\udp2raw.dir\misc.cpp.obj -c G:\VG\misc.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/udp2raw.dir/misc.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/misc.cpp.obj -MF CMakeFiles\udp2raw.dir\misc.cpp.obj.d -o CMakeFiles\udp2raw.dir\misc.cpp.obj -c G:\VQ\VQ\misc.cpp
 
 CMakeFiles/udp2raw.dir/misc.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/misc.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\misc.cpp > CMakeFiles\udp2raw.dir\misc.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\misc.cpp > CMakeFiles\udp2raw.dir\misc.cpp.i
 
 CMakeFiles/udp2raw.dir/misc.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/misc.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\misc.cpp -o CMakeFiles\udp2raw.dir\misc.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\misc.cpp -o CMakeFiles\udp2raw.dir\misc.cpp.s
 
 CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: G:/VG/fd_manager.cpp
+CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: G:/VQ/VQ/fd_manager.cpp
 CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/udp2raw.dir/fd_manager.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/fd_manager.cpp.obj -MF CMakeFiles\udp2raw.dir\fd_manager.cpp.obj.d -o CMakeFiles\udp2raw.dir\fd_manager.cpp.obj -c G:\VG\fd_manager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/udp2raw.dir/fd_manager.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/fd_manager.cpp.obj -MF CMakeFiles\udp2raw.dir\fd_manager.cpp.obj.d -o CMakeFiles\udp2raw.dir\fd_manager.cpp.obj -c G:\VQ\VQ\fd_manager.cpp
 
 CMakeFiles/udp2raw.dir/fd_manager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/fd_manager.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\fd_manager.cpp > CMakeFiles\udp2raw.dir\fd_manager.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\fd_manager.cpp > CMakeFiles\udp2raw.dir\fd_manager.cpp.i
 
 CMakeFiles/udp2raw.dir/fd_manager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/fd_manager.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\fd_manager.cpp -o CMakeFiles\udp2raw.dir\fd_manager.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\fd_manager.cpp -o CMakeFiles\udp2raw.dir\fd_manager.cpp.s
 
 CMakeFiles/udp2raw.dir/client.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/client.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/client.cpp.obj: G:/VG/client.cpp
+CMakeFiles/udp2raw.dir/client.cpp.obj: G:/VQ/VQ/client.cpp
 CMakeFiles/udp2raw.dir/client.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/udp2raw.dir/client.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/client.cpp.obj -MF CMakeFiles\udp2raw.dir\client.cpp.obj.d -o CMakeFiles\udp2raw.dir\client.cpp.obj -c G:\VG\client.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/udp2raw.dir/client.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/client.cpp.obj -MF CMakeFiles\udp2raw.dir\client.cpp.obj.d -o CMakeFiles\udp2raw.dir\client.cpp.obj -c G:\VQ\VQ\client.cpp
 
 CMakeFiles/udp2raw.dir/client.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/client.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\client.cpp > CMakeFiles\udp2raw.dir\client.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\client.cpp > CMakeFiles\udp2raw.dir\client.cpp.i
 
 CMakeFiles/udp2raw.dir/client.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/client.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\client.cpp -o CMakeFiles\udp2raw.dir\client.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\client.cpp -o CMakeFiles\udp2raw.dir\client.cpp.s
 
 CMakeFiles/udp2raw.dir/server.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/server.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/server.cpp.obj: G:/VG/server.cpp
+CMakeFiles/udp2raw.dir/server.cpp.obj: G:/VQ/VQ/server.cpp
 CMakeFiles/udp2raw.dir/server.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/udp2raw.dir/server.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/server.cpp.obj -MF CMakeFiles\udp2raw.dir\server.cpp.obj.d -o CMakeFiles\udp2raw.dir\server.cpp.obj -c G:\VG\server.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/udp2raw.dir/server.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/server.cpp.obj -MF CMakeFiles\udp2raw.dir\server.cpp.obj.d -o CMakeFiles\udp2raw.dir\server.cpp.obj -c G:\VQ\VQ\server.cpp
 
 CMakeFiles/udp2raw.dir/server.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/server.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\server.cpp > CMakeFiles\udp2raw.dir\server.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\server.cpp > CMakeFiles\udp2raw.dir\server.cpp.i
 
 CMakeFiles/udp2raw.dir/server.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/server.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\server.cpp -o CMakeFiles\udp2raw.dir\server.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\server.cpp -o CMakeFiles\udp2raw.dir\server.cpp.s
 
 CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj: G:/VG/lib/aes_faster_c/aes.cpp
+CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj: G:/VQ/VQ/lib/aes_faster_c/aes.cpp
 CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj -MF CMakeFiles\udp2raw.dir\lib\aes_faster_c\aes.cpp.obj.d -o CMakeFiles\udp2raw.dir\lib\aes_faster_c\aes.cpp.obj -c G:\VG\lib\aes_faster_c\aes.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj -MF CMakeFiles\udp2raw.dir\lib\aes_faster_c\aes.cpp.obj.d -o CMakeFiles\udp2raw.dir\lib\aes_faster_c\aes.cpp.obj -c G:\VQ\VQ\lib\aes_faster_c\aes.cpp
 
 CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\lib\aes_faster_c\aes.cpp > CMakeFiles\udp2raw.dir\lib\aes_faster_c\aes.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\lib\aes_faster_c\aes.cpp > CMakeFiles\udp2raw.dir\lib\aes_faster_c\aes.cpp.i
 
 CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\lib\aes_faster_c\aes.cpp -o CMakeFiles\udp2raw.dir\lib\aes_faster_c\aes.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\lib\aes_faster_c\aes.cpp -o CMakeFiles\udp2raw.dir\lib\aes_faster_c\aes.cpp.s
 
 CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj: G:/VG/lib/aes_faster_c/wrapper.cpp
+CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj: G:/VQ/VQ/lib/aes_faster_c/wrapper.cpp
 CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj -MF CMakeFiles\udp2raw.dir\lib\aes_faster_c\wrapper.cpp.obj.d -o CMakeFiles\udp2raw.dir\lib\aes_faster_c\wrapper.cpp.obj -c G:\VG\lib\aes_faster_c\wrapper.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj -MF CMakeFiles\udp2raw.dir\lib\aes_faster_c\wrapper.cpp.obj.d -o CMakeFiles\udp2raw.dir\lib\aes_faster_c\wrapper.cpp.obj -c G:\VQ\VQ\lib\aes_faster_c\wrapper.cpp
 
 CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\lib\aes_faster_c\wrapper.cpp > CMakeFiles\udp2raw.dir\lib\aes_faster_c\wrapper.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\lib\aes_faster_c\wrapper.cpp > CMakeFiles\udp2raw.dir\lib\aes_faster_c\wrapper.cpp.i
 
 CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\lib\aes_faster_c\wrapper.cpp -o CMakeFiles\udp2raw.dir\lib\aes_faster_c\wrapper.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\lib\aes_faster_c\wrapper.cpp -o CMakeFiles\udp2raw.dir\lib\aes_faster_c\wrapper.cpp.s
 
 CMakeFiles/udp2raw.dir/my_ev.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/my_ev.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/my_ev.cpp.obj: G:/VG/my_ev.cpp
+CMakeFiles/udp2raw.dir/my_ev.cpp.obj: G:/VQ/VQ/my_ev.cpp
 CMakeFiles/udp2raw.dir/my_ev.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/udp2raw.dir/my_ev.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/my_ev.cpp.obj -MF CMakeFiles\udp2raw.dir\my_ev.cpp.obj.d -o CMakeFiles\udp2raw.dir\my_ev.cpp.obj -c G:\VG\my_ev.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/udp2raw.dir/my_ev.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/my_ev.cpp.obj -MF CMakeFiles\udp2raw.dir\my_ev.cpp.obj.d -o CMakeFiles\udp2raw.dir\my_ev.cpp.obj -c G:\VQ\VQ\my_ev.cpp
 
 CMakeFiles/udp2raw.dir/my_ev.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/my_ev.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\my_ev.cpp > CMakeFiles\udp2raw.dir\my_ev.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\my_ev.cpp > CMakeFiles\udp2raw.dir\my_ev.cpp.i
 
 CMakeFiles/udp2raw.dir/my_ev.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/my_ev.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\my_ev.cpp -o CMakeFiles\udp2raw.dir\my_ev.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\my_ev.cpp -o CMakeFiles\udp2raw.dir\my_ev.cpp.s
 
 CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj: CMakeFiles/udp2raw.dir/flags.make
 CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj: CMakeFiles/udp2raw.dir/includes_CXX.rsp
-CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj: G:/VG/pcap_wrapper.cpp
+CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj: G:/VQ/VQ/pcap_wrapper.cpp
 CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj: CMakeFiles/udp2raw.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj -MF CMakeFiles\udp2raw.dir\pcap_wrapper.cpp.obj.d -o CMakeFiles\udp2raw.dir\pcap_wrapper.cpp.obj -c G:\VG\pcap_wrapper.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj"
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj -MF CMakeFiles\udp2raw.dir\pcap_wrapper.cpp.obj.d -o CMakeFiles\udp2raw.dir\pcap_wrapper.cpp.obj -c G:\VQ\VQ\pcap_wrapper.cpp
 
 CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.i"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VG\pcap_wrapper.cpp > CMakeFiles\udp2raw.dir\pcap_wrapper.cpp.i
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\VQ\VQ\pcap_wrapper.cpp > CMakeFiles\udp2raw.dir\pcap_wrapper.cpp.i
 
 CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.s"
-	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VG\pcap_wrapper.cpp -o CMakeFiles\udp2raw.dir\pcap_wrapper.cpp.s
+	C:\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\VQ\VQ\pcap_wrapper.cpp -o CMakeFiles\udp2raw.dir\pcap_wrapper.cpp.s
 
 # Object files for target udp2raw
 udp2raw_OBJECTS = \
@@ -370,7 +370,7 @@ udp2raw.exe: CMakeFiles/udp2raw.dir/build.make
 udp2raw.exe: CMakeFiles/udp2raw.dir/linkLibs.rsp
 udp2raw.exe: CMakeFiles/udp2raw.dir/objects1.rsp
 udp2raw.exe: CMakeFiles/udp2raw.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=G:\VG\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Linking CXX executable udp2raw.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=G:\VQ\VQ\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Linking CXX executable udp2raw.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\udp2raw.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -382,6 +382,6 @@ CMakeFiles/udp2raw.dir/clean:
 .PHONY : CMakeFiles/udp2raw.dir/clean
 
 CMakeFiles/udp2raw.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" G:\VG G:\VG G:\VG\build G:\VG\build G:\VG\build\CMakeFiles\udp2raw.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" G:\VQ\VQ G:\VQ\VQ G:\VQ\VQ\build G:\VQ\VQ\build G:\VQ\VQ\build\CMakeFiles\udp2raw.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/udp2raw.dir/depend
 

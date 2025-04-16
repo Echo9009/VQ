@@ -1,1 +1,1 @@
-CMakeFiles/udp2raw.dir/server.cpp.obj: G:\VG\server.cpp
+CMakeFiles/udp2raw.dir/server.cpp.obj: G:\VQ\VQ\server.cpp

@@ -1,4 +1,5 @@
-CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj: G:\VG\lib\pbkdf2-sha1.cpp \
+CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj: \
+ G:\VQ\VQ\lib\pbkdf2-sha1.cpp \
  c:\mingw64\x86_64-w64-mingw32\include\stdio.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt_stdio_config.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt.h \

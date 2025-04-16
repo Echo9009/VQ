@@ -1,4 +1,4 @@
-CMakeFiles/udp2raw.dir/lib/md5.cpp.obj: G:\VG\lib\md5.cpp \
+CMakeFiles/udp2raw.dir/lib/md5.cpp.obj: G:\VQ\VQ\lib\md5.cpp \
  c:\mingw64\x86_64-w64-mingw32\include\string.h \
  c:\mingw64\x86_64-w64-mingw32\include\crtdefs.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt.h \

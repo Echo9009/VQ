@@ -1,5 +1,5 @@
-CMakeFiles/udp2raw.dir/log.cpp.obj: G:\VG\log.cpp G:\VG\log.h \
- G:\VG\common.h c:\mingw64\x86_64-w64-mingw32\include\inttypes.h \
+CMakeFiles/udp2raw.dir/log.cpp.obj: G:\VQ\VQ\log.cpp G:\VQ\VQ\log.h \
+ G:\VQ\VQ\common.h c:\mingw64\x86_64-w64-mingw32\include\inttypes.h \
  c:\mingw64\x86_64-w64-mingw32\include\crtdefs.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt.h \
  c:\mingw64\x86_64-w64-mingw32\include\_mingw.h \
@@ -57,8 +57,8 @@ CMakeFiles/udp2raw.dir/log.cpp.obj: G:\VG\log.cpp G:\VG\log.h \
  c:\mingw64\x86_64-w64-mingw32\include\signal.h \
  c:\mingw64\x86_64-w64-mingw32\include\pthread_signal.h \
  c:\mingw64\x86_64-w64-mingw32\include\pthread_compat.h \
- g:\vg\pcap_wrapper.h g:\vg\my_ev.h g:\vg\my_ev_common.h g:\vg\ev_fixes.h \
- c:\mingw64\x86_64-w64-mingw32\include\winsock2.h \
+ g:\vq\vq\pcap_wrapper.h g:\vq\vq\my_ev.h g:\vq\vq\my_ev_common.h \
+ g:\vq\vq\ev_fixes.h c:\mingw64\x86_64-w64-mingw32\include\winsock2.h \
  c:\mingw64\x86_64-w64-mingw32\include\_mingw_unicode.h \
  c:\mingw64\x86_64-w64-mingw32\include\windows.h \
  c:\mingw64\x86_64-w64-mingw32\include\sdkddkver.h \
@@ -284,7 +284,7 @@ CMakeFiles/udp2raw.dir/log.cpp.obj: G:\VG\log.cpp G:\VG\log.h \
  c:\mingw64\x86_64-w64-mingw32\include\psdk_inc\_wsadata.h \
  c:\mingw64\x86_64-w64-mingw32\include\ws2def.h \
  c:\mingw64\x86_64-w64-mingw32\include\psdk_inc\_wsa_errnos.h \
- c:\mingw64\x86_64-w64-mingw32\include\qos.h G:/VG/libev/ev.h \
+ c:\mingw64\x86_64-w64-mingw32\include\qos.h G:/VQ/VQ/libev/ev.h \
  c:\mingw64\x86_64-w64-mingw32\include\ws2ipdef.h \
  c:\mingw64\x86_64-w64-mingw32\include\in6addr.h \
  c:\mingw64\include\c++\12.2.0\unordered_map \
@@ -403,4 +403,5 @@ CMakeFiles/udp2raw.dir/log.cpp.obj: G:\VG\log.cpp G:\VG\log.h \
  c:\mingw64\include\c++\12.2.0\list \
  c:\mingw64\include\c++\12.2.0\bits\stl_list.h \
  c:\mingw64\include\c++\12.2.0\bits\allocated_ptr.h \
- c:\mingw64\include\c++\12.2.0\bits\list.tcc G:\VG\misc.h G:\VG\network.h
+ c:\mingw64\include\c++\12.2.0\bits\list.tcc G:\VQ\VQ\misc.h \
+ G:\VQ\VQ\network.h

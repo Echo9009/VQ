@@ -140,10 +140,10 @@ conn_info_t::~conn_info_t() {
 
 conn_manager_t::conn_manager_t() {
     ready_num = 0;
-    mp.reserve(32); // gaming: small number of connections
+    mp.reserve(10007);
     // clear_it=mp.begin();
     // timer_fd_mp.reserve(10007);
-    const_id_mp.reserve(32); // gaming: small number of connections
+    const_id_mp.reserve(10007);
     // udp_fd_mp.reserve(100007);
     last_clear_time = 0;
     // current_ready_ip=0;

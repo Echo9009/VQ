@@ -1,5 +1,5 @@
-CMakeFiles/udp2raw.dir/my_ev.cpp.obj: G:\VG\my_ev.cpp \
- G:\VG\my_ev_common.h G:\VG\ev_fixes.h \
+CMakeFiles/udp2raw.dir/my_ev.cpp.obj: G:\VQ\VQ\my_ev.cpp \
+ G:\VQ\VQ\my_ev_common.h G:\VQ\VQ\ev_fixes.h \
  c:\mingw64\x86_64-w64-mingw32\include\winsock2.h \
  c:\mingw64\x86_64-w64-mingw32\include\_mingw_unicode.h \
  c:\mingw64\x86_64-w64-mingw32\include\windows.h \
@@ -256,7 +256,7 @@ CMakeFiles/udp2raw.dir/my_ev.cpp.obj: G:\VG\my_ev.cpp \
  c:\mingw64\x86_64-w64-mingw32\include\psdk_inc\_wsadata.h \
  c:\mingw64\x86_64-w64-mingw32\include\ws2def.h \
  c:\mingw64\x86_64-w64-mingw32\include\psdk_inc\_wsa_errnos.h \
- c:\mingw64\x86_64-w64-mingw32\include\qos.h G:/VG/libev/ev.c \
+ c:\mingw64\x86_64-w64-mingw32\include\qos.h G:/VQ/VQ/libev/ev.c \
  c:\mingw64\x86_64-w64-mingw32\include\fcntl.h \
  c:\mingw64\x86_64-w64-mingw32\include\io.h \
  c:\mingw64\x86_64-w64-mingw32\include\_mingw_off_t.h \
@@ -271,13 +271,13 @@ CMakeFiles/udp2raw.dir/my_ev.cpp.obj: G:\VG\my_ev.cpp \
  c:\mingw64\x86_64-w64-mingw32\include\sec_api\sys\timeb_s.h \
  c:\mingw64\x86_64-w64-mingw32\include\pthread_time.h \
  c:\mingw64\x86_64-w64-mingw32\include\signal.h \
- c:\mingw64\x86_64-w64-mingw32\include\pthread_signal.h G:/VG/libev/ev.h \
- c:\mingw64\x86_64-w64-mingw32\include\sys\stat.h \
+ c:\mingw64\x86_64-w64-mingw32\include\pthread_signal.h \
+ G:/VQ/VQ/libev/ev.h c:\mingw64\x86_64-w64-mingw32\include\sys\stat.h \
  c:\mingw64\x86_64-w64-mingw32\include\_mingw_stat64.h \
  c:\mingw64\include\c++\12.2.0\math.h c:\mingw64\include\c++\12.2.0\cmath \
  c:\mingw64\include\c++\12.2.0\bits\cpp_type_traits.h \
  c:\mingw64\include\c++\12.2.0\ext\type_traits.h \
- c:\mingw64\x86_64-w64-mingw32\include\math.h G:/VG/libev/ev_win32.c \
+ c:\mingw64\x86_64-w64-mingw32\include\math.h G:/VQ/VQ/libev/ev_win32.c \
  c:\mingw64\lib\gcc\x86_64-w64-mingw32\12.2.0\include\float.h \
- c:\mingw64\x86_64-w64-mingw32\include\float.h G:/VG/libev/ev_vars.h \
- G:/VG/libev/ev_wrap.h G:/VG/libev/ev_select.c
+ c:\mingw64\x86_64-w64-mingw32\include\float.h G:/VQ/VQ/libev/ev_vars.h \
+ G:/VQ/VQ/libev/ev_wrap.h G:/VQ/VQ/libev/ev_select.c

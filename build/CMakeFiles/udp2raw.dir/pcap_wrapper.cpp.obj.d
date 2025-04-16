@@ -1,4 +1,4 @@
-CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj: G:\VG\pcap_wrapper.cpp \
+CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj: G:\VQ\VQ\pcap_wrapper.cpp \
  c:\mingw64\x86_64-w64-mingw32\include\windows.h \
  c:\mingw64\x86_64-w64-mingw32\include\_mingw.h \
  c:\mingw64\x86_64-w64-mingw32\include\_mingw_mac.h \
@@ -253,7 +253,7 @@ CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj: G:\VG\pcap_wrapper.cpp \
  c:\mingw64\x86_64-w64-mingw32\include\sec_api\stralign_s.h \
  c:\mingw64\x86_64-w64-mingw32\include\winsvc.h \
  c:\mingw64\x86_64-w64-mingw32\include\mcx.h \
- c:\mingw64\x86_64-w64-mingw32\include\imm.h g:\vg\pcap_wrapper.h \
+ c:\mingw64\x86_64-w64-mingw32\include\imm.h g:\vq\vq\pcap_wrapper.h \
  c:\mingw64\x86_64-w64-mingw32\include\assert.h \
  c:\mingw64\x86_64-w64-mingw32\include\stdio.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt_stdio_config.h \

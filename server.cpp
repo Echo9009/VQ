@@ -16,22 +16,6 @@
 #include "encrypt.h"
 #include "fd_manager.h"
 
-#ifdef UDP2RAW_LINUX
-#include <thread>
-#include <vector>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <sched.h>
-#include <mutex>
-#include <queue>
-#include <condition_variable>
-#include <atomic>
-#include <arpa/inet.h>
-#endif
-
-extern void start_server_workers(int port, int num_workers);
-
 int server_on_timer_multi(conn_info_t &conn_info)  // for server. called when a timer is ready in epoll.for server,there will be one timer for every connection
 // there is also a global timer for server,but its not handled here
 {
@@ -407,7 +391,7 @@ int server_on_raw_recv_multi()  // called when server received an raw packet
         // struct sockaddr saddr;
         // socklen_t saddr_size=sizeof(saddr);
         /// recvfrom(raw_recv_fd, 0,0, 0 ,&saddr , &saddr_size);//
-        mylog(log_warn, "peek_raw failed\n");
+        mylog(log_trace, "peek_raw failed\n");
         return -1;
     } else {
         mylog(log_trace, "peek_raw success\n");
@@ -594,6 +578,8 @@ int server_on_udp_recv(conn_info_t &conn_info, fd64_t fd64) {
     int fd = fd_manager.to_fd(fd64);
 
     int recv_len = recv(fd, buf, max_data_len + 1, 0);
+
+    mylog(log_trace, "received a packet from udp_fd,len:%d\n", recv_len);
 
     if (recv_len == max_data_len + 1) {
         mylog(log_warn, "huge packet, data_len > %d,dropped\n", max_data_len);
@@ -811,112 +797,4 @@ int server_event_loop() {
     return 0;
 }
 
-#ifdef UDP2RAW_LINUX
-#include <mutex>
-#include <queue>
-#include <condition_variable>
-#include <thread>
-#include <atomic>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
-struct Packet {
-    std::vector<char> data;
-    sockaddr_in addr;
-    socklen_t addrlen;
-};
-
-class PacketQueue {
-public:
-    void push(Packet&& pkt) {
-        std::lock_guard<std::mutex> lock(mtx);
-        q.push(std::move(pkt));
-        cv.notify_one();
-    }
-    bool pop(Packet& pkt) {
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [&]{ return !q.empty() || stop_flag; });
-        if (q.empty()) return false;
-        pkt = std::move(q.front());
-        q.pop();
-        return true;
-    }
-    void stop() {
-        std::lock_guard<std::mutex> lock(mtx);
-        stop_flag = true;
-        cv.notify_all();
-    }
-private:
-    std::queue<Packet> q;
-    std::mutex mtx;
-    std::condition_variable cv;
-    bool stop_flag = false;
-};
-
-std::vector<std::unique_ptr<PacketQueue>> worker_queues;
-std::atomic<bool> master_stop_flag{false};
-
-size_t hash_addr(const sockaddr_in& addr, int num_workers) {
-    // ساده: hash ترکیب IP و پورت
-    return (ntohl(addr.sin_addr.s_addr) ^ ntohs(addr.sin_port)) % num_workers;
-}
-
-void master_thread_func(int port, int num_workers) {
-    int fd = socket(AF_INET, SOCK_DGRAM, 0);
-    int opt = 1;
-    setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
-    sockaddr_in addr = {};
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = INADDR_ANY;
-    addr.sin_port = htons(port);
-    bind(fd, (sockaddr*)&addr, sizeof(addr));
-
-    while (!master_stop_flag) {
-        Packet pkt;
-        pkt.data.resize(2048);
-        pkt.addrlen = sizeof(pkt.addr);
-        int len = recvfrom(fd, pkt.data.data(), pkt.data.size(), 0, (sockaddr*)&pkt.addr, &pkt.addrlen);
-        if (len > 0) {
-            pkt.data.resize(len);
-            size_t idx = hash_addr(pkt.addr, num_workers);
-            worker_queues[idx]->push(std::move(pkt));
-        }
-    }
-    close(fd);
-}
-
-void server_worker(int port, int worker_id) {
-    // پین کردن ترد به هسته خاص (اختیاری)
-    cpu_set_t cpuset;
-    CPU_ZERO(&cpuset);
-    CPU_SET(worker_id, &cpuset);
-    pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
-
-    Packet pkt;
-    while (worker_queues[worker_id]->pop(pkt)) {
-        assert(pkt.data.size() <= huge_buf_len);
-        memcpy(g_packet_buf, pkt.data.data(), pkt.data.size());
-        g_packet_buf_len = pkt.data.size();
-        g_packet_buf_cnt = 1;
-        server_on_raw_recv_multi();
-    }
-}
-
-void start_server_workers(int port, int num_workers) {
-    worker_queues.clear();
-    for (int i = 0; i < num_workers; ++i) {
-        worker_queues.emplace_back(new PacketQueue());
-    }
-    std::thread master_thread(master_thread_func, port, num_workers);
-    std::vector<std::thread> threads;
-    for (int i = 0; i < num_workers; ++i) {
-        threads.emplace_back(server_worker, port, i);
-    }
-    master_thread.join();
-    for (auto &q : worker_queues) q->stop();
-    for (auto &t : threads) t.join();
-}
 #endif
-
-#endif
-

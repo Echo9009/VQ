@@ -1,7 +1,7 @@
-G:/VG/build/CMakeFiles/udp2raw.dir
-G:/VG/build/CMakeFiles/edit_cache.dir
-G:/VG/build/CMakeFiles/rebuild_cache.dir
-G:/VG/build/CMakeFiles/list_install_components.dir
-G:/VG/build/CMakeFiles/install.dir
-G:/VG/build/CMakeFiles/install/local.dir
-G:/VG/build/CMakeFiles/install/strip.dir
+G:/VQ/VQ/build/CMakeFiles/udp2raw.dir
+G:/VQ/VQ/build/CMakeFiles/edit_cache.dir
+G:/VQ/VQ/build/CMakeFiles/rebuild_cache.dir
+G:/VQ/VQ/build/CMakeFiles/list_install_components.dir
+G:/VQ/VQ/build/CMakeFiles/install.dir
+G:/VQ/VQ/build/CMakeFiles/install/local.dir
+G:/VQ/VQ/build/CMakeFiles/install/strip.dir
