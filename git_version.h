@@ -1,7 +1,1 @@
-#ifndef GIT_VERSION_H
-#define GIT_VERSION_H
-
-const char* const gitversion = "custom build";
-#define GIT_VERSION gitversion
-
-#endif
+const char *gitversion = "304131a33588b20603c2666b70138290926d8252";

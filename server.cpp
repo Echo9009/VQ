@@ -686,39 +686,6 @@ int server_on_udp_recv(conn_info_t &conn_info, fd64_t fd64) {
     return 0;
 }
 
-// Optimized connection clearing function
-void conn_manager_t::clear_inactive_optimized() {
-    if (get_current_time() - last_clear_time < conn_clear_interval) return;
-
-    size_t cleared = 0;
-    size_t remain = 0;
-    last_clear_time = get_current_time();
-
-    const size_t BATCH_SIZE = 256;
-    std::vector<std::pair<address_t, conn_info_t*>> to_erase;
-    to_erase.reserve(BATCH_SIZE);
-
-    for (auto it = mp.begin(); it != mp.end(); ++it) {
-        if (to_erase.size() >= BATCH_SIZE) break;
-
-        if (is_conn_info_valid(*it->second)) {
-            remain++;
-            continue;
-        }
-
-        to_erase.push_back(*it);
-        cleared++;
-    }
-
-    for (const auto& pair : to_erase) {
-        conn_info_t* conn_info = pair.second;
-        erase(mp.find(pair.first));
-    }
-
-    if (debug_flag)
-        mylog(log_debug, "cleared %zu inactive connections, %zu remain\n", cleared, remain);
-}
-
 // Optimized server event loop
 int server_event_loop() {
     char buf[buf_len];

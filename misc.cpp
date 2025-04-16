@@ -1040,7 +1040,6 @@ int clear_iptables_rule() {
 }
 #endif
 
-#ifdef UDP2RAW_MP
 void iptables_rule()  // handles -a -g --gen-add  --keep-rule --clear --wait-lock
 {
     if (generate_iptables_rule) {
@@ -1127,7 +1126,6 @@ void iptables_rule()  // handles -a -g --gen-add  --keep-rule --clear --wait-loc
         myexit(0);
     }
 }
-#endif
 
 void signal_handler(int sig) {
     about_to_exit = 1;
