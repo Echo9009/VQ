@@ -8,6 +8,7 @@
 #include "fd_manager.h"
 #ifdef UDP2RAW_LINUX
 #include <thread>
+extern void start_server_workers(int port, int num_workers);
 #endif
 
 void sigpipe_cb(struct ev_loop *l, ev_signal *w, int revents) {
