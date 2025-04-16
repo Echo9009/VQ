@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     // Initialize thread pool with number of CPU cores
     unsigned int num_threads = std::thread::hardware_concurrency();
     if (num_threads == 0) num_threads = 4; // fallback if detection fails
-    g_thread_pool = std::make_unique<ThreadPool>(num_threads);
+    g_thread_pool = std::unique_ptr<ThreadPool>(new ThreadPool(num_threads));
     mylog(log_info, "Initialized thread pool with %u threads\n", num_threads);
 
     ev_signal signal_watcher_sigpipe;
