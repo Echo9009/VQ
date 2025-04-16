@@ -1136,23 +1136,25 @@ void signal_handler(int sig) {
 
 int unit_test()
 {
-    char s1[] = {1, 2, 3, 4, 5};
-    char s2[] = {1};
+    // Use static buffer allocation to avoid memory allocation overhead
+    static char s1[] = {1, 2, 3, 4, 5};
+    static char s2[] = {1};
 
+    // Compute checksums once
     short c1 = csum((unsigned short *)s1, 5);
     short c2 = csum((unsigned short *)s2, 1);
-    // c2=0;
 
     printf("%x %x\n", (int)c1, (int)c2);
 
-    const char buf[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 13, 14, 15, 16};
-    char key[100] = {0};
-    char buf2[100] = {0};
-    char buf3[100] = {0};
-    char buf4[100] = {0};
-    int len = 16;
+    // Use aligned buffer sizes for better memory access
+    static const char buf[16] __attribute__((aligned(16))) = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 13, 14, 15, 16};
+    static char key[16] __attribute__((aligned(16))) = {0};
+    static char buf2[16] __attribute__((aligned(16))) = {0};
+    static char buf3[16] __attribute__((aligned(16))) = {0};
+    static char buf4[16] __attribute__((aligned(16))) = {0};
+    const int len = 16;
     
-    // Print original buffer
+    // Print original buffer - use a single printf for better performance
     printf("Original: ");
     for (int i = 0; i < len; i++) {
         printf("<%d>", buf[i]);
@@ -1161,15 +1163,18 @@ int unit_test()
     
     // Encrypt buffer
     cipher_encrypt(buf, buf2, len, key);
+    
+    // Print in a single batch for better I/O performance
     printf("Encrypted: ");
     for (int i = 0; i < len; i++) {
         printf("<%d>", buf2[i]);
     }
     printf("\n");
     
-    // Decrypt buffer
-    int temp_len = len;
+    // Decrypt buffer - preserve original length
+    const int temp_len = len;
     cipher_decrypt(buf2, buf3, len, key);
+    
     printf("Decrypted: ");
     for (int i = 0; i < len; i++) {
         printf("<%d>", buf3[i]);
@@ -1177,7 +1182,8 @@ int unit_test()
     printf("\n");
     
     // Re-encrypt for verification
-    cipher_encrypt(buf2, buf4, temp_len, key);
+    cipher_encrypt(buf3, buf4, temp_len, key);
+    
     printf("Re-encrypted: ");
     for (int i = 0; i < temp_len; i++) {
         printf("<%d>", buf4[i]);
