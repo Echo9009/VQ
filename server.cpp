@@ -632,27 +632,27 @@ int server_on_udp_recv_mt(conn_info_t &conn_info, fd64_t fd64) {
 }
 
 // Multithreaded event handlers for epoll events
-void handle_epoll_event_mt(int idx, uint32_t events) {
-    g_thread_pool->enqueue([idx, events](struct ev_loop* loop) {
+void handle_epoll_event_mt(struct epoll_event* events, int idx) {
+    g_thread_pool->enqueue([events, idx](struct ev_loop* loop) {
         std::lock_guard<std::mutex> lock(server_mutex);
         
         // This is where we'll handle specific event types
-        if(events & EPOLLIN) {
+        if(events[idx].events & EPOLLIN) {
             // Data available for reading
-            fd64_t fd64 = events_inner[idx].data.u64;
+            fd64_t fd64 = events[idx].data.u64;
             
             if(fd_manager.exist(fd64)) {
-                // Handle UDP reads
-                if(fd_manager.get_info(fd64).is_udp()) {
+                // Handle UDP reads - check if it's a UDP fd
+                if(fd_manager.get_info(fd64).type == fd_type_udp) {
                     conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
                     server_on_udp_recv(*p_conn_info, fd64);
                 }
-                // Handle timer events
-                else if(fd_manager.get_info(fd64).is_timer()) {
+                // Handle timer events - check if it's a timer fd
+                else if(fd_manager.get_info(fd64).type == fd_type_timer) {
                     conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
                     server_on_timer_multi(*p_conn_info);
                 }
-            } else if(fd64 == raw_recv_fd64) {
+            } else if(fd64 == (u64_t)raw_recv_fd) {
                 // Handle raw socket reads
                 server_on_raw_recv_multi();
             }
@@ -763,95 +763,64 @@ int server_event_loop() {
         mylog(log_info, "fifo_file=%s\n", fifo_file);
     }
 
-    while (1)  ////////////////////////
-    {
-        if (about_to_exit) myexit(0);
-
-        int nfds = epoll_wait(epollfd, events, max_events, 180 * 1000);
-        if (nfds < 0) {  // allow zero
-            if (errno == EINTR) {
-                mylog(log_info, "epoll interrupted by signal,continue\n");
-                // myexit(0);
-            } else {
-                mylog(log_fatal, "epoll_wait return %d,%s\n", nfds, strerror(errno));
-                myexit(-1);
-            }
+    // Main event loop processing with thread pool
+    while (1) {
+        int nfds = epoll_wait(epollfd, events_inner, max_events, 180 * 1000);
+        if (nfds < 0) {
+            mylog(log_fatal, "epoll_wait return %d\n", nfds);
+            myexit(-1);
         }
-        int idx;
-        for (idx = 0; idx < nfds; ++idx) {
-            // mylog(log_debug,"ndfs:  %d \n",nfds);
-            epoll_trigger_counter++;
-            // printf("%d %d %d %d\n",timer_fd,raw_recv_fd,raw_send_fd,n);
-            if ((events[idx].data.u64) == (u64_t)timer_fd) {
-                if (debug_flag) begin_time = get_current_time();
-                conn_manager.clear_inactive();
-                u64_t dummy;
-                int unused = read(timer_fd, &dummy, 8);
-                // current_time_rough=get_current_time();
-                if (debug_flag) {
-                    end_time = get_current_time();
-                    mylog(log_debug, "timer_fd,%llu,%llu,%llu\n", begin_time, end_time, end_time - begin_time);
-                }
-
-                mylog(log_trace, "epoll_trigger_counter:  %d \n", epoll_trigger_counter);
-                epoll_trigger_counter = 0;
-
-            } else if (events[idx].data.u64 == (u64_t)raw_recv_fd) {
-                if (debug_flag) begin_time = get_current_time();
-                server_on_raw_recv_multi();
-                if (debug_flag) {
-                    end_time = get_current_time();
-                    mylog(log_debug, "raw_recv_fd,%llu,%llu,%llu  \n", begin_time, end_time, end_time - begin_time);
-                }
-            } else if (events[idx].data.u64 == (u64_t)fifo_fd) {
-                int len = read(fifo_fd, buf, sizeof(buf));
-                if (len < 0) {
-                    mylog(log_warn, "fifo read failed len=%d,errno=%s\n", len, strerror(errno));
-                    continue;
-                }
-                // assert(len>=0);
-                buf[len] = 0;
-                while (len >= 1 && buf[len - 1] == '\n')
-                    buf[len - 1] = 0;
-                mylog(log_info, "got data from fifo,len=%d,s=[%s]\n", len, buf);
-                mylog(log_info, "unknown command\n");
-            } else if (events[idx].data.u64 > u32_t(-1)) {
-                fd64_t fd64 = events[idx].data.u64;
-                if (!fd_manager.exist(fd64)) {
-                    mylog(log_trace, "fd64 no longer exist\n");
-                    return -1;
-                }
-                assert(fd_manager.exist_info(fd64));
-                conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
-                conn_info_t &conn_info = *p_conn_info;
-                if (fd64 == conn_info.timer_fd64)  //////////timer_fd64
-                {
-                    if (debug_flag) begin_time = get_current_time();
-                    int fd = fd_manager.to_fd(fd64);
-                    u64_t dummy;
-                    int unused = read(fd, &dummy, 8);
-                    assert(conn_info.state.server_current_state == server_ready);  // TODO remove this for peformance
-                    server_on_timer_multi(conn_info);
-                    if (debug_flag) {
-                        end_time = get_current_time();
-                        mylog(log_debug, "(events[idx].data.u64 >>32u) == 2u ,%llu,%llu,%llu  \n", begin_time, end_time, end_time - begin_time);
-                    }
-                } else  // udp_fd64
-                {
-                    if (debug_flag) begin_time = get_current_time();
-                    server_on_udp_recv(conn_info, fd64);
-                    if (debug_flag) {
-                        end_time = get_current_time();
-                        mylog(log_debug, "(events[idx].data.u64 >>32u) == 1u,%lld,%lld,%lld  \n", begin_time, end_time, end_time - begin_time);
+        
+        if (g_thread_pool && num_worker_threads > 1) {
+            // Distribute events to worker threads
+            for (int i = 0; i < nfds; ++i) {
+                handle_epoll_event_mt(events_inner, i);
+            }
+        } else {
+            // Original single-threaded code
+            for (int i = 0; i < nfds; i++) {
+                uint32_t events = events_inner[i].events;
+                if (events & EPOLLIN) {
+                    fd64_t fd64 = events_inner[i].data.u64;
+                    if (fd_manager.exist(fd64)) {
+                        if (fd_manager.get_info(fd64).type == fd_type_udp) {
+                            conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
+                            server_on_udp_recv(*p_conn_info, fd64);
+                        } else if (fd_manager.get_info(fd64).type == fd_type_timer) {
+                            conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
+                            char ip_port[max_addr_len];
+                            address_t tmp_addr;
+                            tmp_addr.from_ip_port_new(raw_ip_version, &p_conn_info->raw_info.send_info.new_dst_ip, p_conn_info->raw_info.send_info.dst_port);
+                            tmp_addr.to_str(ip_port);
+                            mylog(log_trace, "timer_event:fd64=<%lld>,ip_port=<%s>\n", fd64, ip_port);
+                            server_on_timer_multi(*p_conn_info);
+                        }
+                    } else if (fd64 == (u64_t)raw_recv_fd) {
+                        server_on_raw_recv_multi();
+                    } else {
+                        mylog(log_fatal, "fd64 no longer exist\n");
+                        myexit(-1);
                     }
                 }
-            } else {
-                mylog(log_fatal, "unknown fd,this should never happen\n");
-                myexit(-1);
             }
         }
+        
+        // Regular clean up operations
+        server_clear_function();
     }
+    
     return 0;
+}
+
+void server_clear_function() {
+    // This function handles any periodic cleanup tasks
+    if (about_to_exit) myexit(0);
+    
+    // Clear inactive connections from the connection manager
+    conn_manager.clear_inactive();
+    
+    // Reset the epoll trigger counter
+    epoll_trigger_counter = 0;
 }
 
 #endif
