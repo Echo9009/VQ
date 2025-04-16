@@ -359,8 +359,8 @@ int server_on_raw_recv_pre_ready(conn_info_t &conn_info, char *ip_port, u32_t tm
                 mylog(log_fatal, "[%s]this shouldnt happen2\n", ip_port);
                 myexit(-1);
             }
-            conn_info_t *p_ori = conn_manager.find_insert_p(addr1);
-            conn_info_t *p = conn_manager.find_insert_p(addr2);
+            conn_info_t *p_ori = *(conn_manager.find_insert_p(addr1));
+            conn_info_t *p = *(conn_manager.find_insert_p(addr2));
             conn_info_t *tmp = p;
             p = p_ori;
             p_ori = tmp;
@@ -711,7 +711,7 @@ void conn_manager_t::clear_inactive_optimized() {
     }
 
     for (const auto& pair : to_erase) {
-        conn_info_t* & conn_info = pair.second;
+        conn_info_t* conn_info = pair.second;
         erase(mp.find(pair.first));
     }
 
