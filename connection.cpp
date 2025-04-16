@@ -15,24 +15,6 @@ const int disable_conn_clear = 0;  // a raw connection is called conn.
 
 conn_manager_t conn_manager;
 
-// Helper function to check if a connection is valid
-bool conn_manager_t::is_conn_info_valid(const conn_info_t& conn_info) {
-    if (program_mode == server_mode) {
-        if (conn_info.state.server_current_state == server_ready) {
-            if (get_current_time() - conn_info.last_hb_recv_time <= heartbeat_timeout) {
-                return true;
-            }
-        }
-    } else {
-        if (conn_info.state.client_current_state == client_ready) {
-            if (get_current_time() - conn_info.last_hb_recv_time <= heartbeat_timeout) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 anti_replay_seq_t anti_replay_t::get_new_seq_for_send() {
     return anti_replay_seq++;
 }
@@ -158,10 +140,10 @@ conn_info_t::~conn_info_t() {
 
 conn_manager_t::conn_manager_t() {
     ready_num = 0;
-    mp.reserve(10007);
+    mp.reserve(32); // gaming: small number of connections
     // clear_it=mp.begin();
     // timer_fd_mp.reserve(10007);
-    const_id_mp.reserve(10007);
+    const_id_mp.reserve(32); // gaming: small number of connections
     // udp_fd_mp.reserve(100007);
     last_clear_time = 0;
     // current_ready_ip=0;
@@ -187,8 +169,12 @@ int insert(uint32_t ip,uint16_t port)
         mp[u64];
         return 0;
 }*/
-conn_info_t ** conn_manager_t::find_insert_p(address_t addr)  // be aware,the adress may change after rehash
+conn_info_t *&conn_manager_t::find_insert_p(address_t addr)  // be aware,the adress may change after rehash
 {
+    // u64_t u64=0;
+    // u64=ip;
+    // u64<<=32u;
+    // u64|=port;
     unordered_map<address_t, conn_info_t *>::iterator it = mp.find(addr);
     if (it == mp.end()) {
         mp[addr] = new conn_info_t;
@@ -196,7 +182,7 @@ conn_info_t ** conn_manager_t::find_insert_p(address_t addr)  // be aware,the ad
     } else {
         // lru.update(addr);
     }
-    return &(mp[addr]);
+    return mp[addr];
 }
 conn_info_t &conn_manager_t::find_insert(address_t addr)  // be aware,the adress may change after rehash
 {
@@ -248,109 +234,55 @@ int conn_manager_t::erase(unordered_map<address_t, conn_info_t *>::iterator eras
     return 0;
 }
 int conn_manager_t::clear_inactive() {
-    if (disable_conn_clear) return 0;
-    
-    // Process in smaller batches for more consistent performance
-    if (get_current_time() - last_clear_time < conn_clear_interval) {
-        return 0;
+    if (get_current_time() - last_clear_time > conn_clear_interval) {
+        last_clear_time = get_current_time();
+        return clear_inactive0();
     }
-    
-    last_clear_time = get_current_time();
-    return clear_inactive0();
+    return 0;
 }
 int conn_manager_t::clear_inactive0() {
-    if (disable_conn_clear) return 0;
-    
     unordered_map<address_t, conn_info_t *>::iterator it;
     unordered_map<address_t, conn_info_t *>::iterator old_it;
-    
+
+    if (disable_conn_clear) return 0;
+
+    // map<uint32_t,uint64_t>::iterator it;
     int cnt = 0;
     it = clear_it;
-    
-    // Calculate maximum number of items to check per batch
-    u32_t size = mp.size();
-    u32_t num_to_clean = size / conn_clear_ratio + conn_clear_min;
-    
-    // Limit the clean batch size
-    num_to_clean = min(num_to_clean, (u32_t)1000); // Cap to 1000 to avoid processing too many at once
-    
-    if (num_to_clean == 0) return 0;
-    
-    int check_counter = 0;
-    int maxcount = min(num_to_clean * 2, (u32_t)mp.size()); // Limit max iterations
-    
+    int size = mp.size();
+    int num_to_clean = size / conn_clear_ratio + conn_clear_min;  // clear 1/10 each time,to avoid latency glitch
+
+    mylog(log_trace, "mp.size() %d\n", size);
+
+    num_to_clean = min(num_to_clean, (int)mp.size());
+    u64_t current_time = get_current_time();
+
     for (;;) {
-        check_counter++;
-        if (check_counter > maxcount) break; // Prevent excessive iterations
-        
         if (cnt >= num_to_clean) break;
         if (mp.begin() == mp.end()) break;
-        
+
         if (it == mp.end()) {
             it = mp.begin();
         }
-        
-        conn_info_t *p = it->second;
-        
-        // Check if connection is valid
-        if (!is_conn_info_valid(*p)) {
+
+        if (it->second->state.server_current_state == server_ready && current_time - it->second->last_hb_recv_time <= server_conn_timeout) {
+            it++;
+        } else if (it->second->state.server_current_state != server_ready && current_time - it->second->last_state_time <= server_handshake_timeout) {
+            it++;
+        } else if (it->second->blob != 0 && it->second->blob->conv_manager.s.get_size() > 0) {
+            assert(it->second->state.server_current_state == server_ready);
+            it++;
+        } else {
+            mylog(log_info, "[%s:%d]inactive conn cleared \n", it->second->raw_info.recv_info.new_src_ip.get_str1(), it->second->raw_info.recv_info.src_port);
             old_it = it;
             it++;
             erase(old_it);
-            cnt++;
-        } else {
-            it++;
         }
+        cnt++;
     }
-    
     clear_it = it;
-    return 0;
-}
 
-// Optimized connection clearing function that processes connections in batches
-void conn_manager_t::clear_inactive_optimized() {
-    if (disable_conn_clear) return;
-    
-    if (get_current_time() - last_clear_time < conn_clear_interval) {
-        return;
-    }
-    
-    size_t cleared = 0;
-    size_t remain = 0;
-    last_clear_time = get_current_time();
-    
-    const size_t BATCH_SIZE = 256;
-    std::vector<std::pair<address_t, conn_info_t*>> to_erase;
-    to_erase.reserve(BATCH_SIZE);
-    
-    // Efficiently collect connections to erase in a batch
-    auto it = mp.begin();
-    size_t checked = 0;
-    size_t max_to_check = std::min(mp.size(), (size_t)2000); // Limit number of connections checked per batch
-    
-    while (it != mp.end() && checked < max_to_check) {
-        if (to_erase.size() >= BATCH_SIZE) break;
-        
-        conn_info_t* conn_info = it->second;
-        checked++;
-        
-        if (!is_conn_info_valid(*conn_info)) {
-            to_erase.push_back(*it);
-            cleared++;
-        } else {
-            remain++;
-        }
-        
-        ++it;
-    }
-    
-    // Process the collected batch of connections to erase
-    for (const auto& pair : to_erase) {
-        erase(mp.find(pair.first));
-    }
-    
-    if (debug_flag)
-        mylog(log_debug, "cleared %zu inactive connections, %zu remain\n", cleared, remain);
+    return 0;
 }
 
 int send_bare(raw_info_t &raw_info, const char *data, int len)  // send function with encryption but no anti replay,this is used when client and server verifys each other

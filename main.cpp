@@ -29,14 +29,12 @@ int main(int argc, char *argv[]) {
     assert(sizeof(unsigned int) == 4);
     assert(sizeof(unsigned long long) == 8);
 
-#ifdef UDP2RAW_MP
+#if defined(_WIN32) || defined(__MINGW32__)
     init_ws();
+    enable_log_color = 0;
 #endif
 
     dup2(1, 2);  // redirect stderr to stdout
-#if defined(__MINGW32__)
-    enable_log_color = 0;
-#endif
 
     pre_process_arg(argc, argv);
 
@@ -46,7 +44,7 @@ int main(int argc, char *argv[]) {
 
     if (program_mode == client_mode) {
         struct ev_loop *loop = ev_default_loop(0);
-#if !defined(__MINGW32__)
+#if !defined(_WIN32) && !defined(__MINGW32__)
         ev_signal_init(&signal_watcher_sigpipe, sigpipe_cb, SIGPIPE);
         ev_signal_start(loop, &signal_watcher_sigpipe);
 #endif
@@ -67,7 +65,8 @@ int main(int argc, char *argv[]) {
         myexit(-1);
 #endif
     }
-#if !defined(__MINGW32__)
+
+#if !defined(_WIN32) && !defined(__MINGW32__)
     if (geteuid() != 0) {
         mylog(log_warn, "root check failed, it seems like you are using a non-root account. we can try to continue, but it may fail. If you want to run udp2raw as non-root, you have to add iptables rule manually, and grant udp2raw CAP_NET_RAW capability, check README.md in repo for more info.\n");
     } else {
@@ -85,9 +84,8 @@ int main(int argc, char *argv[]) {
 
     my_init_keys(key_string, program_mode == client_mode ? 1 : 0);
 
-    iptables_rule();
-
 #ifdef UDP2RAW_LINUX
+    iptables_rule();
     init_raw_socket();
 #endif
 

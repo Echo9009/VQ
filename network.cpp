@@ -401,31 +401,17 @@ int init_raw_socket() {
         // init_ifindex(if_name);
     }
 
-    // Optimize socket options
     int opt = 0;
     assert(setsockopt(raw_send_fd, SOL_SOCKET, SO_RCVBUF, &opt, sizeof(opt)) == 0);  // raw_send_fd is for send only, set its recv buffer to zero
 
-    // Set optimized buffer size for high-load scenarios
-    int optimized_socket_buf_size = socket_buf_size;
-    if (optimized_socket_buf_size < 8 * 1024 * 1024) {
-        optimized_socket_buf_size = 8 * 1024 * 1024; // 8MB buffer for high throughput
-    }
-
-    // Enable reusing of port - helps with quick restarts
-    int reuse = 1;
-    if (setsockopt(raw_send_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
-        mylog(log_warn, "SO_REUSEADDR failed for raw_send_fd, errno=%s\n", strerror(errno));
-        // Not fatal, can continue
-    }
-
     if (force_socket_buf) {
-        if (setsockopt(raw_send_fd, SOL_SOCKET, SO_SNDBUFFORCE, &optimized_socket_buf_size, sizeof(optimized_socket_buf_size)) < 0) {
-            mylog(log_fatal, "SO_SNDBUFFORCE fail  socket_buf_size=%d  errno=%s\n", optimized_socket_buf_size, strerror(errno));
+        if (setsockopt(raw_send_fd, SOL_SOCKET, SO_SNDBUFFORCE, &socket_buf_size, sizeof(socket_buf_size)) < 0) {
+            mylog(log_fatal, "SO_SNDBUFFORCE fail  socket_buf_size=%d  errno=%s\n", socket_buf_size, strerror(errno));
             myexit(1);
         }
     } else {
-        if (setsockopt(raw_send_fd, SOL_SOCKET, SO_SNDBUF, &optimized_socket_buf_size, sizeof(optimized_socket_buf_size)) < 0) {
-            mylog(log_fatal, "SO_SNDBUF fail  socket_buf_size=%d  errno=%s\n", optimized_socket_buf_size, strerror(errno));
+        if (setsockopt(raw_send_fd, SOL_SOCKET, SO_SNDBUF, &socket_buf_size, sizeof(socket_buf_size)) < 0) {
+            mylog(log_fatal, "SO_SNDBUF fail  socket_buf_size=%d  errno=%s\n", socket_buf_size, strerror(errno));
             myexit(1);
         }
     }
@@ -445,13 +431,6 @@ int init_raw_socket() {
         // perror("");
         myexit(1);
     }
-
-    // Enable reusing of port for receive socket
-    if (setsockopt(raw_recv_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
-        mylog(log_warn, "SO_REUSEADDR failed for raw_recv_fd, errno=%s\n", strerror(errno));
-        // Not fatal, can continue
-    }
-
     if (strlen(dev) != 0) {
         struct sockaddr_ll bind_address;
         memset(&bind_address, 0, sizeof(bind_address));
@@ -473,8 +452,8 @@ int init_raw_socket() {
     }
 
     if (force_socket_buf) {
-        if (setsockopt(raw_recv_fd, SOL_SOCKET, SO_RCVBUFFORCE, &optimized_socket_buf_size, sizeof(optimized_socket_buf_size)) < 0) {
-            mylog(log_fatal, "SO_RCVBUFFORCE fail  socket_buf_size=%d  errno=%s\n", optimized_socket_buf_size, strerror(errno));
+        if (setsockopt(raw_recv_fd, SOL_SOCKET, SO_RCVBUFFORCE, &socket_buf_size, sizeof(socket_buf_size)) < 0) {
+            mylog(log_fatal, "SO_RCVBUFFORCE fail  socket_buf_size=%d  errno=%s\n", socket_buf_size, strerror(errno));
             myexit(1);
         }
     } else {

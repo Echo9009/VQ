@@ -62,11 +62,11 @@ struct conv_manager_t  // manage the udp connections
         return conv_to_data.size();
     }
     void reserve() {
-        data_to_conv.reserve(10007);
-        conv_to_data.reserve(10007);
+        data_to_conv.reserve(16);
+        conv_to_data.reserve(16);
         // conv_last_active_time.reserve(10007);
 
-        lru.mp.reserve(10007);
+        lru.mp.reserve(16);
     }
     void clear() {
         if (disable_conv_clear) return;
@@ -285,14 +285,12 @@ struct conn_manager_t  // manager for connections. for client,we dont need conn_
             mp[u64];
             return 0;
     }*/
-    conn_info_t ** find_insert_p(address_t addr);  // be aware,the adress may change after rehash //not true?
+    conn_info_t *&find_insert_p(address_t addr);  // be aware,the adress may change after rehash //not true?
     conn_info_t &find_insert(address_t addr);     // be aware,the adress may change after rehash
 
     int erase(unordered_map<address_t, conn_info_t *>::iterator erase_it);
     int clear_inactive();
     int clear_inactive0();
-    void clear_inactive_optimized(); // Optimized version for high connection loads
-    bool is_conn_info_valid(const conn_info_t& conn_info); // Helper to check if connection is valid
 };
 
 extern conn_manager_t conn_manager;

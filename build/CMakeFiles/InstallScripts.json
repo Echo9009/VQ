@@ -1,7 +1,7 @@
 {
 	"InstallScripts" : 
 	[
-		"G:/Q/Q/build/cmake_install.cmake"
+		"G:/VG/build/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

@@ -1,184 +1,227 @@
-# VQ - Advanced UDP Tunneling Solution
+# Udp2raw-tunnel
 
 
-یک تونل که ترافیک UDP را به ترافیک FakeTCP/UDP/ICMP رمزگذاری شده تبدیل می‌کند با استفاده از Raw Socket، به شما کمک می‌کند تا از فایروال‌های UDP عبور کنید (یا در محیط‌های UDP ناپایدار کار کنید).
+A Tunnel which turns UDP Traffic into Encrypted FakeTCP/UDP/ICMP Traffic by using Raw Socket, helps you Bypass UDP FireWalls(or Unstable UDP Environment).
 
-وقتی به تنهایی استفاده می‌شود، VQ فقط ترافیک UDP را تونل می‌کند. با این حال، اگر VQ را همراه با هر VPN مبتنی بر UDP استفاده کنید، می‌توانید هر نوع ترافیکی (شامل TCP/UDP/ICMP) را تونل کنید. در حال حاضر OpenVPN/L2TP/ShadowVPN و [tinyfecVPN](https://github.com/wangyu-/tinyfecVPN) به طور قطع پشتیبانی می‌شوند.
+When used alone,udp2raw tunnels only UDP traffic. Nevertheless,if you used udp2raw + any UDP-based VPN together,you can tunnel any traffic(include TCP/UDP/ICMP),currently OpenVPN/L2TP/ShadowVPN and [tinyfecVPN](https://github.com/wangyu-/tinyfecVPN) are confirmed to be supported.
 
 
 ![image0](images/image0.PNG)
 
-یا
+or
 
 ![image_vpn](images/udp2rawopenvpn.PNG)
 
+[udp2raw wiki](https://github.com/wangyu-/udp2raw-tunnel/wiki)
 
-# پلتفرم‌های پشتیبانی شده
-سیستم لینوکس (شامل لینوکس دسکتاپ، گوشی/تبلت اندروید، روتر OpenWRT یا Raspberry PI) با دسترسی root یا قابلیت cap_net_raw.
+[简体中文](/doc/README.zh-cn.md)
 
-ویندوز و مک‌او‌اس هم پشتیبانی می‌شوند.
 
-# ویژگی‌ها
-### ارسال/دریافت بسته‌های UDP با هدرهای ICMP/FakeTCP/UDP
-هدرهای ICMP/FakeTCP به شما کمک می‌کنند تا از مسدود کردن UDP، QOS روی UDP یا رفتار نادرست NAT روی UDP در برخی ISP‌ها عبور کنید. در حالت هدر ICMP، VQ مانند یک تونل ICMP عمل می‌کند.
+# Support Platforms
+Linux host (including desktop Linux,Android phone/tablet,OpenWRT router,or Raspberry PI) with root account or cap_net_raw capability.
 
-هدرهای UDP نیز پشتیبانی می‌شوند. در حالت هدر UDP، دقیقاً مانند یک تونل UDP معمولی رفتار می‌کند و شما می‌توانید از سایر ویژگی‌ها (مانند رمزگذاری، جلوگیری از حمله replay، یا تثبیت اتصال) استفاده کنید.
+For Windows and MacOS users, use the udp2raw in [this repo](https://github.com/wangyu-/udp2raw-multiplatform).
 
-### شبیه‌سازی TCP با تحویل بلادرنگ/خارج از ترتیب
-در حالت هدر FakeTCP، VQ هنگام برقراری اتصال، handshake سه مرحله‌ای را شبیه‌سازی می‌کند و همچنین seq و ack_seq را در زمان انتقال داده‌ها شبیه‌سازی می‌کند. همچنین چندین گزینه TCP را شبیه‌سازی می‌کند مانند: `MSS`، `sackOk`، `TS`، `TS_ack`، `wscale`. فایروال‌ها FakeTCP را به عنوان یک اتصال TCP در نظر می‌گیرند، اما اساساً UDP است: از تحویل بلادرنگ/خارج از ترتیب پشتیبانی می‌کند (درست مانند UDP معمولی)، بدون کنترل ازدحام یا ارسال مجدد. بنابراین هنگام استفاده از OpenVPN، مشکل TCP روی TCP وجود نخواهد داشت.
+# Features
+### Send/Receive UDP Packets with ICMP/FakeTCP/UDP headers
+ICMP/FakeTCP headers help you bypass UDP blocking, UDP QOS or improper UDP NAT behavior on some ISPs. In ICMP header mode,udp2raw works like an ICMP tunnel.
 
-### رمزگذاری، ضد حمله Replay
-* رمزگذاری ترافیک با AES-128-CBC.
-* حفاظت از یکپارچگی داده‌ها با HMAC-SHA1 (یا ضعیف‌تر MD5/CRC32).
-* دفاع در برابر حمله replay با پنجره ضد replay.
+UDP headers are also supported. In UDP header mode, it behaves just like a normal UDP tunnel, and you can just make use of the other features (such as encryption, anti-replay, or connection stabilization).
 
-### تشخیص خرابی و تثبیت (بازیابی اتصال)
-شکست‌های اتصال با ضربان قلب تشخیص داده می‌شوند. اگر زمان آن به پایان برسد، کلاینت به طور خودکار شماره پورت را تغییر داده و مجدداً متصل می‌شود. اگر اتصال مجدد موفقیت‌آمیز باشد، اتصال قبلی بازیابی می‌شود و تمام مکالمات UDP موجود معتبر باقی می‌مانند.
+### Simulated TCP with Real-time/Out-of-Order Delivery
+In FakeTCP header mode,udp2raw simulates 3-way handshake while establishing a connection,simulates seq and ack_seq while data transferring. It also simulates a few TCP options such as: `MSS`, `sackOk`, `TS`, `TS_ack`, `wscale`. Firewalls will regard FakeTCP as a TCP connection, but its essentially UDP: it supports real-time/out-of-order delivery(just as normal UDP does), no congestion control or re-transmission. So there wont be any TCP over TCP problem when using OpenVPN.
 
-به عنوان مثال، اگر از VQ + OpenVPN استفاده کنید، OpenVPN پس از هر اتصال مجدد اتصال خود را از دست نمی‌دهد، **حتی اگر کابل شبکه مجدداً وصل شود یا نقطه دسترسی WiFi تغییر کند**.
+### Encryption, Anti-Replay
+* Encrypt your traffic with AES-128-CBC.
+* Protect data integrity by HMAC-SHA1 (or weaker MD5/CRC32).
+* Defense replay attack with anti-replay window.
 
-### ویژگی‌های دیگر
-* **چندگانگی** یک کلاینت می‌تواند چندین اتصال UDP را مدیریت کند که همه آنها از یک اتصال خام مشترک استفاده می‌کنند.
+[Notes on encryption](https://github.com/wangyu-/udp2raw-tunnel/wiki/Notes-on-encryption)
 
-* **چندین کلاینت** یک سرور می‌تواند چندین کلاینت داشته باشد.
+### Failure Dectection & Stabilization (Connection Recovery)
+Conection failures are detected by heartbeats. If timed-out, client will automatically change port number and reconnect. If reconnection is successful, the previous connection will be recovered, and all existing UDP conversations will stay vaild.
 
-* **پشتیبانی از NAT** هر سه حالت در محیط‌های NAT کار می‌کنند.
+For example, if you use udp2raw + OpenVPN, OpenVPN won't lose connection after any reconnect, **even if network cable is re-plugged or WiFi access point is changed**.
 
-* **پشتیبانی از OpenVZ** روی VPS BandwagonHost تست شده.
+### Other Features
+* **Multiplexing** One client can handle multiple UDP connections, all of which share the same raw connection.
 
-* **ساخت آسان** بدون وابستگی. برای کراس-کامپایل VQ، تنها کاری که باید انجام دهید دانلود یک toolchain، اصلاح makefile برای اشاره به toolchain و اجرای `make cross` است.
+* **Multiple Clients** One server can have multiple clients.
 
-### کلمات کلیدی
-`عبور از UDP QoS` `عبور از مسدودسازی UDP` `حل مشکل TCP روی TCP در OpenVPN` `OpenVPN روی ICMP` `تونل UDP به ICMP` `تونل UDP به TCP` `UDP روی ICMP` `UDP روی TCP`
+* **NAT Support** All of the 3 modes work in NAT environments.
 
-# شروع
-### نصب
-دانلود آخرین نسخه باینری
+* **OpenVZ Support** Tested on BandwagonHost VPS.
 
-### اجرا
-فرض کنید UDP شما مسدود شده یا QOS شده یا به سادگی به خوبی پشتیبانی نمی‌شود. فرض کنید آی‌پی سرور شما 44.55.66.77 است و یک سرویس دارید که روی پورت udp 7777 در حال گوش دادن است.
+* **Easy to Build** No dependencies.To cross-compile udp2raw,all you need to do is just to download a toolchain,modify makefile to point at the toolchain,run `make cross` then everything is done.(Note:Pre-compiled binaries for Desktop,RaspberryPi,Android,some Openwrt Routers are already included in [Releases](https://github.com/wangyu-/udp2raw-tunnel/releases))
+
+### Keywords
+`Bypass UDP QoS` `Bypass UDP Blocking` `Bypass OpenVPN TCP over TCP problem` `OpenVPN over ICMP` `UDP to ICMP tunnel` `UDP to TCP tunnel` `UDP over ICMP` `UDP over TCP`
+
+# Getting Started
+### Installing
+Download binary release from https://github.com/wangyu-/udp2raw-tunnel/releases
+
+### Running
+Assume your UDP is blocked or being QOS-ed or just poorly supported. Assume your server ip is 44.55.66.77, you have a service listening on udp port 7777.
 
 ```bash
-# اجرا در سمت سرور:
-./VQ_amd64 -s -l0.0.0.0:4096 -r 127.0.0.1:7777    -k "passwd" --raw-mode faketcp -a
+# Run at server side:
+./udp2raw_amd64 -s -l0.0.0.0:4096 -r 127.0.0.1:7777    -k "passwd" --raw-mode faketcp -a
 
-# اجرا در سمت کلاینت
-./VQ_amd64 -c -l0.0.0.0:3333  -r44.55.66.77:4096  -k "passwd" --raw-mode faketcp -a
+# Run at client side
+./udp2raw_amd64 -c -l0.0.0.0:3333  -r44.55.66.77:4096  -k "passwd" --raw-mode faketcp -a
 ```
-(دستورات فوق باید به عنوان root اجرا شوند. برای امنیت بیشتر، با چند مرحله اضافی، می‌توانید VQ را به عنوان غیر root اجرا کنید.)
+(The above commands need to be run as root. For better security, with some extra steps, you can run udp2raw as non-root. Check [this link](https://github.com/wangyu-/udp2raw-tunnel/wiki/run-udp2raw-as-non-root) for more info  )
 
-اکنون، یک تونل خام رمزگذاری شده بین کلاینت و سرور از طریق پورت TCP 4096 ایجاد شده است. اتصال به پورت UDP 3333 در سمت کلاینت معادل اتصال به پورت 7777 در سمت سرور است. هیچ ترافیک UDP نمایان نخواهد شد.
+###### Server Output:
+![](images/output_server.PNG)
+###### Client Output:
+![](images/output_client.PNG)
 
-### نکته
-گزینه `-a` به طور خودکار یک قانون iptables (یا چند قانون iptables) را برای شما اضافه می‌کند، VQ به این قانون iptables برای کار پایدار متکی است. مراقب باشید که `-a` را فراموش نکنید (این یک اشتباه رایج است). اگر نمی‌خواهید VQ به طور خودکار قانون iptables را اضافه کند، می‌توانید آن را به طور دستی اضافه کنید (نگاهی به گزینه `-g` بیندازید) و `-a` را حذف کنید.
+Now,an encrypted raw tunnel has been established between client and server through TCP port 4096. Connecting to UDP port 3333 at the client side is equivalent to connecting to port 7777 at the server side. No UDP traffic will be exposed.
+
+### Note
+To run on Android, check [Android_Guide](https://github.com/wangyu-/udp2raw/wiki/Android-Guide)
+
+`-a` option automatically adds an iptables rule (or a few iptables rules) for you, udp2raw relies on this iptables rule to work stably. Be aware you dont forget `-a` (its a common mistake). If you dont want udp2raw to add iptables rule automatically, you can add it manually(take a look at `-g` option) and omit `-a`.
 
 
-# موضوعات پیشرفته
-### استفاده
+# Advanced Topic
+### Usage
 ```
-VQ
-نسخه گیت: کامل  تاریخ ساخت: بروزرسانی شده
+udp2raw-tunnel
+git version:6e1df4b39f    build date:Oct 24 2017 09:21:15
+repository: https://github.com/wangyu-/udp2raw-tunnel
 
-استفاده:
-    اجرا به عنوان کلاینت : ./this_program -c -l local_listen_ip:local_port -r server_address:server_port  [options]
-    اجرا به عنوان سرور : ./this_program -s -l server_listen_ip:server_port -r remote_address:remote_port  [options]
+usage:
+    run as client : ./this_program -c -l local_listen_ip:local_port -r server_address:server_port  [options]
+    run as server : ./this_program -s -l server_listen_ip:server_port -r remote_address:remote_port  [options]
 
-گزینه‌های مشترک، این گزینه‌ها باید در هر دو طرف یکسان باشند:
-    --raw-mode            <string>        مقادیر در دسترس:faketcp(پیش‌فرض)،udp،icmp
-    -k,--key              <string>        رمز عبور برای تولید کلید متقارن، پیش‌فرض:"secret key"
-    --cipher-mode         <string>        مقادیر در دسترس:aes128cbc(پیش‌فرض)،xor،none
-    --auth-mode           <string>        مقادیر در دسترس:hmac_sha1،md5(پیش‌فرض)،crc32،simple،none
-    -a,--auto-rule                        افزودن خودکار (و حذف) قانون iptables
-    -g,--gen-rule                         تولید قانون iptables و سپس خروج، تا بتوانید آن را به صورت
-                                          دستی کپی و اضافه کنید. -a را نادیده می‌گیرد
-    --disable-anti-replay                 غیرفعال کردن ضد replay، توصیه نمی‌شود
-گزینه‌های کلاینت:
-    --source-ip           <ip>            اجبار source-ip برای سوکت خام
-    --source-port         <port>          اجبار source-port برای سوکت خام، فقط tcp/udp
-                                          این گزینه تغییر پورت را در حین اتصال مجدد غیرفعال می‌کند
-سایر گزینه‌ها:
-    --conf-file           <string>        خواندن گزینه‌ها از یک فایل پیکربندی به جای خط فرمان.
-                                          برای قالب، example.conf را در مخزن بررسی کنید
-    --fifo                <string>        استفاده از یک fifo(لوله نامگذاری شده) برای ارسال دستورات به برنامه در حال اجرا
-    --log-level           <number>        0:هرگز    1:مهلک   2:خطا   3:هشدار
-                                          4:اطلاعات (پیش‌فرض)     5:اشکال‌زدایی   6:ردیابی
-    --log-position                        فعال کردن نام فایل، نام تابع، شماره خط در گزارش
-    --disable-color                       غیرفعال کردن رنگ گزارش
-    --disable-bpf                         غیرفعال کردن فیلتر فضای هسته، اکثر اوقات لازم نیست
-                                          مگر اینکه مشکوک به وجود باگ باشید
-    --sock-buf            <number>        اندازه بافر برای سوکت، >=10 و <=10240، واحد:کیلوبایت، پیش‌فرض:1024
-    --force-sock-buf                      دور زدن محدودیت سیستم هنگام تنظیم sock-buf
-    --seq-mode            <number>        حالت افزایش seq برای faketcp:
-                                          0:هدر ثابت، seq و ack_seq را افزایش ندهید
-                                          1:افزایش seq برای هر بسته، به سادگی آخرین seq را تأیید کنید
-                                          2:افزایش seq به صورت تصادفی، تقریباً هر 3 بسته، به سادگی آخرین seq را تأیید کنید
-                                          3:شبیه‌سازی یک روند seq/ack تقریباً واقعی(پیش‌فرض)
-                                          4:مشابه 3، اما گزینه TCP Window_Scale را در نظر نمی‌گیرد،
-                                          ممکن است هنگامی که فایروال از گزینه TCP پشتیبانی نمی‌کند مفید باشد
-    --lower-level         <string>        ارسال بسته‌ها در سطح OSI 2، قالب:'if_name#dest_mac_adress'
-                                          یعنی:'eth0#00:23:45:67:89:b9'. یا سعی کنید '--lower-level auto' برای
-                                          به دست آوردن پارامتر به طور خودکار، اگر 'auto' شکست خورد آن را به صورت دستی مشخص کنید
-    --gen-add                             تولید قانون iptables و آن را به طور دائمی اضافه کنید، سپس خارج شوید. -g را نادیده می‌گیرد
-    --keep-rule                           نظارت بر iptables و اضافه کردن مجدد به صورت خودکار در صورت لزوم. -a را در نظر می‌گیرد
-    --clear                               پاک کردن هر قانون iptables که توسط این برنامه اضافه شده است. همه چیز را نادیده می‌گیرد
-    -h,--help                             چاپ این پیام راهنما
+common options,these options must be same on both side:
+    --raw-mode            <string>        avaliable values:faketcp(default),udp,icmp
+    -k,--key              <string>        password to gen symetric key,default:"secret key"
+    --cipher-mode         <string>        avaliable values:aes128cbc(default),xor,none
+    --auth-mode           <string>        avaliable values:hmac_sha1,md5(default),crc32,simple,none
+    -a,--auto-rule                        auto add (and delete) iptables rule
+    -g,--gen-rule                         generate iptables rule then exit,so that you can copy and
+                                          add it manually.overrides -a
+    --disable-anti-replay                 disable anti-replay,not suggested
+client options:
+    --source-ip           <ip>            force source-ip for raw socket
+    --source-port         <port>          force source-port for raw socket,tcp/udp only
+                                          this option disables port changing while re-connecting
+other options:
+    --conf-file           <string>        read options from a configuration file instead of command line.
+                                          check example.conf in repo for format
+    --fifo                <string>        use a fifo(named pipe) for sending commands to the running program,
+                                          check readme.md in repository for supported commands.
+    --log-level           <number>        0:never    1:fatal   2:error   3:warn
+                                          4:info (default)     5:debug   6:trace
+    --log-position                        enable file name,function name,line number in log
+    --disable-color                       disable log color
+    --disable-bpf                         disable the kernel space filter,most time its not necessary
+                                          unless you suspect there is a bug
+    --sock-buf            <number>        buf size for socket,>=10 and <=10240,unit:kbyte,default:1024
+    --force-sock-buf                      bypass system limitation while setting sock-buf
+    --seq-mode            <number>        seq increase mode for faketcp:
+                                          0:static header,do not increase seq and ack_seq
+                                          1:increase seq for every packet,simply ack last seq
+                                          2:increase seq randomly, about every 3 packets,simply ack last seq
+                                          3:simulate an almost real seq/ack procedure(default)
+                                          4:similiar to 3,but do not consider TCP Option Window_Scale,
+                                          maybe useful when firewall doesnt support TCP Option
+    --lower-level         <string>        send packets at OSI level 2, format:'if_name#dest_mac_adress'
+                                          ie:'eth0#00:23:45:67:89:b9'.or try '--lower-level auto' to obtain
+                                          the parameter automatically,specify it manually if 'auto' failed
+    --gen-add                             generate iptables rule and add it permanently,then exit.overrides -g
+    --keep-rule                           monitor iptables and auto re-add if necessary.implys -a
+    --clear                               clear any iptables rules added by this program.overrides everything
+    -h,--help                             print this help message
 
 ```
 
-### قوانین Iptables، `-a` و `-g`
-این برنامه بسته‌ها را از طریق سوکت خام ارسال می‌کند. در حالت FakeTCP، پردازش بسته TCP هسته لینوکس باید توسط یک قانون iptables در هر دو طرف مسدود شود، در غیر این صورت هسته به صورت خودکار RST را برای یک بسته TCP ناشناخته ارسال می‌کند و شما از مشکلات پایداری/عملکرد رنج خواهید برد. می‌توانید از گزینه `-a` استفاده کنید تا برنامه به طور خودکار قانون iptables را در شروع اضافه کند/در خروج حذف کند. همچنین می‌توانید از گزینه `-g` برای تولید قانون iptables استفاده کنید و آن را به صورت دستی اضافه کنید.
+### Iptables rules,`-a` and `-g`
+This program sends packets via raw socket. In FakeTCP mode, Linux kernel TCP packet processing has to be blocked by a iptables rule on both sides, otherwise the kernel will automatically send RST for an unrecongized TCP packet and you will sustain from stability / peformance problems. You can use `-a` option to let the program automatically add / delete iptables rule on start / exit. You can also use the `-g` option to generate iptables rule and add it manually.
 
-### `--cipher-mode` و `--auth-mode`
-پیشنهاد می‌شود برای به دست آوردن حداکثر امنیت از `aes128cbc` + `hmac_sha1` استفاده کنید. اگر می‌خواهید برنامه را روی یک روتر اجرا کنید، می‌توانید `xor` + `simple` را امتحان کنید، که می‌تواند بازرسی بسته توسط فایروال‌ها را اکثر اوقات فریب دهد، اما نمی‌تواند شما را در برابر حملات جدی محافظت کند. حالت none فقط برای اهداف اشکال‌زدایی است. توصیه نمی‌شود cipher-mode یا auth-mode را روی none تنظیم کنید.
+### `--cipher-mode` and `--auth-mode`
+It is suggested to use `aes128cbc` + `hmac_sha1` to obtain maximum security. If you want to run the program on a router, you can try `xor` + `simple`, which can fool packet inspection by firewalls the most of time, but it cannot protect you from serious attacks. Mode none is only for debugging purpose. It is not recommended to set the cipher-mode or auth-mode to none.
 
 ### `--seq-mode`
-حالت FakeTCP 100% مانند یک اتصال tcp واقعی رفتار نمی‌کند. ISP‌ها ممکن است بتوانند ترافیک tcp شبیه‌سازی شده را از ترافیک TCP واقعی تشخیص دهند (اگرچه پرهزینه است). seq-mode می‌تواند به شما کمک کند تا رفتار افزایش seq را کمی تغییر دهید. اگر مشکلات اتصال را تجربه می‌کنید، سعی کنید مقدار را تغییر دهید.
+The FakeTCP mode does not behave 100% like a real tcp connection. ISPs may be able to distinguish the simulated tcp traffic from the real TCP traffic (though it's costly). seq-mode can help you change the seq increase behavior slightly. If you experience connection problems, try to change the value.
 
 ### `--lower-level`
-`--lower-level` به شما اجازه می‌دهد بسته را در سطح OSI 2 (سطح پیوند) ارسال کنید، به طوری که می‌توانید از هر قانون iptables محلی عبور کنید. اگر قوانین iptables پیچیده‌ای دارید که با VQ تداخل دارد و نمی‌توانید (یا برای ویرایش قوانین iptables خیلی تنبل هستید)، `--lower-level` می‌تواند بسیار مفید باشد. `--lower-level auto` را امتحان کنید تا پارامترها را به طور خودکار تشخیص دهد، می‌توانید آن را به صورت دستی مشخص کنید اگر `auto` شکست خورد.
+`--lower-level` allows you to send packet at OSI level 2(link level),so that you can bypass any local iptables rules. If you have a complicated iptables rules which conflicts with udp2raw and you cant(or too lazy to) edit the iptables rules,`--lower-level` can be very useful. Try `--lower-level auto` to auto detect the parameters,you can specify it manually if `auto` fails.
 
-قالب دستی `if_name#dest_mac_adress`، یعنی:`eth0#00:23:45:67:89:b9`.
+Manual format `if_name#dest_mac_adress`,ie:`eth0#00:23:45:67:89:b9`.
 
 ### `--keep-rule`
-نظارت بر iptables و اضافه کردن مجدد قوانین iptables(برای مسدود کردن پردازش tcp هسته) در صورت لزوم. به ویژه زمانی مفید است که ممکن است قوانین iptables توسط برنامه‌های دیگر پاک شوند(به عنوان مثال، اگر از openwrt استفاده می‌کنید، هر بار که تنظیمات را تغییر می‌دهید و متعهد می‌شوید، ممکن است قانون iptables پاک شود و دوباره ساخته شود).
+Monitor iptables and auto re-add iptables rules(for blocking kernel tcp processing) if necessary.Especially useful when iptables rules may be cleared by other programs(for example,if you are using openwrt,everytime you changed and commited a setting,iptables rule may be cleared and re-constructed).
 
 ### `--conf-file`
 
-همچنین می‌توانید گزینه‌ها را از یک فایل پیکربندی بارگیری کنید تا رازها را از دستور `ps` دور نگه دارید.
+You can also load options from a configuration file in order to keep secrets away from `ps` command.
 
-به عنوان مثال، بازنویسی گزینه‌ها برای مثال `سرور` فوق (در بخش شروع) در فایل پیکربندی:
+For example, rewrite the options for the above `server` example (in Getting Started section) into configuration file:
 
 `server.conf`
 
 ```
 -s
-# می‌توانید نظرات را مانند این اضافه کنید
-# نظرات باید یک خط کامل را اشغال کنند
-# یا آنها به نحو مورد انتظار کار نخواهند کرد
-# آدرس شنود
+# You can add comments like this
+# Comments MUST occupy an entire line
+# Or they will not work as expected
+# Listen address
 -l 0.0.0.0:4096
-# آدرس ریموت
+# Remote address
 -r 127.0.0.1:7777
 -a
 -k passwd
 --raw-mode faketcp
 ```
 
-توجه داشته باشید به پارامتر `-k`: در حالت خط فرمان، نقل قول‌ها در اطراف رمز عبور توسط shell حذف می‌شوند. در فایل‌های پیکربندی ما نقل قول‌ها را حذف نمی‌کنیم.
+Pay attention to the `-k` parameter: In command line mode the quotes around the password will be removed by shell. In configuration files we do not remove quotes.
 
-سپس سرور را با
+Then start the server with
 
 ```bash
-./VQ_amd64 --conf-file server.conf
+./udp2raw_amd64 --conf-file server.conf
 ```
 
-راه‌اندازی کنید.
-
 ### `--fifo`
-استفاده از یک fifo(لوله نامگذاری شده) برای ارسال دستورات به برنامه در حال اجرا. به عنوان مثال `--fifo fifo.file`.
+Use a fifo(named pipe) for sending commands to the running program. For example `--fifo fifo.file`.
 
-در سمت کلاینت، می‌توانید از `echo reconnect >fifo.file` برای اجبار کلاینت به اتصال مجدد استفاده کنید. در حال حاضر هیچ دستوری برای سرور پیاده‌سازی نشده است.
+At client side,you can use `echo reconnect >fifo.file` to force client to reconnect.Currently no command has been implemented for server.
 
-# تست عملکرد
-#### روش تست:
-iperf3 TCP از طریق OpenVPN + VQ
+# Peformance Test
+#### Test method:
+iperf3 TCP via OpenVPN + udp2raw
+(iperf3 UDP mode is not used because of a bug mentioned in this issue: https://github.com/esnet/iperf/issues/296 . Instead, we package the TCP traffic into UDP by OpenVPN to test the performance. Read [Application](https://github.com/wangyu-/udp2raw-tunnel#application) for details.
+
+#### iperf3 command:
+```
+iperf3 -c 10.222.2.1 -P40
+iperf3 -c 10.222.2.1 -P40 -R
+```
+#### Environments
+* **Client** Vultr $2.5/monthly plan (single core 2.4GHz cpu, 512MB RAM, Tokyo, Japan)
+* **Server** BandwagonHost $3.99/annually plan (single core 2.0GHz cpu, 128MB RAM, Los Angeles, USA)
+
+### Test1
+raw_mode: faketcp  cipher_mode: xor  auth_mode: simple
+
+![image4](images/image4.PNG)
+
+(reverse speed was simliar and not uploaded)
+
+### Test2
+raw_mode: faketcp  cipher_mode: aes128cbc  auth_mode: md5
+
+![image5](images/image5.PNG)
+
+(reverse speed was simliar and not uploaded)
+
+# wiki
+
+Check wiki for more info:
+
+https://github.com/wangyu-/udp2raw-tunnel/wiki

@@ -1,1 +1,1 @@
-const char *gitversion = "304131a33588b20603c2666b70138290926d8252";
+const char *gitversion = "cross-platform-version";

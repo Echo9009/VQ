@@ -122,7 +122,7 @@ int process_lower_level_arg()  // handle --lower-level option
 void print_help() {
     char git_version_buf[100] = {0};
     strncpy(git_version_buf, gitversion, 10);
-    printf("VQ\n");
+    printf("udp2raw-tunnel\n");
     printf("git version:%s    ", git_version_buf);
     printf("build date:%s %s\n", __DATE__, __TIME__);
     printf("repository: https://github.com/wangyu-/udp2raw-tunnel\n");
@@ -190,7 +190,7 @@ void print_help() {
     printf("    --hb-len              <number>        length of heart-beat packet, >=0 and <=1500\n");
     printf("    --mtu-warn            <number>        mtu warning threshold, unit:byte, default:1375\n");
     printf("    --clear                               clear any iptables rules added by this program.overrides everything\n");
-    printf("    --retry-on-error                      retry on error, allow to start VQ before network is initialized\n");
+    printf("    --retry-on-error                      retry on error, allow to start udp2raw before network is initialized\n");
     printf("    -h,--help                             print this help message\n");
     // printf("common options,these options must be same on both side\n");
 }
@@ -804,6 +804,216 @@ void pre_process_arg(int argc, char *argv[])  // mainly for load conf file
     process_arg(new_argc, new_argv_char);
 }
 #ifdef UDP2RAW_LINUX
+void *run_keep(void *none)  // called in a new thread for --keep-rule option
+{
+    while (1) {
+        sleep(iptables_rule_keep_interval);
+        keep_iptables_rule();
+        if (about_to_exit)  // just incase it runs forever if there is some bug,not necessary
+        {
+            sleep(10);
+            keep_thread_running = 0;  // not thread safe ,but wont cause problem
+            break;
+        }
+    }
+    return NULL;
+}
+void iptables_rule()  // handles -a -g --gen-add  --keep-rule --clear --wait-lock
+{
+    assert(raw_ip_version == AF_INET || raw_ip_version == AF_INET6);
+
+    if (raw_ip_version == AF_INET) {
+        iptables_command0 = "iptables ";
+    } else
+        iptables_command0 = "ip6tables ";
+    if (!wait_xtables_lock) {
+        iptables_command = iptables_command0;
+    } else {
+        iptables_command = iptables_command0 + "-w ";
+    }
+
+    if (clear_iptables) {
+        char *output;
+        // int ret =system("iptables-save |grep udp2raw_dWRwMnJhdw|sed -n 's/^-A/iptables -D/p'|sh");
+        int ret = run_command(iptables_command + "-S|sed -n '/udp2rawDwrW/p'|sed -n 's/^-A/" + iptables_command + "-D/p'|sh", output);
+
+        int ret2 = run_command(iptables_command + "-S|sed -n '/udp2rawDwrW/p'|sed -n 's/^-N/" + iptables_command + "-X/p'|sh", output);
+        // system("iptables-save |grep udp2raw_dWRwMnJhdw|sed 's/^-A/iptables -D/'|sh");
+        // system("iptables-save|grep -v udp2raw_dWRwMnJhdw|iptables-restore");
+        mylog(log_info, "tried to clear all iptables rule created previously,return value %d %d\n", ret, ret2);
+        myexit(-1);
+    }
+
+    if (auto_add_iptables_rule && generate_iptables_rule) {
+        mylog(log_warn, " -g overrides -a\n");
+        auto_add_iptables_rule = 0;
+        // myexit(-1);
+    }
+    if (generate_iptables_rule_add && generate_iptables_rule) {
+        mylog(log_warn, " --gen-add overrides -g\n");
+        generate_iptables_rule = 0;
+        // myexit(-1);
+    }
+
+    if (keep_rule && auto_add_iptables_rule == 0) {
+        auto_add_iptables_rule = 1;
+        mylog(log_warn, " --keep_rule implys -a\n");
+        generate_iptables_rule = 0;
+        // myexit(-1);
+    }
+    char tmp_pattern[200];
+    string pattern = "";
+
+    if (program_mode == client_mode) {
+        tmp_pattern[0] = 0;
+        if (raw_mode == mode_faketcp) {
+            sprintf(tmp_pattern, "-s %s -p tcp -m tcp --sport %d", remote_addr.get_ip(), remote_addr.get_port());
+        }
+        if (raw_mode == mode_udp) {
+            sprintf(tmp_pattern, "-s %s -p udp -m udp --sport %d", remote_addr.get_ip(), remote_addr.get_port());
+        }
+        if (raw_mode == mode_icmp) {
+            if (raw_ip_version == AF_INET)
+                sprintf(tmp_pattern, "-s %s -p icmp --icmp-type 0", remote_addr.get_ip());
+            else
+                sprintf(tmp_pattern, "-s %s -p icmpv6 --icmpv6-type 129", remote_addr.get_ip());
+        }
+        pattern += tmp_pattern;
+    }
+    if (program_mode == server_mode) {
+        tmp_pattern[0] = 0;
+        if (raw_ip_version == AF_INET) {
+            if (local_addr.inner.ipv4.sin_addr.s_addr != 0) {
+                sprintf(tmp_pattern, "-d %s ", local_addr.get_ip());
+            }
+        } else {
+            char zero_arr[16] = {0};
+            if (memcmp(&local_addr.inner.ipv6.sin6_addr, zero_arr, 16) != 0) {
+                sprintf(tmp_pattern, "-d %s ", local_addr.get_ip());
+            }
+        }
+        pattern += tmp_pattern;
+
+        tmp_pattern[0] = 0;
+        if (raw_mode == mode_faketcp) {
+            sprintf(tmp_pattern, "-p tcp -m tcp --dport %d", local_addr.get_port());
+        }
+        if (raw_mode == mode_udp) {
+            sprintf(tmp_pattern, "-p udp -m udp --dport %d", local_addr.get_port());
+        }
+        if (raw_mode == mode_icmp) {
+            if (raw_ip_version == AF_INET)
+                sprintf(tmp_pattern, "-p icmp --icmp-type 8");
+            else
+                sprintf(tmp_pattern, "-p icmpv6 --icmpv6-type 128");
+        }
+        pattern += tmp_pattern;
+    }
+    /*
+            if(!simple_rule)
+            {
+                    pattern += " -m comment --comment udp2rawDwrW_";
+
+                    char const_id_str[100];
+                    sprintf(const_id_str, "%x_", const_id);
+
+                    pattern += const_id_str;
+
+                    time_t timer;
+                    char buffer[26];
+                    struct tm* tm_info;
+
+                    time(&timer);
+                    tm_info = localtime(&timer);
+
+                    strftime(buffer, 26, "%Y-%m-%d-%H:%M:%S", tm_info);
+
+                    pattern += buffer;
+
+
+            }*/
+
+    if (generate_iptables_rule) {
+        string rule = iptables_command + "-I INPUT ";
+        rule += pattern;
+        rule += " -j DROP";
+
+        printf("generated iptables rule:\n");
+        printf("%s\n", rule.c_str());
+        myexit(0);
+    }
+    if (generate_iptables_rule_add) {
+        iptables_gen_add(pattern.c_str(), const_id);
+        myexit(0);
+    }
+
+    if (auto_add_iptables_rule) {
+        iptables_rule_init(pattern.c_str(), const_id, keep_rule);
+        if (keep_rule) {
+            if (pthread_create(&keep_thread, NULL, run_keep, 0)) {
+                mylog(log_fatal, "Error creating thread\n");
+                myexit(-1);
+            }
+            keep_thread_running = 1;
+        }
+    } else {
+        mylog(log_warn, " -a has not been set, make sure you have added the needed iptables rules manually\n");
+    }
+}
+#endif
+
+int unit_test() {
+    printf("running unit test\n");
+    vector<string> conf_lines = {"---aaa", "--aaa bbb", "-a bbb", " \t \t \t-a\t \t \t bbbbb\t \t \t "};
+    for (int i = 0; i < int(conf_lines.size()); i++) {
+        printf("orign:%s\n", conf_lines[i].c_str());
+        auto res = parse_conf_line(conf_lines[i]);
+        printf("pasrse_result: size %d", int(res.size()));
+        for (int j = 0; j < int(res.size()); j++) {
+            printf("<%s>", res[j].c_str());
+        }
+        printf("\n");
+    }
+
+    char s1[] = {1, 2, 3, 4, 5};
+
+    char s2[] = {1};
+
+    short c1 = csum((unsigned short *)s1, 5);
+    short c2 = csum((unsigned short *)s2, 1);
+    // c2=0;
+
+    printf("%x %x\n", (int)c1, (int)c2);
+
+    const char buf[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 13, 14, 15, 16};
+    char key[100] = {0};
+    char buf2[100] = {0};
+    char buf3[100] = {0};
+    char buf4[100] = {0};
+    int len = 16;
+    for (int i = 0; i < len; i++) {
+        printf("<%d>", buf[i]);
+    }
+    printf("\n");
+    cipher_encrypt(buf, buf2, len, key);
+    for (int i = 0; i < len; i++) {
+        printf("<%d>", buf2[i]);
+    }
+    printf("\n");
+    int temp_len = len;
+    cipher_decrypt(buf2, buf3, len, key);
+    for (int i = 0; i < len; i++) {
+        printf("<%d>", buf3[i]);
+    }
+    printf("\n");
+    cipher_encrypt(buf2, buf4, temp_len, key);
+    for (int i = 0; i < temp_len; i++) {
+        printf("<%d>", buf4[i]);
+    }
+    return 0;
+}
+
+#ifdef UDP2RAW_LINUX
 int set_timer(int epollfd, int &timer_fd)  // put a timer_fd into epoll,general function,used both in client and server
 {
     int ret;
@@ -812,26 +1022,16 @@ int set_timer(int epollfd, int &timer_fd)  // put a timer_fd into epoll,general 
     itimerspec its;
     memset(&its, 0, sizeof(its));
 
-    // Use CLOCK_MONOTONIC for better timer accuracy
     if ((timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK)) < 0) {
         mylog(log_fatal, "timer_fd create error\n");
         myexit(1);
     }
-    
-    // Adjust timer interval for high-load scenarios
-    // Use a slightly longer interval to reduce CPU overhead while maintaining responsiveness
-    u32_t optimized_timer_interval = timer_interval;
-    
-    // Set timer parameters
-    its.it_interval.tv_sec = (optimized_timer_interval / 1000);
-    its.it_interval.tv_nsec = (optimized_timer_interval % 1000) * 1000ll * 1000ll;
-    its.it_value.tv_nsec = 1;  // start immediately
-    
-    // Use absolute time flag for more consistent timers under high load
+    its.it_interval.tv_sec = (timer_interval / 1000);
+    its.it_interval.tv_nsec = (timer_interval % 1000) * 1000ll * 1000ll;
+    its.it_value.tv_nsec = 1;  // imidiately
     timerfd_settime(timer_fd, 0, &its, 0);
 
-    // Configure epoll for edge-triggered mode for better performance with many events
-    ev.events = EPOLLIN | EPOLLET;
+    ev.events = EPOLLIN;
     ev.data.u64 = timer_fd;
 
     ret = epoll_ctl(epollfd, EPOLL_CTL_ADD, timer_fd, &ev);
@@ -850,29 +1050,19 @@ int set_timer_server(int epollfd, int &timer_fd, fd64_t &fd64)  // only for serv
     itimerspec its;
     memset(&its, 0, sizeof(its));
 
-    // Use CLOCK_MONOTONIC for better timer accuracy
     if ((timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK)) < 0) {
         mylog(log_fatal, "timer_fd create error\n");
         myexit(1);
     }
-    
-    // Adjust timer interval for high-load scenarios
-    // For server connection timers, we can use a slightly longer interval
-    u32_t optimized_timer_interval = timer_interval;
-    
-    // Set timer parameters
-    its.it_interval.tv_sec = (optimized_timer_interval / 1000);
-    its.it_interval.tv_nsec = (optimized_timer_interval % 1000) * 1000ll * 1000ll;
-    its.it_value.tv_nsec = 1;  // start immediately
-    
-    // Use absolute time flag for more consistent timers under high load
+    its.it_interval.tv_sec = (timer_interval / 1000);
+    its.it_interval.tv_nsec = (timer_interval % 1000) * 1000ll * 1000ll;
+    its.it_value.tv_nsec = 1;  // imidiately
     timerfd_settime(timer_fd, 0, &its, 0);
 
     fd64 = fd_manager.create(timer_fd);
 
-    // Configure epoll for edge-triggered mode for better performance with many events
-    ev.events = EPOLLIN | EPOLLET;
-    ev.data.u64 = fd64;  // difference from set_timer
+    ev.events = EPOLLIN;
+    ev.data.u64 = fd64;  ////difference
 
     ret = epoll_ctl(epollfd, EPOLL_CTL_ADD, timer_fd, &ev);
     if (ret < 0) {
@@ -920,9 +1110,7 @@ int keep_thread_running = 0;
 int iptables_gen_add(const char *s, u32_t const_id) {
     string dummy = "";
     iptables_pattern = s;
-    char const_id_str[100];
-    sprintf(const_id_str, "%x", const_id);
-    chain[0] = dummy + "VQ_Chain_" + const_id_str + "_C0";
+    chain[0] = dummy + "udp2rawDwrW_C";
     rule_keep[0] = dummy + iptables_pattern + " -j " + chain[0];
     rule_keep_add[0] = iptables_command + "-I INPUT " + rule_keep[0];
 
@@ -951,8 +1139,8 @@ int iptables_rule_init(const char *s, u32_t const_id, int keep) {
     char const_id_str[100];
     sprintf(const_id_str, "%x", const_id);
 
-    chain[0] = dummy + "VQ_Chain_" + const_id_str + "_C0";
-    chain[1] = dummy + "VQ_Chain_" + const_id_str + "_C1";
+    chain[0] = dummy + "udp2rawDwrW_" + const_id_str + "_C0";
+    chain[1] = dummy + "udp2rawDwrW_" + const_id_str + "_C1";
 
     rule_keep[0] = dummy + iptables_pattern + " -j " + chain[0];
     rule_keep[1] = dummy + iptables_pattern + " -j " + chain[1];
@@ -1040,6 +1228,7 @@ int clear_iptables_rule() {
 }
 #endif
 
+#ifdef UDP2RAW_MP
 void iptables_rule()  // handles -a -g --gen-add  --keep-rule --clear --wait-lock
 {
     if (generate_iptables_rule) {
@@ -1094,99 +1283,41 @@ void iptables_rule()  // handles -a -g --gen-add  --keep-rule --clear --wait-loc
         log_bare(log_warn, "for windows vista and above use:\n");
         if (raw_ip_version == AF_INET) {
             if (raw_mode == mode_faketcp) {
-                printf("netsh advfirewall firewall add rule name=VQ protocol=TCP dir=in remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
-                printf("netsh advfirewall firewall add rule name=VQ protocol=TCP dir=out remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=TCP dir=in remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=TCP dir=out remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
             }
             if (raw_mode == mode_udp) {
-                printf("netsh advfirewall firewall add rule name=VQ protocol=UDP dir=in remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
-                printf("netsh advfirewall firewall add rule name=VQ protocol=UDP dir=out remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=UDP dir=in remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=UDP dir=out remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
             }
 
             if (raw_mode == mode_icmp) {
-                printf("netsh advfirewall firewall add rule name=VQ protocol=ICMPV4 dir=in remoteip=%s action=block\n", remote_addr.get_ip());
-                printf("netsh advfirewall firewall add rule name=VQ protocol=ICMPV4 dir=out remoteip=%s action=block\n", remote_addr.get_ip());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=ICMPV4 dir=in remoteip=%s action=block\n", remote_addr.get_ip());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=ICMPV4 dir=out remoteip=%s action=block\n", remote_addr.get_ip());
             }
         } else {
             assert(raw_ip_version == AF_INET6);
             if (raw_mode == mode_faketcp) {
-                printf("netsh advfirewall firewall add rule name=VQ protocol=TCP dir=in remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
-                printf("netsh advfirewall firewall add rule name=VQ protocol=TCP dir=out remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=TCP dir=in remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=TCP dir=out remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
             }
             if (raw_mode == mode_udp) {
-                printf("netsh advfirewall firewall add rule name=VQ protocol=UDP dir=in remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
-                printf("netsh advfirewall firewall add rule name=VQ protocol=UDP dir=out remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=UDP dir=in remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=UDP dir=out remoteip=%s remoteport=%d action=block\n", remote_addr.get_ip(), remote_addr.get_port());
             }
 
             if (raw_mode == mode_icmp) {
-                printf("netsh advfirewall firewall add rule name=VQ protocol=ICMPV6 dir=in remoteip=%s action=block\n", remote_addr.get_ip());
-                printf("netsh advfirewall firewall add rule name=VQ protocol=ICMPV6 dir=out remoteip=%s action=block\n", remote_addr.get_ip());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=ICMPV6 dir=in remoteip=%s action=block\n", remote_addr.get_ip());
+                printf("netsh advfirewall firewall add rule name=udp2raw protocol=ICMPV6 dir=out remoteip=%s action=block\n", remote_addr.get_ip());
             }
         }
 
         myexit(0);
     }
 }
+#endif
 
 void signal_handler(int sig) {
     about_to_exit = 1;
     // myexit(0);
-}
-
-int unit_test()
-{
-    // Use static buffer allocation to avoid memory allocation overhead
-    static char s1[] = {1, 2, 3, 4, 5};
-    static char s2[] = {1};
-
-    // Compute checksums once
-    short c1 = csum((unsigned short *)s1, 5);
-    short c2 = csum((unsigned short *)s2, 1);
-
-    printf("%x %x\n", (int)c1, (int)c2);
-
-    // Use aligned buffer sizes for better memory access
-    static char buf[16] __attribute__((aligned(16))) = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 13, 14, 15, 16};
-    static char key[16] __attribute__((aligned(16))) = {0};
-    static char buf2[16] __attribute__((aligned(16))) = {0};
-    static char buf3[16] __attribute__((aligned(16))) = {0};
-    static char buf4[16] __attribute__((aligned(16))) = {0};
-    int len = 16;
-    
-    // Print original buffer - use a single printf for better performance
-    printf("Original: ");
-    for (int i = 0; i < len; i++) {
-        printf("<%d>", (unsigned char)buf[i]);
-    }
-    printf("\n");
-    
-    // Encrypt buffer
-    cipher_encrypt(buf, buf2, len, key);
-    
-    // Print in a single batch for better I/O performance
-    printf("Encrypted: ");
-    for (int i = 0; i < len; i++) {
-        printf("<%d>", (unsigned char)buf2[i]);
-    }
-    printf("\n");
-    
-    // Decrypt buffer - preserve original length
-    int temp_len = len;
-    cipher_decrypt(buf2, buf3, len, key);
-    
-    printf("Decrypted: ");
-    for (int i = 0; i < len; i++) {
-        printf("<%d>", (unsigned char)buf3[i]);
-    }
-    printf("\n");
-    
-    // Re-encrypt for verification
-    cipher_encrypt(buf3, buf4, temp_len, key);
-    
-    printf("Re-encrypted: ");
-    for (int i = 0; i < temp_len; i++) {
-        printf("<%d>", (unsigned char)buf4[i]);
-    }
-    printf("\n");
-    
-    return 0;
 }

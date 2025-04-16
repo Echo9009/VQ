@@ -56,10 +56,10 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = G:\Q\Q
+CMAKE_SOURCE_DIR = G:\VG
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = G:\Q\Q\build
+CMAKE_BINARY_DIR = G:\VG\build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -131,9 +131,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start G:\Q\Q\build\CMakeFiles G:\Q\Q\build\\CMakeFiles\progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start G:\VG\build\CMakeFiles G:\VG\build\\CMakeFiles\progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start G:\Q\Q\build\CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start G:\VG\build\CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -161,24 +161,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named VQ
+# Target rules for targets named udp2raw
 
 # Build rule for target.
-VQ: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 VQ
-.PHONY : VQ
+udp2raw: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 udp2raw
+.PHONY : udp2raw
 
 # fast build rule for target.
-VQ/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/build
-.PHONY : VQ/fast
+udp2raw/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/build
+.PHONY : udp2raw/fast
 
 client.obj: client.cpp.obj
 .PHONY : client.obj
 
 # target to build an object file
 client.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/client.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/client.cpp.obj
 .PHONY : client.cpp.obj
 
 client.i: client.cpp.i
@@ -186,7 +186,7 @@ client.i: client.cpp.i
 
 # target to preprocess a source file
 client.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/client.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/client.cpp.i
 .PHONY : client.cpp.i
 
 client.s: client.cpp.s
@@ -194,7 +194,7 @@ client.s: client.cpp.s
 
 # target to generate assembly for a file
 client.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/client.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/client.cpp.s
 .PHONY : client.cpp.s
 
 common.obj: common.cpp.obj
@@ -202,7 +202,7 @@ common.obj: common.cpp.obj
 
 # target to build an object file
 common.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/common.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/common.cpp.obj
 .PHONY : common.cpp.obj
 
 common.i: common.cpp.i
@@ -210,7 +210,7 @@ common.i: common.cpp.i
 
 # target to preprocess a source file
 common.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/common.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/common.cpp.i
 .PHONY : common.cpp.i
 
 common.s: common.cpp.s
@@ -218,7 +218,7 @@ common.s: common.cpp.s
 
 # target to generate assembly for a file
 common.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/common.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/common.cpp.s
 .PHONY : common.cpp.s
 
 connection.obj: connection.cpp.obj
@@ -226,7 +226,7 @@ connection.obj: connection.cpp.obj
 
 # target to build an object file
 connection.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/connection.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/connection.cpp.obj
 .PHONY : connection.cpp.obj
 
 connection.i: connection.cpp.i
@@ -234,7 +234,7 @@ connection.i: connection.cpp.i
 
 # target to preprocess a source file
 connection.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/connection.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/connection.cpp.i
 .PHONY : connection.cpp.i
 
 connection.s: connection.cpp.s
@@ -242,7 +242,7 @@ connection.s: connection.cpp.s
 
 # target to generate assembly for a file
 connection.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/connection.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/connection.cpp.s
 .PHONY : connection.cpp.s
 
 encrypt.obj: encrypt.cpp.obj
@@ -250,7 +250,7 @@ encrypt.obj: encrypt.cpp.obj
 
 # target to build an object file
 encrypt.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/encrypt.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/encrypt.cpp.obj
 .PHONY : encrypt.cpp.obj
 
 encrypt.i: encrypt.cpp.i
@@ -258,7 +258,7 @@ encrypt.i: encrypt.cpp.i
 
 # target to preprocess a source file
 encrypt.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/encrypt.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/encrypt.cpp.i
 .PHONY : encrypt.cpp.i
 
 encrypt.s: encrypt.cpp.s
@@ -266,7 +266,7 @@ encrypt.s: encrypt.cpp.s
 
 # target to generate assembly for a file
 encrypt.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/encrypt.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/encrypt.cpp.s
 .PHONY : encrypt.cpp.s
 
 fd_manager.obj: fd_manager.cpp.obj
@@ -274,7 +274,7 @@ fd_manager.obj: fd_manager.cpp.obj
 
 # target to build an object file
 fd_manager.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/fd_manager.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/fd_manager.cpp.obj
 .PHONY : fd_manager.cpp.obj
 
 fd_manager.i: fd_manager.cpp.i
@@ -282,7 +282,7 @@ fd_manager.i: fd_manager.cpp.i
 
 # target to preprocess a source file
 fd_manager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/fd_manager.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/fd_manager.cpp.i
 .PHONY : fd_manager.cpp.i
 
 fd_manager.s: fd_manager.cpp.s
@@ -290,7 +290,7 @@ fd_manager.s: fd_manager.cpp.s
 
 # target to generate assembly for a file
 fd_manager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/fd_manager.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/fd_manager.cpp.s
 .PHONY : fd_manager.cpp.s
 
 lib/aes_faster_c/aes.obj: lib/aes_faster_c/aes.cpp.obj
@@ -298,7 +298,7 @@ lib/aes_faster_c/aes.obj: lib/aes_faster_c/aes.cpp.obj
 
 # target to build an object file
 lib/aes_faster_c/aes.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/aes_faster_c/aes.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj
 .PHONY : lib/aes_faster_c/aes.cpp.obj
 
 lib/aes_faster_c/aes.i: lib/aes_faster_c/aes.cpp.i
@@ -306,7 +306,7 @@ lib/aes_faster_c/aes.i: lib/aes_faster_c/aes.cpp.i
 
 # target to preprocess a source file
 lib/aes_faster_c/aes.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/aes_faster_c/aes.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.i
 .PHONY : lib/aes_faster_c/aes.cpp.i
 
 lib/aes_faster_c/aes.s: lib/aes_faster_c/aes.cpp.s
@@ -314,7 +314,7 @@ lib/aes_faster_c/aes.s: lib/aes_faster_c/aes.cpp.s
 
 # target to generate assembly for a file
 lib/aes_faster_c/aes.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/aes_faster_c/aes.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.s
 .PHONY : lib/aes_faster_c/aes.cpp.s
 
 lib/aes_faster_c/wrapper.obj: lib/aes_faster_c/wrapper.cpp.obj
@@ -322,7 +322,7 @@ lib/aes_faster_c/wrapper.obj: lib/aes_faster_c/wrapper.cpp.obj
 
 # target to build an object file
 lib/aes_faster_c/wrapper.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/aes_faster_c/wrapper.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj
 .PHONY : lib/aes_faster_c/wrapper.cpp.obj
 
 lib/aes_faster_c/wrapper.i: lib/aes_faster_c/wrapper.cpp.i
@@ -330,7 +330,7 @@ lib/aes_faster_c/wrapper.i: lib/aes_faster_c/wrapper.cpp.i
 
 # target to preprocess a source file
 lib/aes_faster_c/wrapper.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/aes_faster_c/wrapper.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.i
 .PHONY : lib/aes_faster_c/wrapper.cpp.i
 
 lib/aes_faster_c/wrapper.s: lib/aes_faster_c/wrapper.cpp.s
@@ -338,7 +338,7 @@ lib/aes_faster_c/wrapper.s: lib/aes_faster_c/wrapper.cpp.s
 
 # target to generate assembly for a file
 lib/aes_faster_c/wrapper.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/aes_faster_c/wrapper.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.s
 .PHONY : lib/aes_faster_c/wrapper.cpp.s
 
 lib/md5.obj: lib/md5.cpp.obj
@@ -346,7 +346,7 @@ lib/md5.obj: lib/md5.cpp.obj
 
 # target to build an object file
 lib/md5.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/md5.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/md5.cpp.obj
 .PHONY : lib/md5.cpp.obj
 
 lib/md5.i: lib/md5.cpp.i
@@ -354,7 +354,7 @@ lib/md5.i: lib/md5.cpp.i
 
 # target to preprocess a source file
 lib/md5.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/md5.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/md5.cpp.i
 .PHONY : lib/md5.cpp.i
 
 lib/md5.s: lib/md5.cpp.s
@@ -362,7 +362,7 @@ lib/md5.s: lib/md5.cpp.s
 
 # target to generate assembly for a file
 lib/md5.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/md5.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/md5.cpp.s
 .PHONY : lib/md5.cpp.s
 
 lib/pbkdf2-sha1.obj: lib/pbkdf2-sha1.cpp.obj
@@ -370,7 +370,7 @@ lib/pbkdf2-sha1.obj: lib/pbkdf2-sha1.cpp.obj
 
 # target to build an object file
 lib/pbkdf2-sha1.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/pbkdf2-sha1.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj
 .PHONY : lib/pbkdf2-sha1.cpp.obj
 
 lib/pbkdf2-sha1.i: lib/pbkdf2-sha1.cpp.i
@@ -378,7 +378,7 @@ lib/pbkdf2-sha1.i: lib/pbkdf2-sha1.cpp.i
 
 # target to preprocess a source file
 lib/pbkdf2-sha1.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/pbkdf2-sha1.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.i
 .PHONY : lib/pbkdf2-sha1.cpp.i
 
 lib/pbkdf2-sha1.s: lib/pbkdf2-sha1.cpp.s
@@ -386,7 +386,7 @@ lib/pbkdf2-sha1.s: lib/pbkdf2-sha1.cpp.s
 
 # target to generate assembly for a file
 lib/pbkdf2-sha1.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/pbkdf2-sha1.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.s
 .PHONY : lib/pbkdf2-sha1.cpp.s
 
 lib/pbkdf2-sha256.obj: lib/pbkdf2-sha256.cpp.obj
@@ -394,7 +394,7 @@ lib/pbkdf2-sha256.obj: lib/pbkdf2-sha256.cpp.obj
 
 # target to build an object file
 lib/pbkdf2-sha256.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/pbkdf2-sha256.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj
 .PHONY : lib/pbkdf2-sha256.cpp.obj
 
 lib/pbkdf2-sha256.i: lib/pbkdf2-sha256.cpp.i
@@ -402,7 +402,7 @@ lib/pbkdf2-sha256.i: lib/pbkdf2-sha256.cpp.i
 
 # target to preprocess a source file
 lib/pbkdf2-sha256.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/pbkdf2-sha256.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.i
 .PHONY : lib/pbkdf2-sha256.cpp.i
 
 lib/pbkdf2-sha256.s: lib/pbkdf2-sha256.cpp.s
@@ -410,7 +410,7 @@ lib/pbkdf2-sha256.s: lib/pbkdf2-sha256.cpp.s
 
 # target to generate assembly for a file
 lib/pbkdf2-sha256.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/lib/pbkdf2-sha256.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.s
 .PHONY : lib/pbkdf2-sha256.cpp.s
 
 log.obj: log.cpp.obj
@@ -418,7 +418,7 @@ log.obj: log.cpp.obj
 
 # target to build an object file
 log.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/log.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/log.cpp.obj
 .PHONY : log.cpp.obj
 
 log.i: log.cpp.i
@@ -426,7 +426,7 @@ log.i: log.cpp.i
 
 # target to preprocess a source file
 log.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/log.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/log.cpp.i
 .PHONY : log.cpp.i
 
 log.s: log.cpp.s
@@ -434,7 +434,7 @@ log.s: log.cpp.s
 
 # target to generate assembly for a file
 log.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/log.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/log.cpp.s
 .PHONY : log.cpp.s
 
 main.obj: main.cpp.obj
@@ -442,7 +442,7 @@ main.obj: main.cpp.obj
 
 # target to build an object file
 main.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/main.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/main.cpp.obj
 .PHONY : main.cpp.obj
 
 main.i: main.cpp.i
@@ -450,7 +450,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -458,7 +458,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 misc.obj: misc.cpp.obj
@@ -466,7 +466,7 @@ misc.obj: misc.cpp.obj
 
 # target to build an object file
 misc.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/misc.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/misc.cpp.obj
 .PHONY : misc.cpp.obj
 
 misc.i: misc.cpp.i
@@ -474,7 +474,7 @@ misc.i: misc.cpp.i
 
 # target to preprocess a source file
 misc.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/misc.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/misc.cpp.i
 .PHONY : misc.cpp.i
 
 misc.s: misc.cpp.s
@@ -482,7 +482,7 @@ misc.s: misc.cpp.s
 
 # target to generate assembly for a file
 misc.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/misc.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/misc.cpp.s
 .PHONY : misc.cpp.s
 
 my_ev.obj: my_ev.cpp.obj
@@ -490,7 +490,7 @@ my_ev.obj: my_ev.cpp.obj
 
 # target to build an object file
 my_ev.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/my_ev.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/my_ev.cpp.obj
 .PHONY : my_ev.cpp.obj
 
 my_ev.i: my_ev.cpp.i
@@ -498,7 +498,7 @@ my_ev.i: my_ev.cpp.i
 
 # target to preprocess a source file
 my_ev.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/my_ev.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/my_ev.cpp.i
 .PHONY : my_ev.cpp.i
 
 my_ev.s: my_ev.cpp.s
@@ -506,7 +506,7 @@ my_ev.s: my_ev.cpp.s
 
 # target to generate assembly for a file
 my_ev.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/my_ev.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/my_ev.cpp.s
 .PHONY : my_ev.cpp.s
 
 network.obj: network.cpp.obj
@@ -514,7 +514,7 @@ network.obj: network.cpp.obj
 
 # target to build an object file
 network.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/network.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/network.cpp.obj
 .PHONY : network.cpp.obj
 
 network.i: network.cpp.i
@@ -522,7 +522,7 @@ network.i: network.cpp.i
 
 # target to preprocess a source file
 network.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/network.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/network.cpp.i
 .PHONY : network.cpp.i
 
 network.s: network.cpp.s
@@ -530,7 +530,7 @@ network.s: network.cpp.s
 
 # target to generate assembly for a file
 network.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/network.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/network.cpp.s
 .PHONY : network.cpp.s
 
 pcap_wrapper.obj: pcap_wrapper.cpp.obj
@@ -538,7 +538,7 @@ pcap_wrapper.obj: pcap_wrapper.cpp.obj
 
 # target to build an object file
 pcap_wrapper.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/pcap_wrapper.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj
 .PHONY : pcap_wrapper.cpp.obj
 
 pcap_wrapper.i: pcap_wrapper.cpp.i
@@ -546,7 +546,7 @@ pcap_wrapper.i: pcap_wrapper.cpp.i
 
 # target to preprocess a source file
 pcap_wrapper.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/pcap_wrapper.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.i
 .PHONY : pcap_wrapper.cpp.i
 
 pcap_wrapper.s: pcap_wrapper.cpp.s
@@ -554,7 +554,7 @@ pcap_wrapper.s: pcap_wrapper.cpp.s
 
 # target to generate assembly for a file
 pcap_wrapper.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/pcap_wrapper.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.s
 .PHONY : pcap_wrapper.cpp.s
 
 server.obj: server.cpp.obj
@@ -562,7 +562,7 @@ server.obj: server.cpp.obj
 
 # target to build an object file
 server.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/server.cpp.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/server.cpp.obj
 .PHONY : server.cpp.obj
 
 server.i: server.cpp.i
@@ -570,7 +570,7 @@ server.i: server.cpp.i
 
 # target to preprocess a source file
 server.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/server.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/server.cpp.i
 .PHONY : server.cpp.i
 
 server.s: server.cpp.s
@@ -578,7 +578,7 @@ server.s: server.cpp.s
 
 # target to generate assembly for a file
 server.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/server.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/server.cpp.s
 .PHONY : server.cpp.s
 
 # Help Target
@@ -593,7 +593,7 @@ help:
 	@echo ... install/strip
 	@echo ... list_install_components
 	@echo ... rebuild_cache
-	@echo ... VQ
+	@echo ... udp2raw
 	@echo ... client.obj
 	@echo ... client.i
 	@echo ... client.s

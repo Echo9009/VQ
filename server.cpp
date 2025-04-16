@@ -16,85 +16,14 @@
 #include "encrypt.h"
 #include "fd_manager.h"
 
-// Thread pool implementation for multi-core support
+#ifdef UDP2RAW_LINUX
 #include <thread>
-#include <mutex>
-#include <condition_variable>
-#include <queue>
-#include <functional>
-#include <atomic>
 #include <vector>
-
-class ThreadPool {
-private:
-    std::vector<std::thread> workers;
-    std::queue<std::function<void()>> tasks;
-    std::mutex queue_mutex;
-    std::condition_variable condition;
-    std::atomic<bool> stop;
-    std::atomic<size_t> active_tasks;
-
-public:
-    ThreadPool(size_t threads) : stop(false), active_tasks(0) {
-        for (size_t i = 0; i < threads; ++i) {
-            workers.emplace_back([this] {
-                while (true) {
-                    std::function<void()> task;
-
-                    {
-                        std::unique_lock<std::mutex> lock(this->queue_mutex);
-                        this->condition.wait(lock, [this] { 
-                            return this->stop || !this->tasks.empty(); 
-                        });
-
-                        if (this->stop && this->tasks.empty())
-                            return;
-
-                        task = std::move(this->tasks.front());
-                        this->tasks.pop();
-                    }
-
-                    active_tasks++;
-                    task();
-                    active_tasks--;
-                }
-            });
-        }
-    }
-
-    template<class F>
-    void enqueue(F&& f) {
-        {
-            std::unique_lock<std::mutex> lock(queue_mutex);
-            if (stop)
-                throw std::runtime_error("enqueue on stopped ThreadPool");
-            tasks.emplace(std::forward<F>(f));
-        }
-        condition.notify_one();
-    }
-
-    size_t get_active_tasks() const {
-        return active_tasks;
-    }
-
-    size_t get_queued_tasks() {
-        std::unique_lock<std::mutex> lock(queue_mutex);
-        return tasks.size();
-    }
-
-    ~ThreadPool() {
-        {
-            std::unique_lock<std::mutex> lock(queue_mutex);
-            stop = true;
-        }
-        condition.notify_all();
-        for (std::thread &worker : workers)
-            worker.join();
-    }
-};
-
-// Global thread pool
-ThreadPool* g_thread_pool = nullptr;
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <sched.h>
+#endif
 
 int server_on_timer_multi(conn_info_t &conn_info)  // for server. called when a timer is ready in epoll.for server,there will be one timer for every connection
 // there is also a global timer for server,but its not handled here
@@ -359,8 +288,8 @@ int server_on_raw_recv_pre_ready(conn_info_t &conn_info, char *ip_port, u32_t tm
                 mylog(log_fatal, "[%s]this shouldnt happen2\n", ip_port);
                 myexit(-1);
             }
-            conn_info_t *p_ori = *(conn_manager.find_insert_p(addr1));
-            conn_info_t *p = *(conn_manager.find_insert_p(addr2));
+            conn_info_t *&p_ori = conn_manager.find_insert_p(addr1);
+            conn_info_t *&p = conn_manager.find_insert_p(addr2);
             conn_info_t *tmp = p;
             p = p_ori;
             p_ori = tmp;
@@ -471,7 +400,7 @@ int server_on_raw_recv_multi()  // called when server received an raw packet
         // struct sockaddr saddr;
         // socklen_t saddr_size=sizeof(saddr);
         /// recvfrom(raw_recv_fd, 0,0, 0 ,&saddr , &saddr_size);//
-        mylog(log_trace, "peek_raw failed\n");
+        mylog(log_warn, "peek_raw failed\n");
         return -1;
     } else {
         mylog(log_trace, "peek_raw success\n");
@@ -659,8 +588,6 @@ int server_on_udp_recv(conn_info_t &conn_info, fd64_t fd64) {
 
     int recv_len = recv(fd, buf, max_data_len + 1, 0);
 
-    mylog(log_trace, "received a packet from udp_fd,len:%d\n", recv_len);
-
     if (recv_len == max_data_len + 1) {
         mylog(log_warn, "huge packet, data_len > %d,dropped\n", max_data_len);
         return -1;
@@ -686,7 +613,6 @@ int server_on_udp_recv(conn_info_t &conn_info, fd64_t fd64) {
     return 0;
 }
 
-// Optimized server event loop
 int server_event_loop() {
     char buf[buf_len];
 
@@ -706,6 +632,7 @@ int server_event_loop() {
             bind_addr.v6 = local_addr.inner.ipv6.sin6_addr;
         }
     }
+    // bind_address_uint32=local_ip_uint32;//only server has bind adress,client sets it to zero
 
     if (lower_level) {
         if (lower_level_manual) {
@@ -718,19 +645,17 @@ int server_event_loop() {
 
     if (raw_mode == mode_faketcp) {
         bind_fd = socket(local_addr.get_type(), SOCK_STREAM, 0);
-    } else if (raw_mode == mode_udp || raw_mode == mode_icmp) {
+    } else if (raw_mode == mode_udp || raw_mode == mode_icmp)  // bind an adress to avoid collision,for icmp,there is no port,just bind a udp port
+    {
         bind_fd = socket(local_addr.get_type(), SOCK_DGRAM, 0);
     }
 
-    // Set socket options for high performance
-    int val = 1;
-    setsockopt(bind_fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
-    
-    // Increase socket buffer sizes
-    int rcvbuf = 4 * 1024 * 1024; // 4MB receive buffer
-    int sndbuf = 4 * 1024 * 1024; // 4MB send buffer
-    setsockopt(bind_fd, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(rcvbuf));
-    setsockopt(bind_fd, SOL_SOCKET, SO_SNDBUF, &sndbuf, sizeof(sndbuf));
+    // struct sockaddr_in temp_bind_addr={0};
+    // bzero(&temp_bind_addr, sizeof(temp_bind_addr));
+
+    // temp_bind_addr.sin_family = AF_INET;
+    // temp_bind_addr.sin_port = local_addr.get_port();
+    // temp_bind_addr.sin_addr.s_addr = local_addr.inner.ipv4.sin_addr.s_addr;
 
     if (bind(bind_fd, (struct sockaddr *)&local_addr.inner, local_addr.get_len()) != 0) {
         mylog(log_fatal, "bind fail\n");
@@ -744,10 +669,11 @@ int server_event_loop() {
         }
     }
 
+    // init_raw_socket();
     init_filter(local_addr.get_port());  // bpf filter
 
     epollfd = epoll_create1(0);
-    const int max_events = 8192; // Increased from 4096
+    const int max_events = 4096;
 
     struct epoll_event ev, events[max_events];
     if (epollfd < 0) {
@@ -755,7 +681,7 @@ int server_event_loop() {
         myexit(-1);
     }
 
-    ev.events = EPOLLIN | EPOLLET; // Add edge-triggered mode
+    ev.events = EPOLLIN;
     ev.data.u64 = raw_recv_fd;
 
     ret = epoll_ctl(epollfd, EPOLL_CTL_ADD, raw_recv_fd, &ev);
@@ -770,19 +696,13 @@ int server_event_loop() {
     u64_t begin_time = 0;
     u64_t end_time = 0;
 
-    // Initialize thread pool with available CPU cores
-    unsigned int num_cores = std::thread::hardware_concurrency();
-    if (num_cores == 0) num_cores = 4; // Default if detection fails
-    g_thread_pool = new ThreadPool(num_cores);
-    mylog(log_info, "Initialized thread pool with %u threads\n", num_cores);
-
     mylog(log_info, "now listening at %s\n", local_addr.get_str());
 
     int fifo_fd = -1;
 
     if (fifo_file[0] != 0) {
         fifo_fd = create_fifo(fifo_file);
-        ev.events = EPOLLIN | EPOLLET; // Add edge-triggered mode
+        ev.events = EPOLLIN;
         ev.data.u64 = fifo_fd;
 
         ret = epoll_ctl(epollfd, EPOLL_CTL_ADD, fifo_fd, &ev);
@@ -793,109 +713,141 @@ int server_event_loop() {
         mylog(log_info, "fifo_file=%s\n", fifo_file);
     }
 
-    // Storage for batch processing
-    std::vector<std::function<void()>> batch_tasks;
-    batch_tasks.reserve(max_events);
+    while (1)  ////////////////////////
+    {
+        if (about_to_exit) myexit(0);
 
-    while (1) {
-        if (about_to_exit) {
-            delete g_thread_pool;
-            myexit(0);
-        }
-
-        int nfds = epoll_wait(epollfd, events, max_events, 100); // Reduced timeout for more responsive processing
-        if (nfds < 0) {
+        int nfds = epoll_wait(epollfd, events, max_events, 180 * 1000);
+        if (nfds < 0) {  // allow zero
             if (errno == EINTR) {
                 mylog(log_info, "epoll interrupted by signal,continue\n");
+                // myexit(0);
             } else {
                 mylog(log_fatal, "epoll_wait return %d,%s\n", nfds, strerror(errno));
                 myexit(-1);
             }
         }
-
-        batch_tasks.clear();
-
-        for (int idx = 0; idx < nfds; ++idx) {
+        int idx;
+        for (idx = 0; idx < nfds; ++idx) {
+            // mylog(log_debug,"ndfs:  %d \n",nfds);
             epoll_trigger_counter++;
-            
+            // printf("%d %d %d %d\n",timer_fd,raw_recv_fd,raw_send_fd,n);
             if ((events[idx].data.u64) == (u64_t)timer_fd) {
+                if (debug_flag) begin_time = get_current_time();
+                conn_manager.clear_inactive();
                 u64_t dummy;
                 int unused = read(timer_fd, &dummy, 8);
-                
-                // Optimize inactive connection clearing by delegating to thread pool
-                batch_tasks.push_back([&]() {
-                    conn_manager.clear_inactive_optimized();
-                });
-            } 
-            else if (events[idx].data.u64 == (u64_t)raw_recv_fd) {
-                // Process raw packet reception in thread pool
-                batch_tasks.push_back([&]() {
-                    server_on_raw_recv_multi();
-                });
-            } 
-            else if (events[idx].data.u64 == (u64_t)fifo_fd) {
+                // current_time_rough=get_current_time();
+                if (debug_flag) {
+                    end_time = get_current_time();
+                    mylog(log_debug, "timer_fd,%llu,%llu,%llu\n", begin_time, end_time, end_time - begin_time);
+                }
+
+                mylog(log_trace, "epoll_trigger_counter:  %d \n", epoll_trigger_counter);
+                epoll_trigger_counter = 0;
+
+            } else if (events[idx].data.u64 == (u64_t)raw_recv_fd) {
+                if (debug_flag) begin_time = get_current_time();
+                server_on_raw_recv_multi();
+                if (debug_flag) {
+                    end_time = get_current_time();
+                    mylog(log_debug, "raw_recv_fd,%llu,%llu,%llu  \n", begin_time, end_time, end_time - begin_time);
+                }
+            } else if (events[idx].data.u64 == (u64_t)fifo_fd) {
                 int len = read(fifo_fd, buf, sizeof(buf));
                 if (len < 0) {
                     mylog(log_warn, "fifo read failed len=%d,errno=%s\n", len, strerror(errno));
                     continue;
                 }
+                // assert(len>=0);
                 buf[len] = 0;
                 while (len >= 1 && buf[len - 1] == '\n')
                     buf[len - 1] = 0;
                 mylog(log_info, "got data from fifo,len=%d,s=[%s]\n", len, buf);
                 mylog(log_info, "unknown command\n");
-            } 
-            else if (events[idx].data.u64 > u32_t(-1)) {
+            } else if (events[idx].data.u64 > u32_t(-1)) {
                 fd64_t fd64 = events[idx].data.u64;
                 if (!fd_manager.exist(fd64)) {
                     mylog(log_trace, "fd64 no longer exist\n");
-                    continue;
+                    return -1;
                 }
-                
                 assert(fd_manager.exist_info(fd64));
                 conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
-                
-                // Copy necessary data for thread safety
-                fd64_t task_fd64 = fd64;
-                conn_info_t *task_p_conn_info = p_conn_info;
-                
-                if (fd64 == p_conn_info->timer_fd64) {
-                    batch_tasks.push_back([task_fd64, task_p_conn_info]() {
-                        int fd = fd_manager.to_fd(task_fd64);
-                        u64_t dummy;
-                        int unused = read(fd, &dummy, 8);
-                        server_on_timer_multi(*task_p_conn_info);
-                    });
-                } 
-                else {
-                    batch_tasks.push_back([task_fd64, task_p_conn_info]() {
-                        server_on_udp_recv(*task_p_conn_info, task_fd64);
-                    });
+                conn_info_t &conn_info = *p_conn_info;
+                if (fd64 == conn_info.timer_fd64)  //////////timer_fd64
+                {
+                    if (debug_flag) begin_time = get_current_time();
+                    int fd = fd_manager.to_fd(fd64);
+                    u64_t dummy;
+                    int unused = read(fd, &dummy, 8);
+                    assert(conn_info.state.server_current_state == server_ready);  // TODO remove this for peformance
+                    server_on_timer_multi(conn_info);
+                    if (debug_flag) {
+                        end_time = get_current_time();
+                        mylog(log_debug, "(events[idx].data.u64 >>32u) == 2u ,%llu,%llu,%llu  \n", begin_time, end_time, end_time - begin_time);
+                    }
+                } else  // udp_fd64
+                {
+                    if (debug_flag) begin_time = get_current_time();
+                    server_on_udp_recv(conn_info, fd64);
+                    if (debug_flag) {
+                        end_time = get_current_time();
+                        mylog(log_debug, "(events[idx].data.u64 >>32u) == 1u,%lld,%lld,%lld  \n", begin_time, end_time, end_time - begin_time);
+                    }
                 }
-            } 
-            else {
+            } else {
                 mylog(log_fatal, "unknown fd,this should never happen\n");
                 myexit(-1);
             }
         }
-
-        // Enqueue all tasks to thread pool
-        for (auto& task : batch_tasks) {
-            g_thread_pool->enqueue(task);
-        }
-
-        // Process some tasks in the main thread if thread pool is overwhelmed
-        size_t active_tasks = g_thread_pool->get_active_tasks();
-        size_t queued_tasks = g_thread_pool->get_queued_tasks();
-        
-        if (queued_tasks > num_cores * 100) {
-            mylog(log_warn, "Thread pool overloaded: %zu active, %zu queued\n", 
-                  active_tasks, queued_tasks);
-        }
     }
-    
-    delete g_thread_pool;
     return 0;
 }
+
+#ifdef UDP2RAW_LINUX
+void server_worker(int port, int worker_id) {
+    int fd = socket(AF_INET, SOCK_DGRAM, 0);
+    int opt = 1;
+    setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+
+    sockaddr_in addr = {};
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = INADDR_ANY;
+    addr.sin_port = htons(port);
+    bind(fd, (sockaddr*)&addr, sizeof(addr));
+
+    // Pin thread to core (اختیاری)
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(worker_id, &cpuset);
+    pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
+
+    // راه‌اندازی event loop (epoll یا libev)
+    // اینجا باید حلقه event اصلی سرور را فراخوانی کنی و fd را جایگزین fd اصلی کنی
+    // مثال:
+    // server_event_loop(fd);
+    // فعلاً فقط یک حلقه ساده برای دریافت پکت:
+    char buf[2048];
+    while (1) {
+        int len = recv(fd, buf, sizeof(buf), 0);
+        if (len > 0) {
+            // اینجا باید منطق پردازش پکت را فراخوانی کنی
+            // process_packet(buf, len);
+        }
+    }
+    close(fd);
+}
+
+int main(int argc, char **argv) {
+    int port = 12345; // مقدار پورت را از آرگومان یا کانفیگ بخوان
+    int num_workers = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
+    for (int i = 0; i < num_workers; ++i) {
+        threads.emplace_back(server_worker, port, i);
+    }
+    for (auto &t : threads) t.join();
+    return 0;
+}
+#endif
 
 #endif

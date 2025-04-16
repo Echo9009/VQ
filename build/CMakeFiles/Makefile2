@@ -53,20 +53,20 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = G:\Q\Q
+CMAKE_SOURCE_DIR = G:\VG
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = G:\Q\Q\build
+CMAKE_BINARY_DIR = G:\VG\build
 
 #=============================================================================
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/VQ.dir/all
+all: CMakeFiles/udp2raw.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
-codegen: CMakeFiles/VQ.dir/codegen
+codegen: CMakeFiles/udp2raw.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -74,40 +74,40 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/VQ.dir/clean
+clean: CMakeFiles/udp2raw.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/VQ.dir
+# Target rules for target CMakeFiles/udp2raw.dir
 
 # All Build rule for target.
-CMakeFiles/VQ.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=G:\Q\Q\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 "Built target VQ"
-.PHONY : CMakeFiles/VQ.dir/all
+CMakeFiles/udp2raw.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=G:\VG\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 "Built target udp2raw"
+.PHONY : CMakeFiles/udp2raw.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/VQ.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start G:\Q\Q\build\CMakeFiles 18
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/VQ.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start G:\Q\Q\build\CMakeFiles 0
-.PHONY : CMakeFiles/VQ.dir/rule
+CMakeFiles/udp2raw.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start G:\VG\build\CMakeFiles 18
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/udp2raw.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start G:\VG\build\CMakeFiles 0
+.PHONY : CMakeFiles/udp2raw.dir/rule
 
 # Convenience name for target.
-VQ: CMakeFiles/VQ.dir/rule
-.PHONY : VQ
+udp2raw: CMakeFiles/udp2raw.dir/rule
+.PHONY : udp2raw
 
 # codegen rule for target.
-CMakeFiles/VQ.dir/codegen:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=G:\Q\Q\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 "Finished codegen for target VQ"
-.PHONY : CMakeFiles/VQ.dir/codegen
+CMakeFiles/udp2raw.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=G:\VG\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 "Finished codegen for target udp2raw"
+.PHONY : CMakeFiles/udp2raw.dir/codegen
 
 # clean rule for target.
-CMakeFiles/VQ.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\VQ.dir\build.make CMakeFiles/VQ.dir/clean
-.PHONY : CMakeFiles/VQ.dir/clean
+CMakeFiles/udp2raw.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/clean
+.PHONY : CMakeFiles/udp2raw.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

@@ -6,6 +6,7 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #pragma GCC diagnostic ignored "-Wunused-value"
+#pragma GCC diagnostic ignored "-Wnarrowing"
 
 #pragma GCC diagnostic ignored "-Wall"
 #pragma GCC diagnostic ignored "-W"

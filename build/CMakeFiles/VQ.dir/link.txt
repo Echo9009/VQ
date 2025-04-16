@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\VQ.dir/objects.a
-C:\mingw64\bin\ar.exe qc CMakeFiles\VQ.dir/objects.a @CMakeFiles\VQ.dir\objects1.rsp
-C:\mingw64\bin\c++.exe -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -O3 -DNDEBUG -Wl,--whole-archive CMakeFiles\VQ.dir/objects.a -Wl,--no-whole-archive -o VQ.exe -Wl,--out-implib,libVQ.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\VQ.dir\linkLibs.rsp

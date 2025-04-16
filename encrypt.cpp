@@ -66,7 +66,7 @@ int my_init_keys(const char *user_passwd, int is_client) {
         is_hmac_used = 1;
     if (is_hmac_used || g_fix_gro || 1) {
         unsigned char salt[400] = "";
-        char salt_text[400] = "VQ_salt1";
+        char salt_text[400] = "udp2raw_salt1";
         md5((uint8_t *)(salt_text), strlen(salt_text), salt);  // TODO different salt per session
 
         unsigned char pbkdf2_output1[400] = "";

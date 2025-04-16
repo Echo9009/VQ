@@ -1,91 +1,87 @@
-# CMake build system for VQ
-# Supports both Windows and Linux platforms
+#note: experimental
+#      currently only used for generating `compile_commands.json` for clangd.
+#      to build this project, it's suggested to use `makefile` instead
 
-cmake_minimum_required(VERSION 3.7)
-project(VQ)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+cmake_minimum_required(VERSION 3.10)
+project(udp2raw)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Define source files
-set(SOURCE_FILES
-        main.cpp 
-        lib/md5.cpp
-        lib/pbkdf2-sha1.cpp
-        lib/pbkdf2-sha256.cpp
-        encrypt.cpp
-        log.cpp
-        network.cpp
-        common.cpp
-        connection.cpp
-        misc.cpp
-        fd_manager.cpp
-        client.cpp
-        server.cpp
-        lib/aes_faster_c/aes.cpp
-        lib/aes_faster_c/wrapper.cpp
-        my_ev.cpp
-)
-
-# Platform specific settings
+# Define platform-specific variables and settings
 if(WIN32)
-    # Windows specific settings
-    add_definitions(-D_WIN32)
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2")
+    # Windows-specific settings
+    add_definitions(-DUDP2RAW_MP -D_WIN32)
     set(PLATFORM_LIBS ws2_32)
-    
-    # Add pcap wrapper for Windows
-    list(APPEND SOURCE_FILES pcap_wrapper.cpp)
-    
-    # Option to use wepoll instead of embedded libev
-    option(USE_WEPOLL "Use wepoll instead of embedded libev" OFF)
-    if(USE_WEPOLL)
-        add_definitions(-DNO_LIBEV_EMBED)
-        list(APPEND PLATFORM_LIBS ev)
-    endif()
-    
-    # Multi-platform support
-    option(ENABLE_MP "Enable multi-platform support" ON)
-    if(ENABLE_MP)
-        # Keeping UDP2RAW_MP define for compatibility
-        add_definitions(-DUDP2RAW_MP)
+    # Disable POSIX warnings on Windows
+    if(MSVC)
+        add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    else()
+        # For MinGW
+        add_definitions(-Wno-narrowing)
     endif()
 else()
-    # Linux/Unix specific settings
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2")
+    # Linux-specific settings
+    add_definitions(-DUDP2RAW_LINUX)
     set(PLATFORM_LIBS rt pthread)
-    
-    # Debug build with sanitizers
-    option(ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
-    if(ENABLE_SANITIZERS)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fsanitize=address,undefined")
-    endif()
-    
-    # Option for static linking
-    option(STATIC_LINK "Link libraries statically" OFF)
-    if(STATIC_LINK)
-        set(CMAKE_EXE_LINKER_FLAGS "-static")
-    endif()
 endif()
 
-# Include directories
+# Common source files
+set(COMMON_SOURCES
+    main.cpp 
+    lib/md5.cpp
+    lib/pbkdf2-sha1.cpp
+    lib/pbkdf2-sha256.cpp
+    encrypt.cpp
+    log.cpp
+    network.cpp
+    common.cpp
+    connection.cpp
+    misc.cpp
+    fd_manager.cpp
+    client.cpp
+    server.cpp
+    lib/aes_faster_c/aes.cpp
+    lib/aes_faster_c/wrapper.cpp
+    my_ev.cpp
+)
+
+# Add platform-specific sources
+if(WIN32)
+    list(APPEND COMMON_SOURCES pcap_wrapper.cpp)
+endif()
+
+# Set include directories
 include_directories(SYSTEM "libev")
 include_directories(".")
 
-# Build executable
-add_executable(VQ ${SOURCE_FILES})
-target_link_libraries(VQ ${PLATFORM_LIBS})
+# Common compiler flags
+set(COMMON_FLAGS "-Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers")
+
+# Set compiler flags based on platform
+if(WIN32)
+    # Windows compiler flags
+    set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -O2 -Wno-narrowing -fpermissive")
+    if(MINGW)
+        # Additional MinGW-specific flags
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
+    endif()
+else()
+    # Linux compiler flags
+    set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -O2 -g")
+    # Optional: Add sanitizer flags for debug builds on Linux
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined")
+    endif()
+endif()
+
+# Define the main executable
+add_executable(udp2raw ${COMMON_SOURCES})
+
+# Link platform-specific libraries
+target_link_libraries(udp2raw ${PLATFORM_LIBS})
 
 # Installation rules
-install(TARGETS VQ DESTINATION bin)
-
-# Print build configuration summary
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "Platform: ${CMAKE_SYSTEM_NAME}")
-if(WIN32)
-    message(STATUS "Multi-platform support: ${ENABLE_MP}")
-    message(STATUS "Using wepoll: ${USE_WEPOLL}")
-else()
-    message(STATUS "Static linking: ${STATIC_LINK}")
-    message(STATUS "Sanitizers enabled: ${ENABLE_SANITIZERS}")
-endif()
+install(TARGETS udp2raw DESTINATION bin)
+install(FILES example.conf DESTINATION etc/udp2raw)

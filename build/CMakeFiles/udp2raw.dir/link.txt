@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\udp2raw.dir/objects.a
+C:\mingw64\bin\ar.exe qc CMakeFiles\udp2raw.dir/objects.a @CMakeFiles\udp2raw.dir\objects1.rsp
+C:\mingw64\bin\c++.exe -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -Wl,--whole-archive CMakeFiles\udp2raw.dir/objects.a -Wl,--no-whole-archive -o udp2raw.exe -Wl,--out-implib,libudp2raw.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\udp2raw.dir\linkLibs.rsp
