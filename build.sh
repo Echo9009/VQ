@@ -3,7 +3,10 @@
 
 echo "Building udp2raw for Linux..."
 
-# Create build directory if it doesn't exist
+# Remove existing build directory to avoid cache issues
+rm -rf build
+
+# Create build directory
 mkdir -p build
 cd build
 
