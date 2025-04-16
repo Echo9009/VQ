@@ -1,0 +1,7 @@
+G:/Q/Q/build/CMakeFiles/VQ.dir
+G:/Q/Q/build/CMakeFiles/edit_cache.dir
+G:/Q/Q/build/CMakeFiles/rebuild_cache.dir
+G:/Q/Q/build/CMakeFiles/list_install_components.dir
+G:/Q/Q/build/CMakeFiles/install.dir
+G:/Q/Q/build/CMakeFiles/install/local.dir
+G:/Q/Q/build/CMakeFiles/install/strip.dir
