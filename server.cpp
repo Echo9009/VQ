@@ -23,6 +23,10 @@ extern int num_worker_threads;
 // Mutex for protecting shared resources
 std::mutex server_mutex;
 
+extern int epoll_trigger_counter;
+extern int epollfd;
+struct epoll_event events_inner[4096]; // Declare events_inner array with max_events size
+
 int server_on_timer_multi(conn_info_t &conn_info)  // for server. called when a timer is ready in epoll.for server,there will be one timer for every connection
 // there is also a global timer for server,but its not handled here
 {
@@ -632,27 +636,29 @@ int server_on_udp_recv_mt(conn_info_t &conn_info, fd64_t fd64) {
 }
 
 // Multithreaded event handlers for epoll events
-void handle_epoll_event_mt(struct epoll_event* events, int idx) {
-    g_thread_pool->enqueue([events, idx](struct ev_loop* loop) {
+void handle_epoll_event_mt(int idx) {
+    g_thread_pool->enqueue([idx](struct ev_loop* loop) {
         std::lock_guard<std::mutex> lock(server_mutex);
         
         // This is where we'll handle specific event types
-        if(events[idx].events & EPOLLIN) {
+        if(events_inner[idx].events & EPOLLIN) {
             // Data available for reading
-            fd64_t fd64 = events[idx].data.u64;
+            fd64_t fd64 = events_inner[idx].data.u64;
             
             if(fd_manager.exist(fd64)) {
-                // Handle UDP reads - check if it's a UDP fd
-                if(fd_manager.get_info(fd64).type == fd_type_udp) {
-                    conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
+                // Get the file descriptor info
+                fd_info_t& info = fd_manager.get_info(fd64);
+                conn_info_t *p_conn_info = info.p_conn_info;
+                
+                // Check if it's udp (check if the fd64 matches the udp_fd64 in the connection info)
+                if(fd64 == p_conn_info->udp_fd64) {
                     server_on_udp_recv(*p_conn_info, fd64);
                 }
-                // Handle timer events - check if it's a timer fd
-                else if(fd_manager.get_info(fd64).type == fd_type_timer) {
-                    conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
+                // Check if it's a timer (check if the fd64 matches the timer_fd64 in the connection info)
+                else if(fd64 == p_conn_info->timer_fd64) {
                     server_on_timer_multi(*p_conn_info);
                 }
-            } else if(fd64 == (u64_t)raw_recv_fd) {
+            } else if(fd64 == (fd64_t)raw_recv_fd) {
                 // Handle raw socket reads
                 server_on_raw_recv_multi();
             }
@@ -774,7 +780,7 @@ int server_event_loop() {
         if (g_thread_pool && num_worker_threads > 1) {
             // Distribute events to worker threads
             for (int i = 0; i < nfds; ++i) {
-                handle_epoll_event_mt(events_inner, i);
+                handle_epoll_event_mt(i);
             }
         } else {
             // Original single-threaded code
@@ -783,11 +789,15 @@ int server_event_loop() {
                 if (events & EPOLLIN) {
                     fd64_t fd64 = events_inner[i].data.u64;
                     if (fd_manager.exist(fd64)) {
-                        if (fd_manager.get_info(fd64).type == fd_type_udp) {
-                            conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
+                        fd_info_t& info = fd_manager.get_info(fd64);
+                        conn_info_t *p_conn_info = info.p_conn_info;
+                        
+                        // Check if it's udp (check if the fd64 matches the udp_fd64 in the connection info)
+                        if(fd64 == p_conn_info->udp_fd64) {
                             server_on_udp_recv(*p_conn_info, fd64);
-                        } else if (fd_manager.get_info(fd64).type == fd_type_timer) {
-                            conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
+                        }
+                        // Check if it's a timer (check if the fd64 matches the timer_fd64 in the connection info)
+                        else if(fd64 == p_conn_info->timer_fd64) {
                             char ip_port[max_addr_len];
                             address_t tmp_addr;
                             tmp_addr.from_ip_port_new(raw_ip_version, &p_conn_info->raw_info.send_info.new_dst_ip, p_conn_info->raw_info.send_info.dst_port);
@@ -806,21 +816,10 @@ int server_event_loop() {
         }
         
         // Regular clean up operations
-        server_clear_function();
+        server_clear_function(0);
     }
     
     return 0;
-}
-
-void server_clear_function() {
-    // This function handles any periodic cleanup tasks
-    if (about_to_exit) myexit(0);
-    
-    // Clear inactive connections from the connection manager
-    conn_manager.clear_inactive();
-    
-    // Reset the epoll trigger counter
-    epoll_trigger_counter = 0;
 }
 
 #endif
