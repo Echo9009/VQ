@@ -894,10 +894,17 @@ void server_worker(int port, int worker_id) {
 
     Packet pkt;
     while (worker_queues[worker_id]->pop(pkt)) {
-        // اینجا باید منطق پردازش پکت را فراخوانی کنی
-        // مثلاً:
-        // process_packet(pkt.data.data(), pkt.data.size(), pkt.addr);
-        // یا اگر نیاز به event loop داری، اینجا فراخوانی کن
+        // پردازش پکت دریافتی با منطق اصلی سرور
+        // فرض: داده pkt.data همان پکت خام دریافتی است
+        // باید داده را به همان صورت که server_on_raw_recv_multi انتظار دارد، به آن بدهیم
+        // این تابع را باید طوری refactor کنی که بتواند یک پکت منفرد را هندل کند
+        // فعلاً ساده‌ترین راه: قرار دادن داده در بافر و فراخوانی server_on_raw_recv_multi
+        // (در صورت نیاز به refactor بیشتر اطلاع بده)
+        //
+        // مثال:
+        memcpy(raw_recv_buf, pkt.data.data(), pkt.data.size());
+        raw_recv_buf_len = pkt.data.size();
+        server_on_raw_recv_multi();
     }
 }
 
