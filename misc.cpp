@@ -1147,17 +1147,17 @@ int unit_test()
     printf("%x %x\n", (int)c1, (int)c2);
 
     // Use aligned buffer sizes for better memory access
-    static const char buf[16] __attribute__((aligned(16))) = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 13, 14, 15, 16};
+    static char buf[16] __attribute__((aligned(16))) = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 13, 14, 15, 16};
     static char key[16] __attribute__((aligned(16))) = {0};
     static char buf2[16] __attribute__((aligned(16))) = {0};
     static char buf3[16] __attribute__((aligned(16))) = {0};
     static char buf4[16] __attribute__((aligned(16))) = {0};
-    const int len = 16;
+    int len = 16;
     
     // Print original buffer - use a single printf for better performance
     printf("Original: ");
     for (int i = 0; i < len; i++) {
-        printf("<%d>", buf[i]);
+        printf("<%d>", (unsigned char)buf[i]);
     }
     printf("\n");
     
@@ -1167,17 +1167,17 @@ int unit_test()
     // Print in a single batch for better I/O performance
     printf("Encrypted: ");
     for (int i = 0; i < len; i++) {
-        printf("<%d>", buf2[i]);
+        printf("<%d>", (unsigned char)buf2[i]);
     }
     printf("\n");
     
     // Decrypt buffer - preserve original length
-    const int temp_len = len;
+    int temp_len = len;
     cipher_decrypt(buf2, buf3, len, key);
     
     printf("Decrypted: ");
     for (int i = 0; i < len; i++) {
-        printf("<%d>", buf3[i]);
+        printf("<%d>", (unsigned char)buf3[i]);
     }
     printf("\n");
     
@@ -1186,7 +1186,7 @@ int unit_test()
     
     printf("Re-encrypted: ");
     for (int i = 0; i < temp_len; i++) {
-        printf("<%d>", buf4[i]);
+        printf("<%d>", (unsigned char)buf4[i]);
     }
     printf("\n");
     
