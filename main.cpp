@@ -8,25 +8,9 @@
 #include "fd_manager.h"
 #include "thread_pool.h"
 #include <thread>
-#include <memory>
-
-// Implement make_unique for C++11 (it's only available in C++14 and later)
-namespace std {
-    template<typename T, typename... Args>
-    std::unique_ptr<T> make_unique(Args&&... args) {
-        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-    }
-}
-
-// Forward declarations
-int client_event_loop();
-int server_event_loop();
 
 // Global thread pool
 std::unique_ptr<ThreadPool> g_thread_pool;
-
-// Number of CPU cores to use (default to hardware concurrency if available)
-int num_worker_threads = std::thread::hardware_concurrency();
 
 void sigpipe_cb(struct ev_loop *l, ev_signal *w, int revents) {
     mylog(log_info, "got sigpipe, ignored");
@@ -42,8 +26,8 @@ void sigint_cb(struct ev_loop *l, ev_signal *w, int revents) {
     myexit(0);
 }
 
-int client_event_loop_multi_thread();
-int server_event_loop_multi_thread();
+int client_event_loop();
+int server_event_loop();
 
 int main(int argc, char *argv[]) {
     assert(sizeof(unsigned short) == 2);
@@ -59,20 +43,11 @@ int main(int argc, char *argv[]) {
 
     pre_process_arg(argc, argv);
 
-    // Parse num_worker_threads from command line if provided
-    for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--threads") == 0 && i + 1 < argc) {
-            num_worker_threads = atoi(argv[i + 1]);
-            if (num_worker_threads <= 0) {
-                num_worker_threads = std::thread::hardware_concurrency();
-            }
-            mylog(log_info, "Using %d worker threads\n", num_worker_threads);
-            break;
-        }
-    }
-
-    // Initialize thread pool with specified number of threads
-    g_thread_pool = std::make_unique<ThreadPool>(num_worker_threads);
+    // Initialize thread pool with number of CPU cores
+    unsigned int num_threads = std::thread::hardware_concurrency();
+    if (num_threads == 0) num_threads = 4; // fallback if detection fails
+    g_thread_pool = std::make_unique<ThreadPool>(num_threads);
+    mylog(log_info, "Initialized thread pool with %u threads\n", num_threads);
 
     ev_signal signal_watcher_sigpipe;
     ev_signal signal_watcher_sigterm;
@@ -126,39 +101,16 @@ int main(int argc, char *argv[]) {
 #endif
 
     if (program_mode == client_mode) {
-        client_event_loop_multi_thread();
+        client_event_loop();
     } else {
 #ifdef UDP2RAW_LINUX
-        server_event_loop_multi_thread();
+        server_event_loop();
 #else
         mylog(log_fatal, "server mode not supported in multi-platform version\n");
         myexit(-1);
 #endif
     }
 
+    // Thread pool will be automatically cleaned up when program exits
     return 0;
-}
-
-// Multi-threaded client event loop implementation
-int client_event_loop_multi_thread() {
-    mylog(log_info, "Starting multi-threaded client event loop with %d threads\n", num_worker_threads);
-    
-    // Run the regular client_event_loop in the main thread
-    // This will be our primary event loop
-    return client_event_loop();
-}
-
-// Multi-threaded server event loop implementation
-int server_event_loop_multi_thread() {
-#ifdef UDP2RAW_LINUX
-    mylog(log_info, "Starting multi-threaded server event loop with %d threads\n", num_worker_threads);
-    
-    // Run the regular server_event_loop in the main thread
-    // This will be our primary event loop
-    return server_event_loop();
-#else
-    mylog(log_fatal, "server mode not supported in multi-platform version\n");
-    myexit(-1);
-    return -1;
-#endif
 }

@@ -6,13 +6,6 @@
 #include "lib/md5.h"
 #include "encrypt.h"
 #include "fd_manager.h"
-#include "thread_pool.h"
-
-extern std::unique_ptr<ThreadPool> g_thread_pool;
-extern int num_worker_threads;
-
-// Mutex for protecting shared resources
-std::mutex conn_mutex;
 
 #ifdef UDP2RAW_MP
 u32_t detect_interval = 1500;
@@ -549,132 +542,78 @@ int client_on_udp_recv(conn_info_t &conn_info) {
     }
     return 0;
 }
-
-// New versions of callback functions that can run in worker threads
-void udp_accept_cb_mt(struct ev_loop *loop, struct ev_io *watcher, int revents) {
-    // Get connection info from watcher
-    conn_info_t &conn_info = *((conn_info_t*)watcher->data);
-    
-    std::lock_guard<std::mutex> lock(conn_mutex);
-    
-    // Process the UDP event
-    int fd = watcher->fd;
-    client_on_udp_recv(conn_info);
-}
-
-void raw_recv_cb_mt(struct ev_loop *loop, struct ev_io *watcher, int revents) {
-    // Get connection info from watcher
-    conn_info_t &conn_info = *((conn_info_t*)watcher->data);
-    
-    std::lock_guard<std::mutex> lock(conn_mutex);
-    
-    // Process the raw receive event
-    client_on_raw_recv(conn_info);
-}
-
-void async_cb_mt(struct ev_loop *loop, struct ev_async *watcher, int revents) {
-    // This callback is used just to wake up the event loop
-}
-
-void timer_cb_mt(struct ev_loop *loop, struct ev_timer *watcher, int revents) {
-    // Get connection info from watcher
-    conn_info_t &conn_info = *((conn_info_t*)watcher->data);
-    
-    std::lock_guard<std::mutex> lock(conn_mutex);
-    
-    // Process the timer event
-    client_on_timer(conn_info);
-}
-
-// Original callback functions remain for compatibility
 void udp_accept_cb(struct ev_loop *loop, struct ev_io *watcher, int revents) {
-    // Submit task to thread pool instead of handling directly
-    if (g_thread_pool && num_worker_threads > 1) {
-        // Randomly select a worker thread
-        size_t thread_idx = rand() % g_thread_pool->size();
-        struct ev_loop* worker_loop = g_thread_pool->get_loop(thread_idx);
-        
-        if (worker_loop) {
-            // Create a new watcher for the worker thread
-            struct ev_io* worker_watcher = new struct ev_io;
-            *worker_watcher = *watcher;  // Copy watcher data
-            
-            // Schedule task in thread pool
-            g_thread_pool->enqueue([worker_watcher](struct ev_loop* loop) {
-                udp_accept_cb_mt(loop, worker_watcher, EV_READ);
-                delete worker_watcher;  // Clean up after use
-            });
-            return;
-        }
-    }
-    
-    // Fallback to synchronous processing
-    conn_info_t &conn_info = *((conn_info_t*)watcher->data);
+    conn_info_t &conn_info = *((conn_info_t *)watcher->data);
     client_on_udp_recv(conn_info);
 }
-
 void raw_recv_cb(struct ev_loop *loop, struct ev_io *watcher, int revents) {
-    // Submit task to thread pool instead of handling directly
-    if (g_thread_pool && num_worker_threads > 1) {
-        // Randomly select a worker thread
-        size_t thread_idx = rand() % g_thread_pool->size();
-        struct ev_loop* worker_loop = g_thread_pool->get_loop(thread_idx);
-        
-        if (worker_loop) {
-            // Create a new watcher for the worker thread
-            struct ev_io* worker_watcher = new struct ev_io;
-            *worker_watcher = *watcher;  // Copy watcher data
-            
-            // Schedule task in thread pool
-            g_thread_pool->enqueue([worker_watcher](struct ev_loop* loop) {
-                raw_recv_cb_mt(loop, worker_watcher, EV_READ);
-                delete worker_watcher;  // Clean up after use
-            });
-            return;
-        }
-    }
-    
-    // Fallback to synchronous processing
-    conn_info_t &conn_info = *((conn_info_t*)watcher->data);
+    if (is_udp2raw_mp) assert(0 == 1);
+    conn_info_t &conn_info = *((conn_info_t *)watcher->data);
     client_on_raw_recv(conn_info);
 }
-
+#ifdef UDP2RAW_MP
 void async_cb(struct ev_loop *loop, struct ev_async *watcher, int revents) {
-    // This callback is used just to wake up the event loop
-    // No actual processing needed
-}
+    conn_info_t &conn_info = *((conn_info_t *)watcher->data);
 
-void timer_cb(struct ev_loop *loop, struct ev_timer *watcher, int revents) {
-    // Submit task to thread pool instead of handling directly
-    if (g_thread_pool && num_worker_threads > 1) {
-        // Randomly select a worker thread
-        size_t thread_idx = rand() % g_thread_pool->size();
-        struct ev_loop* worker_loop = g_thread_pool->get_loop(thread_idx);
-        
-        if (worker_loop) {
-            // Create a new watcher for the worker thread
-            struct ev_timer* worker_watcher = new struct ev_timer;
-            *worker_watcher = *watcher;  // Copy watcher data
-            
-            // Schedule task in thread pool
-            g_thread_pool->enqueue([worker_watcher](struct ev_loop* loop) {
-                timer_cb_mt(loop, worker_watcher, EV_TIMER);
-                delete worker_watcher;  // Clean up after use
-            });
-            return;
+    if (send_with_pcap && !pcap_header_captured) {
+        int empty = 0;
+        char *p;
+        int len;
+        pthread_mutex_lock(&queue_mutex);
+        empty = my_queue.empty();
+        if (!empty) {
+            my_queue.peek_front(p, len);
+            my_queue.pop_front();
         }
-    }
-    
-    // Fallback to synchronous processing
-    conn_info_t &conn_info = *((conn_info_t*)watcher->data);
-    client_on_timer(conn_info);
-}
+        pthread_mutex_unlock(&queue_mutex);
+        if (empty) return;
 
+        pcap_header_captured = 1;
+        assert(pcap_link_header_len != -1);
+        memcpy(pcap_header_buf, p, max_data_len);
+
+        log_bare(log_info, "link level header captured:\n");
+        unsigned char *tmp = (unsigned char *)pcap_header_buf;
+        pcap_captured_full_len = len;
+        for (int i = 0; i < pcap_link_header_len; i++)
+            log_bare(log_info, "<%x>", (u32_t)tmp[i]);
+
+        log_bare(log_info, "\n");
+        return;
+    }
+
+    // mylog(log_info,"async_cb called\n");
+    while (1) {
+        int empty = 0;
+        char *p;
+        int len;
+        pthread_mutex_lock(&queue_mutex);
+        empty = my_queue.empty();
+        if (!empty) {
+            my_queue.peek_front(p, len);
+            my_queue.pop_front();
+        }
+        pthread_mutex_unlock(&queue_mutex);
+
+        if (empty) break;
+        if (g_fix_gro == 0 && len > max_data_len) {
+            mylog(log_warn, "huge packet %d > %d, dropped. maybe you need to turn down mtu at upper level, or maybe you need the --fix-gro option\n", len, max_data_len);
+            break;
+        }
+
+        int new_len = len - pcap_link_header_len;
+        memcpy(g_packet_buf, p + pcap_link_header_len, new_len);
+        g_packet_buf_len = new_len;
+        assert(g_packet_buf_cnt == 0);
+        g_packet_buf_cnt++;
+        client_on_raw_recv(conn_info);
+    }
+}
+#endif
 void clear_timer_cb(struct ev_loop *loop, struct ev_timer *watcher, int revents) {
     conn_info_t &conn_info = *((conn_info_t *)watcher->data);
     client_on_timer(conn_info);
 }
-
 void fifo_cb(struct ev_loop *loop, struct ev_io *watcher, int revents) {
     conn_info_t &conn_info = *((conn_info_t *)watcher->data);
 
@@ -698,7 +637,6 @@ void fifo_cb(struct ev_loop *loop, struct ev_io *watcher, int revents) {
         mylog(log_info, "unknown command\n");
     }
 }
-
 int client_event_loop() {
     char buf[buf_len];
 

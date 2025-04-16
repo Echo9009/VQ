@@ -21,6 +21,7 @@ CMakeFiles/udp2raw.dir/encrypt.cpp.obj: G:\VQ\VQ\encrypt.cpp \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\c++config.h \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\os_defines.h \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\cpu_defines.h \
+ c:\mingw64\include\c++\12.2.0\pstl\pstl_config.h \
  c:\mingw64\x86_64-w64-mingw32\include\stdlib.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt_wstdlib.h \
  c:\mingw64\lib\gcc\x86_64-w64-mingw32\12.2.0\include-fixed\limits.h \
@@ -329,6 +330,7 @@ CMakeFiles/udp2raw.dir/encrypt.cpp.obj: G:\VQ\VQ\encrypt.cpp \
  c:\mingw64\include\c++\12.2.0\debug\debug.h \
  c:\mingw64\include\c++\12.2.0\bits\predefined_ops.h \
  c:\mingw64\include\c++\12.2.0\bits\enable_special_members.h \
+ c:\mingw64\include\c++\12.2.0\bits\node_handle.h \
  c:\mingw64\include\c++\12.2.0\bits\unordered_map.h \
  c:\mingw64\include\c++\12.2.0\bits\range_access.h \
  c:\mingw64\include\c++\12.2.0\bits\erase_if.h \
@@ -363,6 +365,8 @@ CMakeFiles/udp2raw.dir/encrypt.cpp.obj: G:\VQ\VQ\encrypt.cpp \
  c:\mingw64\include\c++\12.2.0\bits\cxxabi_forced.h \
  c:\mingw64\include\c++\12.2.0\bits\refwrap.h \
  c:\mingw64\include\c++\12.2.0\bits\basic_string.h \
+ c:\mingw64\include\c++\12.2.0\string_view \
+ c:\mingw64\include\c++\12.2.0\bits\string_view.tcc \
  c:\mingw64\include\c++\12.2.0\ext\string_conversions.h \
  c:\mingw64\include\c++\12.2.0\cstdio \
  c:\mingw64\include\c++\12.2.0\cerrno \

@@ -5,17 +5,15 @@
 cmake_minimum_required(VERSION 3.10)
 project(udp2raw)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Add C++11 flag explicitly to be sure
-if(NOT MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-endif()
+# Enable optimizations
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
-# Enable threading support
-find_package(Threads REQUIRED)
+# Enable multi-threading
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 # Define platform-specific variables and settings
 if(WIN32)
@@ -77,7 +75,7 @@ if(WIN32)
     endif()
 else()
     # Linux compiler flags
-    set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -O2 -g -pthread")
+    set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -O2 -g")
     # Optional: Add sanitizer flags for debug builds on Linux
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined")
@@ -88,7 +86,7 @@ endif()
 add_executable(udp2raw ${COMMON_SOURCES})
 
 # Link platform-specific libraries
-target_link_libraries(udp2raw ${PLATFORM_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(udp2raw ${PLATFORM_LIBS})
 
 # Installation rules
 install(TARGETS udp2raw DESTINATION bin)

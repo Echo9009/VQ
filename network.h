@@ -307,4 +307,7 @@ int after_send_raw0(raw_info_t &raw_info);
 
 int after_recv_raw0(raw_info_t &raw_info);
 
+// Thread pool packet processing function
+int process_packet_in_thread_pool(raw_info_t &raw_info, const char *payload, int payloadlen);
+
 #endif /* NETWORK_H_ */

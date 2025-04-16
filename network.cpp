@@ -8,6 +8,9 @@
 #include "network.h"
 #include "log.h"
 #include "misc.h"
+#include "thread_pool.h"
+
+extern std::unique_ptr<ThreadPool> g_thread_pool;
 
 int g_fix_gro = 0;
 
@@ -2529,16 +2532,9 @@ int send_raw0(raw_info_t &raw_info, const char *payload, int payloadlen) {
     packet_info_t &send_info = raw_info.send_info;
     packet_info_t &recv_info = raw_info.recv_info;
     mylog(log_trace, "send_raw : from %s %d  to %s %d\n", send_info.new_src_ip.get_str1(), send_info.src_port, send_info.new_dst_ip.get_str2(), send_info.dst_port);
-    switch (raw_mode) {
-        case mode_faketcp:
-            return send_raw_tcp(raw_info, payload, payloadlen);
-        case mode_udp:
-            return send_raw_udp(raw_info, payload, payloadlen);
-        case mode_icmp:
-            return send_raw_icmp(raw_info, payload, payloadlen);
-        default:
-            return -1;
-    }
+    
+    // Use thread pool for packet processing
+    return process_packet_in_thread_pool(raw_info, payload, payloadlen);
 }
 int recv_raw0(raw_info_t &raw_info, char *&payload, int &payloadlen) {
     packet_info_t &send_info = raw_info.send_info;
@@ -2823,4 +2819,31 @@ int client_bind_to_a_new_port2(int &fd, const address_t &address)  // find a fre
     mylog(log_fatal, "bind port fail\n");
     myexit(-1);
     return -1;  ////for compiler check
+}
+
+int process_packet_in_thread_pool(raw_info_t &raw_info, const char *payload, int payloadlen) {
+    return g_thread_pool->enqueue([&raw_info, payload, payloadlen]() {
+        char *processed_payload = new char[payloadlen];
+        memcpy(processed_payload, payload, payloadlen);
+        
+        // Process packet based on protocol
+        int ret = 0;
+        switch(raw_info.send_info.protocol) {
+            case IPPROTO_TCP:
+                ret = send_raw_tcp(raw_info, processed_payload, payloadlen);
+                break;
+            case IPPROTO_UDP:
+                ret = send_raw_udp(raw_info, processed_payload, payloadlen);
+                break;
+            case IPPROTO_ICMP:
+                ret = send_raw_icmp(raw_info, processed_payload, payloadlen);
+                break;
+            default:
+                mylog(log_warn, "Unknown protocol: %d\n", raw_info.send_info.protocol);
+                ret = -1;
+        }
+        
+        delete[] processed_payload;
+        return ret;
+    }).get();
 }

@@ -23,6 +23,7 @@ CMakeFiles/udp2raw.dir/common.cpp.obj: G:\VQ\VQ\common.cpp \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\c++config.h \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\os_defines.h \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\cpu_defines.h \
+ c:\mingw64\include\c++\12.2.0\pstl\pstl_config.h \
  c:\mingw64\x86_64-w64-mingw32\include\stdlib.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt_wstdlib.h \
  c:\mingw64\lib\gcc\x86_64-w64-mingw32\12.2.0\include-fixed\limits.h \
@@ -327,6 +328,7 @@ CMakeFiles/udp2raw.dir/common.cpp.obj: G:\VQ\VQ\common.cpp \
  c:\mingw64\include\c++\12.2.0\debug\debug.h \
  c:\mingw64\include\c++\12.2.0\bits\predefined_ops.h \
  c:\mingw64\include\c++\12.2.0\bits\enable_special_members.h \
+ c:\mingw64\include\c++\12.2.0\bits\node_handle.h \
  c:\mingw64\include\c++\12.2.0\bits\unordered_map.h \
  c:\mingw64\include\c++\12.2.0\bits\range_access.h \
  c:\mingw64\include\c++\12.2.0\bits\erase_if.h \
@@ -361,6 +363,8 @@ CMakeFiles/udp2raw.dir/common.cpp.obj: G:\VQ\VQ\common.cpp \
  c:\mingw64\include\c++\12.2.0\bits\cxxabi_forced.h \
  c:\mingw64\include\c++\12.2.0\bits\refwrap.h \
  c:\mingw64\include\c++\12.2.0\bits\basic_string.h \
+ c:\mingw64\include\c++\12.2.0\string_view \
+ c:\mingw64\include\c++\12.2.0\bits\string_view.tcc \
  c:\mingw64\include\c++\12.2.0\ext\string_conversions.h \
  c:\mingw64\include\c++\12.2.0\cstdio \
  c:\mingw64\include\c++\12.2.0\cerrno \
@@ -407,10 +411,26 @@ CMakeFiles/udp2raw.dir/common.cpp.obj: G:\VQ\VQ\common.cpp \
  G:\VQ\VQ\misc.h G:\VQ\VQ\network.h c:\mingw64\include\c++\12.2.0\random \
  c:\mingw64\include\c++\12.2.0\cmath \
  c:\mingw64\x86_64-w64-mingw32\include\math.h \
+ c:\mingw64\include\c++\12.2.0\bits\specfun.h \
  c:\mingw64\include\c++\12.2.0\limits \
+ c:\mingw64\include\c++\12.2.0\tr1\gamma.tcc \
+ c:\mingw64\include\c++\12.2.0\tr1\special_function_util.h \
+ c:\mingw64\include\c++\12.2.0\tr1\bessel_function.tcc \
+ c:\mingw64\include\c++\12.2.0\tr1\beta_function.tcc \
+ c:\mingw64\include\c++\12.2.0\tr1\ell_integral.tcc \
+ c:\mingw64\include\c++\12.2.0\tr1\exp_integral.tcc \
+ c:\mingw64\include\c++\12.2.0\tr1\hypergeometric.tcc \
+ c:\mingw64\include\c++\12.2.0\tr1\legendre_function.tcc \
+ c:\mingw64\include\c++\12.2.0\tr1\modified_bessel_func.tcc \
+ c:\mingw64\include\c++\12.2.0\tr1\poly_hermite.tcc \
+ c:\mingw64\include\c++\12.2.0\tr1\poly_laguerre.tcc \
+ c:\mingw64\include\c++\12.2.0\tr1\riemann_zeta.tcc \
  c:\mingw64\include\c++\12.2.0\bits\random.h \
  c:\mingw64\include\c++\12.2.0\bits\uniform_int_dist.h \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\opt_random.h \
  c:\mingw64\include\c++\12.2.0\bits\random.tcc \
  c:\mingw64\include\c++\12.2.0\numeric \
- c:\mingw64\include\c++\12.2.0\bits\stl_numeric.h
+ c:\mingw64\include\c++\12.2.0\bits\stl_numeric.h \
+ c:\mingw64\include\c++\12.2.0\bit \
+ c:\mingw64\include\c++\12.2.0\pstl\glue_numeric_defs.h \
+ c:\mingw64\include\c++\12.2.0\pstl\execution_defs.h
