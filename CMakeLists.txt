@@ -5,15 +5,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(udp2raw)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# Enable optimizations
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-
-# Enable multi-threading
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 # Define platform-specific variables and settings
 if(WIN32)
@@ -48,6 +42,9 @@ set(COMMON_SOURCES
     fd_manager.cpp
     client.cpp
     server.cpp
+    worker.cpp
+    lock_free_queue.cpp
+    server_core.cpp
     lib/aes_faster_c/aes.cpp
     lib/aes_faster_c/wrapper.cpp
     my_ev.cpp
@@ -68,14 +65,14 @@ set(COMMON_FLAGS "-Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-
 # Set compiler flags based on platform
 if(WIN32)
     # Windows compiler flags
-    set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -O2 -Wno-narrowing -fpermissive")
+    set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -O2 -Wno-narrowing -fpermissive -std=c++14")
     if(MINGW)
         # Additional MinGW-specific flags
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
     endif()
 else()
     # Linux compiler flags
-    set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -O2 -g")
+    set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -O2 -g -std=c++14 -pthread")
     # Optional: Add sanitizer flags for debug builds on Linux
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined")

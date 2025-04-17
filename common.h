@@ -45,9 +45,7 @@ const int is_udp2raw_mp = 1;
 #endif
 
 #else
-#ifndef UDP2RAW_LINUX
 #define UDP2RAW_LINUX
-#endif
 const int is_udp2raw_mp = 0;
 //#include <linux/if_ether.h>
 #include <linux/filter.h>

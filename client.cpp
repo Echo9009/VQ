@@ -6,6 +6,7 @@
 #include "lib/md5.h"
 #include "encrypt.h"
 #include "fd_manager.h"
+#include "worker.h"
 
 #ifdef UDP2RAW_MP
 u32_t detect_interval = 1500;
@@ -556,16 +557,11 @@ void async_cb(struct ev_loop *loop, struct ev_async *watcher, int revents) {
     conn_info_t &conn_info = *((conn_info_t *)watcher->data);
 
     if (send_with_pcap && !pcap_header_captured) {
-        int empty = 0;
         char *p;
         int len;
-        pthread_mutex_lock(&queue_mutex);
-        empty = my_queue.empty();
-        if (!empty) {
-            my_queue.peek_front(p, len);
-            my_queue.pop_front();
-        }
-        pthread_mutex_unlock(&queue_mutex);
+        
+        // Use the lock-free queue to get the packet
+        bool empty = !ThreadQueueManager::instance().pop_packet(p, len);
         if (empty) return;
 
         pcap_header_captured = 1;
@@ -582,31 +578,24 @@ void async_cb(struct ev_loop *loop, struct ev_async *watcher, int revents) {
         return;
     }
 
-    // mylog(log_info,"async_cb called\n");
+    // Process all available packets in the queue using our multi-threaded worker
     while (1) {
-        int empty = 0;
         char *p;
         int len;
-        pthread_mutex_lock(&queue_mutex);
-        empty = my_queue.empty();
-        if (!empty) {
-            my_queue.peek_front(p, len);
-            my_queue.pop_front();
+        
+        // Use the lock-free queue to get the packet
+        if (!ThreadQueueManager::instance().pop_packet(p, len)) {
+            break; // Queue is empty
         }
-        pthread_mutex_unlock(&queue_mutex);
-
-        if (empty) break;
+        
         if (g_fix_gro == 0 && len > max_data_len) {
             mylog(log_warn, "huge packet %d > %d, dropped. maybe you need to turn down mtu at upper level, or maybe you need the --fix-gro option\n", len, max_data_len);
-            break;
+            continue;
         }
 
-        int new_len = len - pcap_link_header_len;
-        memcpy(g_packet_buf, p + pcap_link_header_len, new_len);
-        g_packet_buf_len = new_len;
-        assert(g_packet_buf_cnt == 0);
-        g_packet_buf_cnt++;
-        client_on_raw_recv(conn_info);
+        // Process the packet using our multi-threaded worker system
+        // This will distribute packet processing across all available cores
+        PacketWorker::instance().process_packet(p, len, &conn_info, true);
     }
 }
 #endif

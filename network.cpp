@@ -8,9 +8,6 @@
 #include "network.h"
 #include "log.h"
 #include "misc.h"
-#include "thread_pool.h"
-
-extern std::unique_ptr<ThreadPool> g_thread_pool;
 
 int g_fix_gro = 0;
 
@@ -78,9 +75,11 @@ int pcap_captured_full_len = -1;
 pcap_t *pcap_handle;
 int pcap_link_header_len = -1;
 // int pcap_cnt=0;
-queue_t my_queue;
 
-pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+// Lock-free queues are now managed by ThreadQueueManager
+// queue_t my_queue;
+// pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 pthread_mutex_t pcap_mutex = PTHREAD_MUTEX_INITIALIZER;
 int use_pcap_mutex = 1;
 
@@ -293,31 +292,26 @@ void my_packet_handler(
     u_char *args,
     const struct pcap_pkthdr *packet_header,
     const u_char *pkt_data) {
-    /*printf("<%d %d>\n",(int)packet_header->caplen,(int)packet_header->len );
-    for(int i=0;i<sizeof(pcap_pkthdr);i++)
-    {
-            char *p=(char *) packet_header;
-            printf("<%x>",int( p[i] ));
+    
+    // Use log_debug instead of checking debug_mode
+    mylog(log_debug, "received a packet with length of [%d]\n", (int)(packet_header->caplen));
+
+    // Skip if packet is too small
+    if ((int)packet_header->caplen < pcap_link_header_len) {
+        return;
     }
-    printf("\n");*/
-    // mylog(log_debug,"received a packet!\n");
-    assert(packet_header->caplen <= packet_header->len);
-    assert(packet_header->caplen <= huge_data_len);
-    // if(packet_header->caplen > max_data_len) return ;
-    if (g_fix_gro == 0 && packet_header->caplen < packet_header->len) return;
 
-    if ((int)packet_header->caplen < pcap_link_header_len) return;
-    // mylog(log_debug,"and its vaild!\n");
+    // Only store the packet content after link header
+    const u_char *payload = pkt_data + pcap_link_header_len;
+    int payload_len = packet_header->caplen - pcap_link_header_len;
 
-    pthread_mutex_lock(&queue_mutex);
-    if (!my_queue.full())
-        my_queue.push_back((char *)pkt_data, (int)(packet_header->caplen));
-    pthread_mutex_unlock(&queue_mutex);
+    // Using our lock-free queue manager for multi-core scalability
+    if (!ThreadQueueManager::instance().push_to_global((char *)payload, payload_len)) {
+        mylog(log_warn, "lock-free queue full, packet dropped\n");
+    }
 
-    // pcap_cnt++;
-
+    // Signal that we have data
     ev_async_send(g_default_loop, &async_watcher);
-    return;
 }
 
 void *pcap_recv_thread_entry(void *none) {
@@ -2532,9 +2526,16 @@ int send_raw0(raw_info_t &raw_info, const char *payload, int payloadlen) {
     packet_info_t &send_info = raw_info.send_info;
     packet_info_t &recv_info = raw_info.recv_info;
     mylog(log_trace, "send_raw : from %s %d  to %s %d\n", send_info.new_src_ip.get_str1(), send_info.src_port, send_info.new_dst_ip.get_str2(), send_info.dst_port);
-    
-    // Use thread pool for packet processing
-    return process_packet_in_thread_pool(raw_info, payload, payloadlen);
+    switch (raw_mode) {
+        case mode_faketcp:
+            return send_raw_tcp(raw_info, payload, payloadlen);
+        case mode_udp:
+            return send_raw_udp(raw_info, payload, payloadlen);
+        case mode_icmp:
+            return send_raw_icmp(raw_info, payload, payloadlen);
+        default:
+            return -1;
+    }
 }
 int recv_raw0(raw_info_t &raw_info, char *&payload, int &payloadlen) {
     packet_info_t &send_info = raw_info.send_info;
@@ -2819,31 +2820,4 @@ int client_bind_to_a_new_port2(int &fd, const address_t &address)  // find a fre
     mylog(log_fatal, "bind port fail\n");
     myexit(-1);
     return -1;  ////for compiler check
-}
-
-int process_packet_in_thread_pool(raw_info_t &raw_info, const char *payload, int payloadlen) {
-    return g_thread_pool->enqueue([&raw_info, payload, payloadlen]() {
-        char *processed_payload = new char[payloadlen];
-        memcpy(processed_payload, payload, payloadlen);
-        
-        // Process packet based on protocol
-        int ret = 0;
-        switch(raw_info.send_info.protocol) {
-            case IPPROTO_TCP:
-                ret = send_raw_tcp(raw_info, processed_payload, payloadlen);
-                break;
-            case IPPROTO_UDP:
-                ret = send_raw_udp(raw_info, processed_payload, payloadlen);
-                break;
-            case IPPROTO_ICMP:
-                ret = send_raw_icmp(raw_info, processed_payload, payloadlen);
-                break;
-            default:
-                mylog(log_warn, "Unknown protocol: %d\n", raw_info.send_info.protocol);
-                ret = -1;
-        }
-        
-        delete[] processed_payload;
-        return ret;
-    }).get();
 }

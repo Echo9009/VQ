@@ -75,7 +75,6 @@ CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj: G:\VQ\VQ\pcap_wrapper.cpp \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\c++config.h \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\os_defines.h \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\cpu_defines.h \
- c:\mingw64\include\c++\12.2.0\pstl\pstl_config.h \
  c:\mingw64\x86_64-w64-mingw32\include\stdlib.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt_wstdlib.h \
  c:\mingw64\lib\gcc\x86_64-w64-mingw32\12.2.0\include-fixed\limits.h \

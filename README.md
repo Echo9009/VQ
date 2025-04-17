@@ -207,14 +207,14 @@ iperf3 -c 10.222.2.1 -P40 -R
 * **Server** BandwagonHost $3.99/annually plan (single core 2.0GHz cpu, 128MB RAM, Los Angeles, USA)
 
 ### Test1
-raw_mode: faketcp  cipher_mode: xor  auth_mode: simple
+raw_mode: faketcp  cipher_mode: xor  auth_mode: simple
 
 ![image4](images/image4.PNG)
 
 (reverse speed was simliar and not uploaded)
 
 ### Test2
-raw_mode: faketcp  cipher_mode: aes128cbc  auth_mode: md5
+raw_mode: faketcp  cipher_mode: aes128cbc  auth_mode: md5
 
 ![image5](images/image5.PNG)
 
@@ -225,32 +225,3 @@ raw_mode: faketcp  cipher_mode: aes128cbc  auth_mode: md5
 Check wiki for more info:
 
 https://github.com/wangyu-/udp2raw-tunnel/wiki
-
-# Multi-Core Support
-
-Starting from version 740fbf0, udp2raw includes multi-core support through a thread pool implementation. This allows the program to utilize multiple CPU cores for packet processing, significantly improving performance and scalability on multi-core systems.
-
-### Features of Multi-Core Support:
-
-* **Automatic Core Detection**: Automatically detects the number of available CPU cores and creates an appropriate number of worker threads.
-* **Parallel Packet Processing**: Network packets are distributed across multiple threads for parallel processing.
-* **Improved Performance**: Significantly higher throughput on systems with multiple CPU cores.
-* **Scalability**: Performance scales with the number of available cores.
-
-### How It Works:
-
-The multi-core implementation uses a thread pool that:
-1. Creates worker threads equal to the number of detected CPU cores
-2. Distributes incoming network packets to these threads
-3. Processes packets in parallel across all available cores
-
-This is particularly beneficial for high-traffic scenarios where single-core processing would become a bottleneck.
-
-### Example Performance Comparison:
-
-| Configuration | Single-Core | Multi-Core (4 cores) | Improvement |
-|---------------|-------------|----------------------|-------------|
-| TCP Traffic   | X Mbps      | ~4X Mbps             | ~400%       |
-| UDP Traffic   | Y Mbps      | ~4Y Mbps             | ~400%       |
-
-*Note: Actual performance improvement depends on your specific hardware configuration and network conditions.*

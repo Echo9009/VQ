@@ -1,103 +1,121 @@
 [
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\main.cpp.obj -c G:\\VQ\\VQ\\main.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\main.cpp.obj -c G:\\VQ\\VQ\\main.cpp",
   "file": "G:/VQ/VQ/main.cpp",
   "output": "CMakeFiles/udp2raw.dir/main.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lib\\md5.cpp.obj -c G:\\VQ\\VQ\\lib\\md5.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lib\\md5.cpp.obj -c G:\\VQ\\VQ\\lib\\md5.cpp",
   "file": "G:/VQ/VQ/lib/md5.cpp",
   "output": "CMakeFiles/udp2raw.dir/lib/md5.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lib\\pbkdf2-sha1.cpp.obj -c G:\\VQ\\VQ\\lib\\pbkdf2-sha1.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lib\\pbkdf2-sha1.cpp.obj -c G:\\VQ\\VQ\\lib\\pbkdf2-sha1.cpp",
   "file": "G:/VQ/VQ/lib/pbkdf2-sha1.cpp",
   "output": "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lib\\pbkdf2-sha256.cpp.obj -c G:\\VQ\\VQ\\lib\\pbkdf2-sha256.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lib\\pbkdf2-sha256.cpp.obj -c G:\\VQ\\VQ\\lib\\pbkdf2-sha256.cpp",
   "file": "G:/VQ/VQ/lib/pbkdf2-sha256.cpp",
   "output": "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\encrypt.cpp.obj -c G:\\VQ\\VQ\\encrypt.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\encrypt.cpp.obj -c G:\\VQ\\VQ\\encrypt.cpp",
   "file": "G:/VQ/VQ/encrypt.cpp",
   "output": "CMakeFiles/udp2raw.dir/encrypt.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\log.cpp.obj -c G:\\VQ\\VQ\\log.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\log.cpp.obj -c G:\\VQ\\VQ\\log.cpp",
   "file": "G:/VQ/VQ/log.cpp",
   "output": "CMakeFiles/udp2raw.dir/log.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\network.cpp.obj -c G:\\VQ\\VQ\\network.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\network.cpp.obj -c G:\\VQ\\VQ\\network.cpp",
   "file": "G:/VQ/VQ/network.cpp",
   "output": "CMakeFiles/udp2raw.dir/network.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\common.cpp.obj -c G:\\VQ\\VQ\\common.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\common.cpp.obj -c G:\\VQ\\VQ\\common.cpp",
   "file": "G:/VQ/VQ/common.cpp",
   "output": "CMakeFiles/udp2raw.dir/common.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\connection.cpp.obj -c G:\\VQ\\VQ\\connection.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\connection.cpp.obj -c G:\\VQ\\VQ\\connection.cpp",
   "file": "G:/VQ/VQ/connection.cpp",
   "output": "CMakeFiles/udp2raw.dir/connection.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\misc.cpp.obj -c G:\\VQ\\VQ\\misc.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\misc.cpp.obj -c G:\\VQ\\VQ\\misc.cpp",
   "file": "G:/VQ/VQ/misc.cpp",
   "output": "CMakeFiles/udp2raw.dir/misc.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\fd_manager.cpp.obj -c G:\\VQ\\VQ\\fd_manager.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\fd_manager.cpp.obj -c G:\\VQ\\VQ\\fd_manager.cpp",
   "file": "G:/VQ/VQ/fd_manager.cpp",
   "output": "CMakeFiles/udp2raw.dir/fd_manager.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\client.cpp.obj -c G:\\VQ\\VQ\\client.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\client.cpp.obj -c G:\\VQ\\VQ\\client.cpp",
   "file": "G:/VQ/VQ/client.cpp",
   "output": "CMakeFiles/udp2raw.dir/client.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\server.cpp.obj -c G:\\VQ\\VQ\\server.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\server.cpp.obj -c G:\\VQ\\VQ\\server.cpp",
   "file": "G:/VQ/VQ/server.cpp",
   "output": "CMakeFiles/udp2raw.dir/server.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lib\\aes_faster_c\\aes.cpp.obj -c G:\\VQ\\VQ\\lib\\aes_faster_c\\aes.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\worker.cpp.obj -c G:\\VQ\\VQ\\worker.cpp",
+  "file": "G:/VQ/VQ/worker.cpp",
+  "output": "CMakeFiles/udp2raw.dir/worker.cpp.obj"
+},
+{
+  "directory": "G:/VQ/VQ/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lock_free_queue.cpp.obj -c G:\\VQ\\VQ\\lock_free_queue.cpp",
+  "file": "G:/VQ/VQ/lock_free_queue.cpp",
+  "output": "CMakeFiles/udp2raw.dir/lock_free_queue.cpp.obj"
+},
+{
+  "directory": "G:/VQ/VQ/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\server_core.cpp.obj -c G:\\VQ\\VQ\\server_core.cpp",
+  "file": "G:/VQ/VQ/server_core.cpp",
+  "output": "CMakeFiles/udp2raw.dir/server_core.cpp.obj"
+},
+{
+  "directory": "G:/VQ/VQ/build",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lib\\aes_faster_c\\aes.cpp.obj -c G:\\VQ\\VQ\\lib\\aes_faster_c\\aes.cpp",
   "file": "G:/VQ/VQ/lib/aes_faster_c/aes.cpp",
   "output": "CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lib\\aes_faster_c\\wrapper.cpp.obj -c G:\\VQ\\VQ\\lib\\aes_faster_c\\wrapper.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\lib\\aes_faster_c\\wrapper.cpp.obj -c G:\\VQ\\VQ\\lib\\aes_faster_c\\wrapper.cpp",
   "file": "G:/VQ/VQ/lib/aes_faster_c/wrapper.cpp",
   "output": "CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\my_ev.cpp.obj -c G:\\VQ\\VQ\\my_ev.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\my_ev.cpp.obj -c G:\\VQ\\VQ\\my_ev.cpp",
   "file": "G:/VQ/VQ/my_ev.cpp",
   "output": "CMakeFiles/udp2raw.dir/my_ev.cpp.obj"
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\pcap_wrapper.cpp.obj -c G:\\VQ\\VQ\\pcap_wrapper.cpp",
+  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\pcap_wrapper.cpp.obj -c G:\\VQ\\VQ\\pcap_wrapper.cpp",
   "file": "G:/VQ/VQ/pcap_wrapper.cpp",
   "output": "CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj"
 }

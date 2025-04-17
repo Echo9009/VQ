@@ -1,5 +1,5 @@
-CMakeFiles/udp2raw.dir/main.cpp.obj: G:\VQ\VQ\main.cpp G:\VQ\VQ\common.h \
- c:\mingw64\x86_64-w64-mingw32\include\inttypes.h \
+CMakeFiles/udp2raw.dir/server_core.cpp.obj: G:\VQ\VQ\server_core.cpp \
+ G:\VQ\VQ\common.h c:\mingw64\x86_64-w64-mingw32\include\inttypes.h \
  c:\mingw64\x86_64-w64-mingw32\include\crtdefs.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt.h \
  c:\mingw64\x86_64-w64-mingw32\include\_mingw.h \
@@ -438,5 +438,4 @@ CMakeFiles/udp2raw.dir/main.cpp.obj: G:\VQ\VQ\main.cpp G:\VQ\VQ\common.h \
  c:\mingw64\include\c++\12.2.0\bits\stl_queue.h \
  c:\mingw64\include\c++\12.2.0\future \
  c:\mingw64\include\c++\12.2.0\bits\atomic_futex.h G:\VQ\VQ\connection.h \
- G:\VQ\VQ\misc.h G:\VQ\VQ\lib/md5.h G:\VQ\VQ\encrypt.h \
- G:\VQ\VQ\fd_manager.h G:\VQ\VQ\worker.h
+ G:\VQ\VQ\misc.h

@@ -8,6 +8,9 @@
 #ifndef UDP2RAW_NETWORK_H_
 #define UDP2RAW_NETWORK_H_
 
+#include "lock_free_queue.h"
+#include "thread_pool.h"
+
 extern int raw_recv_fd;
 extern int raw_send_fd;
 extern int use_tcp_dummy_socket;
@@ -31,12 +34,14 @@ extern char g_packet_buf[huge_buf_len];
 extern int g_packet_buf_len;
 extern int g_packet_buf_cnt;
 #ifdef UDP2RAW_MP
-extern queue_t my_queue;
+// Using ThreadQueueManager instead of direct queue access
+// extern queue_t my_queue;
 
 extern ev_async async_watcher;
 extern struct ev_loop *g_default_loop;
 
-extern pthread_mutex_t queue_mutex;
+// Lock-free queue doesn't need mutex
+// extern pthread_mutex_t queue_mutex;
 extern int use_pcap_mutex;
 
 extern int pcap_cnt;
@@ -306,8 +311,5 @@ int recv_raw0(raw_info_t &raw_info, char *&payload, int &payloadlen);
 int after_send_raw0(raw_info_t &raw_info);
 
 int after_recv_raw0(raw_info_t &raw_info);
-
-// Thread pool packet processing function
-int process_packet_in_thread_pool(raw_info_t &raw_info, const char *payload, int payloadlen);
 
 #endif /* NETWORK_H_ */

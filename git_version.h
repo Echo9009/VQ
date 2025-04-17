@@ -1,1 +1,1 @@
-const char *gitversion = "custom_build";
+const char *gitversion = "multi-core-lock-free-queue-implementation";

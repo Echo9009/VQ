@@ -15,6 +15,7 @@
 #include "lib/md5.h"
 #include "encrypt.h"
 #include "fd_manager.h"
+#include "worker.h"
 
 int server_on_timer_multi(conn_info_t &conn_info)  // for server. called when a timer is ready in epoll.for server,there will be one timer for every connection
 // there is also a global timer for server,but its not handled here
@@ -379,19 +380,15 @@ int server_on_recv_safer_multi(conn_info_t &conn_info, char type, char *data, in
 }
 int server_on_raw_recv_multi()  // called when server received an raw packet
 {
-    char dummy_buf[buf_len];
-    raw_info_t peek_raw_info;
-    peek_raw_info.peek = 1;
-    packet_info_t &peek_info = peek_raw_info.recv_info;
-    mylog(log_trace, "got a packet\n");
-    if (pre_recv_raw_packet() < 0) return -1;
-    if (peek_raw(peek_raw_info) < 0) {
+    raw_info_t peek_info;
+    packet_info_t &peek_info_send = peek_info.send_info;
+    packet_info_t &peek_info_recv = peek_info.recv_info;
+
+    peek_info.peek = 1;
+    int peek_ret = peek_raw(peek_info);
+
+    if (peek_ret != 0) {
         discard_raw_packet();
-        // recv(raw_recv_fd, 0,0, 0  );//
-        // struct sockaddr saddr;
-        // socklen_t saddr_size=sizeof(saddr);
-        /// recvfrom(raw_recv_fd, 0,0, 0 ,&saddr , &saddr_size);//
-        mylog(log_trace, "peek_raw failed\n");
         return -1;
     } else {
         mylog(log_trace, "peek_raw success\n");
@@ -411,7 +408,6 @@ int server_on_raw_recv_multi()  // called when server received an raw packet
 
     if (raw_mode == mode_faketcp && peek_info.syn == 1) {
         if (!conn_manager.exist(addr) || conn_manager.find_insert(addr).state.server_current_state != server_ready) {  // reply any syn ,before state become ready
-
             raw_info_t tmp_raw_info;
             if (recv_raw0(tmp_raw_info, data, data_len) < 0) {
                 return 0;
@@ -450,7 +446,6 @@ int server_on_raw_recv_multi()  // called when server received an raw packet
             }
         } else {
             discard_raw_packet();
-            // recv(raw_recv_fd, 0,0,0);
         }
         return 0;
     }
@@ -458,7 +453,6 @@ int server_on_raw_recv_multi()  // called when server received an raw packet
         if (conn_manager.mp.size() >= max_handshake_conn_num) {
             mylog(log_info, "[%s]reached max_handshake_conn_num,ignored new handshake\n", ip_port);
             discard_raw_packet();
-            // recv(raw_recv_fd, 0,0, 0  );//
             return 0;
         }
 
@@ -526,11 +520,22 @@ int server_on_raw_recv_multi()  // called when server received an raw packet
     packet_info_t &recv_info = conn_info.raw_info.recv_info;
     raw_info_t &raw_info = conn_info.raw_info;
 
+    // Copy the packet data first
+    char buf[huge_buf_len];
+    int buf_len = 0;
+    
+    // Get the raw packet data based on the connection state
     if (conn_info.state.server_current_state == server_handshake1) {
         if (recv_bare(raw_info, data, data_len) != 0) {
             return -1;
         }
-        return server_on_raw_recv_handshake1(conn_info, ip_port, data, data_len);
+        // Copy data to buffer
+        memcpy(buf, data, data_len);
+        buf_len = data_len;
+        
+        // Process the packet in the thread pool
+        PacketWorker::instance().process_packet(buf, buf_len, &conn_info, false);
+        return 0;
     }
     if (conn_info.state.server_current_state == server_ready) {
         vector<char> type_vec;
@@ -541,18 +546,25 @@ int server_on_raw_recv_multi()  // called when server received an raw packet
             return -1;
         }
 
+        // For each packet, submit a task to the thread pool
         for (int i = 0; i < (int)type_vec.size(); i++) {
             char type = type_vec[i];
             char *data = (char *)data_vec[i].c_str();  // be careful, do not append data to it
             int data_len = data_vec[i].length();
-            server_on_raw_recv_ready(conn_info, ip_port, type, data, data_len);
+            
+            // Format the data for processing: [type][data]
+            buf[0] = type;
+            memcpy(buf + 1, data, data_len);
+            buf_len = data_len + 1;
+            
+            // Process the packet in the thread pool
+            PacketWorker::instance().process_packet(buf, buf_len, &conn_info, false);
         }
         return 0;
     }
 
     if (conn_info.state.server_current_state == server_idle) {
         discard_raw_packet();
-        // recv(raw_recv_fd, 0,0, 0  );//
         return 0;
     }
     mylog(log_fatal, "we should never run to here\n");

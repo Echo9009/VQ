@@ -18,6 +18,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "G:/VQ/VQ/lib/md5.cpp" "CMakeFiles/udp2raw.dir/lib/md5.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/lib/md5.cpp.obj.d"
   "G:/VQ/VQ/lib/pbkdf2-sha1.cpp" "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.obj.d"
   "G:/VQ/VQ/lib/pbkdf2-sha256.cpp" "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj.d"
+  "G:/VQ/VQ/lock_free_queue.cpp" "CMakeFiles/udp2raw.dir/lock_free_queue.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/lock_free_queue.cpp.obj.d"
   "G:/VQ/VQ/log.cpp" "CMakeFiles/udp2raw.dir/log.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/log.cpp.obj.d"
   "G:/VQ/VQ/main.cpp" "CMakeFiles/udp2raw.dir/main.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/main.cpp.obj.d"
   "G:/VQ/VQ/misc.cpp" "CMakeFiles/udp2raw.dir/misc.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/misc.cpp.obj.d"
@@ -25,6 +26,8 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "G:/VQ/VQ/network.cpp" "CMakeFiles/udp2raw.dir/network.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/network.cpp.obj.d"
   "G:/VQ/VQ/pcap_wrapper.cpp" "CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj.d"
   "G:/VQ/VQ/server.cpp" "CMakeFiles/udp2raw.dir/server.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/server.cpp.obj.d"
+  "G:/VQ/VQ/server_core.cpp" "CMakeFiles/udp2raw.dir/server_core.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/server_core.cpp.obj.d"
+  "G:/VQ/VQ/worker.cpp" "CMakeFiles/udp2raw.dir/worker.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/worker.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
