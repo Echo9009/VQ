@@ -9,6 +9,7 @@
 #include "log.h"
 #include "misc.h"
 #include "thread_pool.h"
+#include "batch_processor.h"
 
 extern std::unique_ptr<ThreadPool> g_thread_pool;
 
@@ -2822,28 +2823,9 @@ int client_bind_to_a_new_port2(int &fd, const address_t &address)  // find a fre
 }
 
 int process_packet_in_thread_pool(raw_info_t &raw_info, const char *payload, int payloadlen) {
-    return g_thread_pool->enqueue([&raw_info, payload, payloadlen]() {
-        char *processed_payload = new char[payloadlen];
-        memcpy(processed_payload, payload, payloadlen);
-        
-        // Process packet based on protocol
-        int ret = 0;
-        switch(raw_info.send_info.protocol) {
-            case IPPROTO_TCP:
-                ret = send_raw_tcp(raw_info, processed_payload, payloadlen);
-                break;
-            case IPPROTO_UDP:
-                ret = send_raw_udp(raw_info, processed_payload, payloadlen);
-                break;
-            case IPPROTO_ICMP:
-                ret = send_raw_icmp(raw_info, processed_payload, payloadlen);
-                break;
-            default:
-                mylog(log_warn, "Unknown protocol: %d\n", raw_info.send_info.protocol);
-                ret = -1;
-        }
-        
-        delete[] processed_payload;
-        return ret;
-    }).get();
+    // Instead of processing each packet individually, add it to the batch processor
+    g_packet_batch_processor->addPacket(payload, payloadlen, raw_info);
+    
+    // We return 0 for success here since the actual processing happens asynchronously
+    return 0;
 }

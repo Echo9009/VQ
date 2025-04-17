@@ -7,6 +7,8 @@
 #include "encrypt.h"
 #include "fd_manager.h"
 #include "thread_pool.h"
+#include "memory_pool.h"
+#include "batch_processor.h"
 #include <thread>
 
 // Global thread pool
@@ -48,6 +50,17 @@ int main(int argc, char *argv[]) {
     if (num_threads == 0) num_threads = 4; // fallback if detection fails
     g_thread_pool = std::unique_ptr<ThreadPool>(new ThreadPool(num_threads));
     mylog(log_info, "Initialized thread pool with %u threads\n", num_threads);
+
+    // Initialize memory pool - use 8KB chunks to accommodate most packet sizes
+    init_memory_pool(8192, 64);
+    mylog(log_info, "Initialized memory pool with 8KB chunks\n");
+
+    // Initialize batch processor - configure batch size and delay
+    init_batch_processor(
+        64,                            // Process up to 64 packets at once
+        std::chrono::milliseconds(5),  // Process every 5ms even if batch not full
+        num_threads / 2 + 1            // Use (cores/2 + 1) worker threads
+    );
 
     ev_signal signal_watcher_sigpipe;
     ev_signal signal_watcher_sigterm;

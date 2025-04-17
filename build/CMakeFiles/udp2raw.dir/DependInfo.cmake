@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "G:/VQ/VQ/batch_processor.cpp" "CMakeFiles/udp2raw.dir/batch_processor.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/batch_processor.cpp.obj.d"
   "G:/VQ/VQ/client.cpp" "CMakeFiles/udp2raw.dir/client.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/client.cpp.obj.d"
   "G:/VQ/VQ/common.cpp" "CMakeFiles/udp2raw.dir/common.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/common.cpp.obj.d"
   "G:/VQ/VQ/connection.cpp" "CMakeFiles/udp2raw.dir/connection.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/connection.cpp.obj.d"
@@ -20,6 +21,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "G:/VQ/VQ/lib/pbkdf2-sha256.cpp" "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.obj.d"
   "G:/VQ/VQ/log.cpp" "CMakeFiles/udp2raw.dir/log.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/log.cpp.obj.d"
   "G:/VQ/VQ/main.cpp" "CMakeFiles/udp2raw.dir/main.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/main.cpp.obj.d"
+  "G:/VQ/VQ/memory_pool.cpp" "CMakeFiles/udp2raw.dir/memory_pool.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/memory_pool.cpp.obj.d"
   "G:/VQ/VQ/misc.cpp" "CMakeFiles/udp2raw.dir/misc.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/misc.cpp.obj.d"
   "G:/VQ/VQ/my_ev.cpp" "CMakeFiles/udp2raw.dir/my_ev.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/my_ev.cpp.obj.d"
   "G:/VQ/VQ/network.cpp" "CMakeFiles/udp2raw.dir/network.cpp.obj" "gcc" "CMakeFiles/udp2raw.dir/network.cpp.obj.d"

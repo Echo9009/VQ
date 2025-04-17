@@ -8,6 +8,10 @@
 #ifndef UDP2RAW_NETWORK_H_
 #define UDP2RAW_NETWORK_H_
 
+// Remove these includes from here - we'll add them at the end of the file
+// #include "memory_pool.h"
+// #include "batch_processor.h"
+
 extern int raw_recv_fd;
 extern int raw_send_fd;
 extern int use_tcp_dummy_socket;

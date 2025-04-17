@@ -173,6 +173,30 @@ udp2raw/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/build
 .PHONY : udp2raw/fast
 
+batch_processor.obj: batch_processor.cpp.obj
+.PHONY : batch_processor.obj
+
+# target to build an object file
+batch_processor.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/batch_processor.cpp.obj
+.PHONY : batch_processor.cpp.obj
+
+batch_processor.i: batch_processor.cpp.i
+.PHONY : batch_processor.i
+
+# target to preprocess a source file
+batch_processor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/batch_processor.cpp.i
+.PHONY : batch_processor.cpp.i
+
+batch_processor.s: batch_processor.cpp.s
+.PHONY : batch_processor.s
+
+# target to generate assembly for a file
+batch_processor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/batch_processor.cpp.s
+.PHONY : batch_processor.cpp.s
+
 client.obj: client.cpp.obj
 .PHONY : client.obj
 
@@ -461,6 +485,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+memory_pool.obj: memory_pool.cpp.obj
+.PHONY : memory_pool.obj
+
+# target to build an object file
+memory_pool.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/memory_pool.cpp.obj
+.PHONY : memory_pool.cpp.obj
+
+memory_pool.i: memory_pool.cpp.i
+.PHONY : memory_pool.i
+
+# target to preprocess a source file
+memory_pool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/memory_pool.cpp.i
+.PHONY : memory_pool.cpp.i
+
+memory_pool.s: memory_pool.cpp.s
+.PHONY : memory_pool.s
+
+# target to generate assembly for a file
+memory_pool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/memory_pool.cpp.s
+.PHONY : memory_pool.cpp.s
+
 misc.obj: misc.cpp.obj
 .PHONY : misc.obj
 
@@ -594,6 +642,9 @@ help:
 	@echo ... list_install_components
 	@echo ... rebuild_cache
 	@echo ... udp2raw
+	@echo ... batch_processor.obj
+	@echo ... batch_processor.i
+	@echo ... batch_processor.s
 	@echo ... client.obj
 	@echo ... client.i
 	@echo ... client.s
@@ -630,6 +681,9 @@ help:
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... memory_pool.obj
+	@echo ... memory_pool.i
+	@echo ... memory_pool.s
 	@echo ... misc.obj
 	@echo ... misc.i
 	@echo ... misc.s
