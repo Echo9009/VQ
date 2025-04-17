@@ -9,6 +9,7 @@
 #include "log.h"
 #include "misc.h"
 #include "thread_pool.h"
+#include "packet_processor.h"
 
 extern std::unique_ptr<ThreadPool> g_thread_pool;
 
@@ -2522,33 +2523,101 @@ int recv_raw_tcp_deprecated(packet_info_t &info,char * &payload,int &payloadlen)
 
         return 0;
 }*/
-int send_raw0(raw_info_t &raw_info, const char *payload, int payloadlen) {
-    if (random_drop != 0) {
-        if (get_true_random_number() % 10000 < (u32_t)random_drop) {
-            return 0;
-        }
-    }
 
-    packet_info_t &send_info = raw_info.send_info;
-    packet_info_t &recv_info = raw_info.recv_info;
-    mylog(log_trace, "send_raw : from %s %d  to %s %d\n", send_info.new_src_ip.get_str1(), send_info.src_port, send_info.new_dst_ip.get_str2(), send_info.dst_port);
+// یک نمونه سراسری از PacketProcessor
+PacketProcessor g_packet_processor;
+
+int send_raw0(raw_info_t &raw_info, const char *payload, int payloadlen) {
+    // تنظیم اطلاعات raw برای پردازشگر پکت
+    g_packet_processor.set_raw_info(raw_info);
     
-    // Use thread pool for packet processing
-    return process_packet_in_thread_pool(raw_info, payload, payloadlen);
+    packet_info_t &send_info = raw_info.send_info;
+    
+    // نمایش اطلاعات ارسال
+    mylog(log_trace, "send_raw0 called, payload_len=%d\n", payloadlen);
+    
+    // آماده‌سازی بافر خروجی
+    static char dummy_output[MAX_PACKET_SIZE];
+    int output_len = 0;
+    
+    // پردازش پکت خروجی با PacketProcessor
+    int ret = g_packet_processor.process_outgoing_packet(payload, payloadlen, dummy_output, output_len);
+    if (ret != 0) {
+        mylog(log_debug, "process_outgoing_packet failed with code %d\n", ret);
+        return -1;
+    }
+    
+    // در اینجا می‌توانیم از output_len و dummy_output برای ارسال استفاده کنیم
+    // اما برای سازگاری با کد قبلی، بسته به پروتکل مورد استفاده، از توابع مختلف استفاده می‌کنیم
+    
+    switch(raw_mode) {
+        case mode_faketcp:
+            return send_raw_tcp(raw_info, payload, payloadlen);
+        case mode_udp:
+            return send_raw_udp(raw_info, payload, payloadlen);
+        case mode_icmp:
+            return send_raw_icmp(raw_info, payload, payloadlen);
+        default:
+            mylog(log_warn, "unknown raw_mode\n");
+            return -1;
+    }
 }
+
 int recv_raw0(raw_info_t &raw_info, char *&payload, int &payloadlen) {
     packet_info_t &send_info = raw_info.send_info;
     packet_info_t &recv_info = raw_info.recv_info;
+    
+    // تنظیم اطلاعات raw برای پردازشگر پکت
+    g_packet_processor.set_raw_info(raw_info);
+    
+    // آماده‌سازی بافر خروجی
+    static char payload_buffer[MAX_PACKET_SIZE];
+    int payload_len = 0;
+    
+    // فراخوانی تابع مناسب براساس نوع پروتکل
+    int ret = -1;
     switch (raw_mode) {
-        case mode_faketcp:
-            return recv_raw_tcp(raw_info, payload, payloadlen);
-        case mode_udp:
-            return recv_raw_udp(raw_info, payload, payloadlen);
-        case mode_icmp:
-            return recv_raw_icmp(raw_info, payload, payloadlen);
+        case mode_faketcp: {
+            char buf[buf_len];
+            int recv_len = recv_raw_tcp_packet(buf, sizeof(buf));
+            if (recv_len < 0) return -1;
+            
+            // پردازش پکت دریافتی با PacketProcessor
+            ret = g_packet_processor.process_incoming_packet(buf, recv_len, payload_buffer, payload_len);
+            break;
+        }
+        case mode_udp: {
+            char buf[buf_len];
+            int recv_len = recv_raw_udp_packet(buf, sizeof(buf));
+            if (recv_len < 0) return -1;
+            
+            // پردازش پکت دریافتی با PacketProcessor
+            ret = g_packet_processor.process_incoming_packet(buf, recv_len, payload_buffer, payload_len);
+            break;
+        }
+        case mode_icmp: {
+            char buf[buf_len];
+            int recv_len = recv_raw_icmp_packet(buf, sizeof(buf));
+            if (recv_len < 0) return -1;
+            
+            // پردازش پکت دریافتی با PacketProcessor
+            ret = g_packet_processor.process_incoming_packet(buf, recv_len, payload_buffer, payload_len);
+            break;
+        }
         default:
             return -1;
     }
+    
+    if (ret != 0 || payload_len == 0) {
+        mylog(log_debug, "process_incoming_packet failed or empty payload\n");
+        return -1;
+    }
+    
+    payload = payload_buffer;
+    payloadlen = payload_len;
+    
+    mylog(log_trace, "recv_raw0 success, payload_len=%d\n", payload_len);
+    return 0;
 }
 
 int after_send_raw0(raw_info_t &raw_info) {
@@ -2822,28 +2891,67 @@ int client_bind_to_a_new_port2(int &fd, const address_t &address)  // find a fre
 }
 
 int process_packet_in_thread_pool(raw_info_t &raw_info, const char *payload, int payloadlen) {
-    return g_thread_pool->enqueue([&raw_info, payload, payloadlen]() {
-        char *processed_payload = new char[payloadlen];
-        memcpy(processed_payload, payload, payloadlen);
-        
-        // Process packet based on protocol
-        int ret = 0;
-        switch(raw_info.send_info.protocol) {
-            case IPPROTO_TCP:
-                ret = send_raw_tcp(raw_info, processed_payload, payloadlen);
-                break;
-            case IPPROTO_UDP:
-                ret = send_raw_udp(raw_info, processed_payload, payloadlen);
-                break;
-            case IPPROTO_ICMP:
-                ret = send_raw_icmp(raw_info, processed_payload, payloadlen);
-                break;
-            default:
-                mylog(log_warn, "Unknown protocol: %d\n", raw_info.send_info.protocol);
-                ret = -1;
-        }
-        
-        delete[] processed_payload;
-        return ret;
-    }).get();
+    static thread_local PacketProcessor packet_processor;
+    static thread_local bool initialized = false;
+    
+    // مقداردهی اولیه پردازشگر یک بار در هر نخ
+    if (!initialized) {
+        packet_processor.initialize(raw_mode);
+        initialized = true;
+    }
+    
+    // تنظیم اطلاعات raw_info
+    packet_processor.set_raw_info(raw_info);
+    
+    // پردازش و ارسال پکت با استفاده از پردازشگر بهینه شده
+    char dummy_output[MAX_PACKET_SIZE]; // بافر خروجی مورد نیاز نیست، اما باید پاس داده شود
+    int output_len = 0;
+    
+    return packet_processor.process_outgoing_packet(payload, payloadlen, dummy_output, output_len);
+}
+
+// توابع کمکی برای دریافت پکت براساس نوع پروتکل
+int recv_raw_tcp_packet(char *buf, int buf_size) {
+    struct sockaddr_in saddr;
+    socklen_t saddr_size = sizeof(saddr);
+    
+    int recv_len = recvfrom(raw_recv_fd, buf, buf_size, 0, (sockaddr *)&saddr, &saddr_size);
+    
+    if (recv_len < 0) {
+        mylog(log_trace, "recv_len < 0 %s\n", get_sock_error());
+        return -1;
+    }
+    
+    mylog(log_trace, "recv_raw_tcp_packet, received a packet with len=%d\n", recv_len);
+    return recv_len;
+}
+
+int recv_raw_udp_packet(char *buf, int buf_size) {
+    struct sockaddr_in saddr;
+    socklen_t saddr_size = sizeof(saddr);
+    
+    int recv_len = recvfrom(raw_recv_fd, buf, buf_size, 0, (sockaddr *)&saddr, &saddr_size);
+    
+    if (recv_len < 0) {
+        mylog(log_trace, "recv_len < 0 %s\n", get_sock_error());
+        return -1;
+    }
+    
+    mylog(log_trace, "recv_raw_udp_packet, received a packet with len=%d\n", recv_len);
+    return recv_len;
+}
+
+int recv_raw_icmp_packet(char *buf, int buf_size) {
+    struct sockaddr_in saddr;
+    socklen_t saddr_size = sizeof(saddr);
+    
+    int recv_len = recvfrom(raw_recv_fd, buf, buf_size, 0, (sockaddr *)&saddr, &saddr_size);
+    
+    if (recv_len < 0) {
+        mylog(log_trace, "recv_len < 0 %s\n", get_sock_error());
+        return -1;
+    }
+    
+    mylog(log_trace, "recv_raw_icmp_packet, received a packet with len=%d\n", recv_len);
+    return recv_len;
 }

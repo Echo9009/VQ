@@ -533,6 +533,30 @@ network.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/network.cpp.s
 .PHONY : network.cpp.s
 
+packet_processor.obj: packet_processor.cpp.obj
+.PHONY : packet_processor.obj
+
+# target to build an object file
+packet_processor.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/packet_processor.cpp.obj
+.PHONY : packet_processor.cpp.obj
+
+packet_processor.i: packet_processor.cpp.i
+.PHONY : packet_processor.i
+
+# target to preprocess a source file
+packet_processor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/packet_processor.cpp.i
+.PHONY : packet_processor.cpp.i
+
+packet_processor.s: packet_processor.cpp.s
+.PHONY : packet_processor.s
+
+# target to generate assembly for a file
+packet_processor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/packet_processor.cpp.s
+.PHONY : packet_processor.cpp.s
+
 pcap_wrapper.obj: pcap_wrapper.cpp.obj
 .PHONY : pcap_wrapper.obj
 
@@ -639,6 +663,9 @@ help:
 	@echo ... network.obj
 	@echo ... network.i
 	@echo ... network.s
+	@echo ... packet_processor.obj
+	@echo ... packet_processor.i
+	@echo ... packet_processor.s
 	@echo ... pcap_wrapper.obj
 	@echo ... pcap_wrapper.i
 	@echo ... pcap_wrapper.s

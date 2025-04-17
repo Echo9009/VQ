@@ -51,6 +51,7 @@ set(COMMON_SOURCES
     lib/aes_faster_c/aes.cpp
     lib/aes_faster_c/wrapper.cpp
     my_ev.cpp
+    packet_processor.cpp
 )
 
 # Add platform-specific sources

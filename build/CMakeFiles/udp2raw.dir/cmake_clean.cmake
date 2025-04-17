@@ -29,6 +29,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/udp2raw.dir/my_ev.cpp.obj.d"
   "CMakeFiles/udp2raw.dir/network.cpp.obj"
   "CMakeFiles/udp2raw.dir/network.cpp.obj.d"
+  "CMakeFiles/udp2raw.dir/packet_processor.cpp.obj"
+  "CMakeFiles/udp2raw.dir/packet_processor.cpp.obj.d"
   "CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj"
   "CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj.d"
   "CMakeFiles/udp2raw.dir/server.cpp.obj"
