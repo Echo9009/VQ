@@ -81,8 +81,9 @@ endif()
 # Add nlohmann/json
 FetchContent_Declare(
     json
-    URL https://github.com/nlohmann/json/releases/download/v3.10.5/json.tar.xz
-    URL_HASH SHA256=5daca6ca216495edf89d167f808d1b6deb16dff8b45aca1848d990c5b56a6d09
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.2
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(json)
 
