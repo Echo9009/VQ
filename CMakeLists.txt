@@ -51,7 +51,6 @@ set(COMMON_SOURCES
     lib/aes_faster_c/aes.cpp
     lib/aes_faster_c/wrapper.cpp
     my_ev.cpp
-    profiler.cpp
 )
 
 # Add platform-specific sources
@@ -62,30 +61,6 @@ endif()
 # Set include directories
 include_directories(SYSTEM "libev")
 include_directories(".")
-
-# Find required packages
-include(FetchContent)
-
-# Add libcurl
-find_package(CURL QUIET)
-if(NOT CURL_FOUND)
-    message(STATUS "libcurl not found, fetching it...")
-    FetchContent_Declare(
-        curl
-        URL https://github.com/curl/curl/releases/download/curl-7_78_0/curl-7.78.0.tar.gz
-        URL_HASH SHA256=d82f6a44b65379f7d97b43d0fc006c8231cce6e5dbf70e7f9d2a287d6b385494
-    )
-    FetchContent_MakeAvailable(curl)
-endif()
-
-# Add nlohmann/json
-FetchContent_Declare(
-    json
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG v3.11.2
-    GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(json)
 
 # Common compiler flags
 set(COMMON_FLAGS "-Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers")
@@ -111,7 +86,7 @@ endif()
 add_executable(udp2raw ${COMMON_SOURCES})
 
 # Link platform-specific libraries
-target_link_libraries(udp2raw ${PLATFORM_LIBS} CURL::libcurl nlohmann_json::nlohmann_json)
+target_link_libraries(udp2raw ${PLATFORM_LIBS})
 
 # Installation rules
 install(TARGETS udp2raw DESTINATION bin)

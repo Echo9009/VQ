@@ -14,7 +14,6 @@
 #include <algorithm>   // For std::min
 #include <vector>      // For std::vector
 #include <future>      // For std::future
-#include "profiler.h"
 
 // Platform-specific includes for memory mapping
 #ifdef __linux__
@@ -1185,8 +1184,6 @@ printf("pcap send!\n");*/
 #endif
 
 int send_raw_ip(raw_info_t &raw_info, const char *payload, int payloadlen) {
-    PROFILE_FUNCTION();
-    
     const packet_info_t &send_info = raw_info.send_info;
     const packet_info_t &recv_info = raw_info.recv_info;
     char send_raw_ip_buf[buf_len];
@@ -1265,14 +1262,7 @@ int send_raw_ip(raw_info_t &raw_info, const char *payload, int payloadlen) {
         memcpy(send_raw_ip_buf + sizeof(my_ip6hdr), payload, payloadlen);
     }
 
-    int ret = send_raw_packet(raw_info, send_raw_ip_buf, ip_tot_len);
-    
-    // Record network metrics after sending
-    if (ret >= 0) {
-        Profiler::getInstance().recordNetworkActivity(ret, 0);
-    }
-    
-    return ret;
+    return send_raw_packet(raw_info, send_raw_ip_buf, ip_tot_len);
 }
 
 int pre_recv_raw_packet() {
@@ -1357,8 +1347,6 @@ int recv_raw_packet(char *&packet, int &len, int peek) {
 }
 #endif
 int recv_raw_ip(raw_info_t &raw_info, char *&payload, int &payloadlen) {
-    PROFILE_FUNCTION();
-    
     char *raw_packet_buf;
     // static char recv_raw_ip_buf[buf_len];
     int raw_packet_len;
@@ -1464,11 +1452,6 @@ int recv_raw_ip(raw_info_t &raw_info, char *&payload, int &payloadlen) {
         return -1;
     }
 
-    // Record network metrics after receiving
-    if (payloadlen >= 0) {
-        Profiler::getInstance().recordNetworkActivity(0, payloadlen);
-    }
-    
     return 0;
 }
 

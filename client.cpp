@@ -6,7 +6,6 @@
 #include "lib/md5.h"
 #include "encrypt.h"
 #include "fd_manager.h"
-#include "profiler.h"
 
 #ifdef UDP2RAW_MP
 u32_t detect_interval = 1500;
@@ -639,7 +638,6 @@ void fifo_cb(struct ev_loop *loop, struct ev_io *watcher, int revents) {
     }
 }
 int client_event_loop() {
-    PROFILE_FUNCTION();
     char buf[buf_len];
 
     conn_info_t conn_info;

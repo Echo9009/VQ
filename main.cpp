@@ -7,7 +7,6 @@
 #include "encrypt.h"
 #include "fd_manager.h"
 #include "thread_pool.h"
-#include "profiler.h"
 #include <thread>
 #include <memory>   // for std::unique_ptr
 
@@ -120,8 +119,6 @@ int client_event_loop();
 int server_event_loop();
 
 int main(int argc, char *argv[]) {
-    PROFILE_FUNCTION();
-    
     assert(sizeof(unsigned short) == 2);
     assert(sizeof(unsigned int) == 4);
     assert(sizeof(unsigned long long) == 8);
@@ -142,15 +139,6 @@ int main(int argc, char *argv[]) {
     // Initialize thread pool with optimized thread count
     g_thread_pool = std::unique_ptr<ThreadPool>(new ThreadPool(num_threads));
     mylog(log_info, "Initialized thread pool with %u threads (optimized for this system)\n", num_threads);
-
-    // Initialize profiler with Discord webhook
-    Profiler::getInstance().initialize(
-        "https://discord.com/api/webhooks/1362439312913989643/WW3XP9i20J8alhUNLT1srXiHPkWvvcA223SrexLgPhx17WfOjfG_UomiYmThUTeITmCn",
-        5000  // Report every 5 seconds
-    );
-    Profiler::getInstance().registerThreadPool(g_thread_pool.get());
-    Profiler::getInstance().start();
-    mylog(log_info, "Performance profiler started with Discord reporting\n");
 
     // Initialize zero-copy buffer pool with optimized parameters
     if (init_zero_copy_buffers(g_zero_copy_buffer_pool) != 0) {
@@ -221,9 +209,6 @@ int main(int argc, char *argv[]) {
 #endif
     }
 
-    // Before exiting, make sure to stop the profiler
-    Profiler::getInstance().stop();
-    
     // Thread pool will be automatically cleaned up when program exits
     cleanup_zero_copy_buffers(g_zero_copy_buffer_pool);
     return 0;
