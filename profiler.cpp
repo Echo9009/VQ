@@ -411,7 +411,7 @@ std::string Profiler::generatePerformanceChart() {
             // Show last 10 values or less
             int start_idx = std::max(0, static_cast<int>(values.size()) - 10);
             
-            for (int i = start_idx; i < values.size(); i++) {
+            for (size_t i = start_idx; i < values.size(); i++) {
                 double normalized = range > 0 ? (values[i] - min_val) / range : 0.5;
                 int bar_height = static_cast<int>(normalized * chart_width);
                 
