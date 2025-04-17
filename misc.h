@@ -12,12 +12,6 @@
 #include "log.h"
 #include "network.h"
 
-#if !defined(_WIN32) && !defined(__MINGW32__)
-#include <sys/epoll.h>
-#endif
-
-#include <cstdlib>
-
 extern int hb_mode;
 extern int hb_len;
 extern char hb_buf[buf_len];

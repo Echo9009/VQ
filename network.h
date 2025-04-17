@@ -295,11 +295,6 @@ int recv_raw_udp(raw_info_t &raw_info, char *&payload, int &payloadlen);
 
 int recv_raw_tcp(raw_info_t &raw_info, char *&payload, int &payloadlen);
 
-// توابع کمکی برای دریافت پکت براساس نوع پروتکل
-int recv_raw_tcp_packet(char *buf, int buf_size);
-int recv_raw_udp_packet(char *buf, int buf_size);
-int recv_raw_icmp_packet(char *buf, int buf_size);
-
 // int send_raw(raw_info_t &raw_info,const char * payload,int payloadlen);
 
 // int recv_raw(raw_info_t &raw_info,char * &payload,int &payloadlen);

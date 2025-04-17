@@ -97,12 +97,6 @@
 },
 {
   "directory": "G:/VQ/VQ/build",
-  "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\packet_processor.cpp.obj -c G:\\VQ\\VQ\\packet_processor.cpp",
-  "file": "G:/VQ/VQ/packet_processor.cpp",
-  "output": "CMakeFiles/udp2raw.dir/packet_processor.cpp.obj"
-},
-{
-  "directory": "G:/VQ/VQ/build",
   "command": "C:\\mingw64\\bin\\c++.exe -DUDP2RAW_MP -D_WIN32 @CMakeFiles/udp2raw.dir/includes_CXX.rsp -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing -o CMakeFiles\\udp2raw.dir\\pcap_wrapper.cpp.obj -c G:\\VQ\\VQ\\pcap_wrapper.cpp",
   "file": "G:/VQ/VQ/pcap_wrapper.cpp",
   "output": "CMakeFiles/udp2raw.dir/pcap_wrapper.cpp.obj"
