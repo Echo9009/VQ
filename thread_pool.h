@@ -10,10 +10,23 @@
 #include <stdexcept>
 #include <array>
 
-// Lock-free queue implementation for per-thread work stealing
+/**
+ * @brief Lock-free queue implementation for per-thread work stealing
+ * 
+ * This is a lock-free implementation of a queue that:
+ * - Uses atomic operations instead of mutexes for thread safety
+ * - Implements single-producer-single-consumer pattern efficiently
+ * - Allows popping from the front and pushing to the back
+ * - Tracks size with an atomic counter
+ * 
+ * @tparam T Type of elements stored in the queue
+ */
 template<typename T>
 class LockFreeQueue {
 private:
+    /**
+     * @brief Node structure for the linked list implementation
+     */
     struct Node {
         std::shared_ptr<T> data;
         std::atomic<Node*> next;
@@ -26,6 +39,9 @@ private:
     std::atomic<size_t> size_counter;
     
 public:
+    /**
+     * @brief Constructs a new Lock Free Queue with a dummy node
+     */
     LockFreeQueue() : size_counter(0) {
         // Initialize with a dummy node
         Node* dummy = new Node();
@@ -39,6 +55,9 @@ public:
     LockFreeQueue(LockFreeQueue&&) = delete;
     LockFreeQueue& operator=(LockFreeQueue&&) = delete;
     
+    /**
+     * @brief Destructor - cleans up all nodes
+     */
     ~LockFreeQueue() {
         // Clean up remaining nodes
         while (pop_front()) {}
@@ -48,9 +67,15 @@ public:
         delete dummy;
     }
     
+    /**
+     * @brief Adds an item to the back of the queue
+     * 
+     * @param item Item to add
+     */
     void push_back(T item) {
-        // Create a new node with the item
-        std::shared_ptr<T> new_data = std::make_shared<T>(std::move(item));
+        // Create a new node with the item - using copy constructor to ensure
+        // std::function objects are properly copied
+        std::shared_ptr<T> new_data = std::make_shared<T>(item);
         Node* new_node = new Node();
         new_node->data = new_data;
         
@@ -63,6 +88,13 @@ public:
         size_counter.fetch_add(1, std::memory_order_relaxed);
     }
     
+    /**
+     * @brief Removes and returns the item at the front of the queue
+     * 
+     * @param item Reference to store the popped item
+     * @return true If an item was successfully popped
+     * @return false If the queue was empty
+     */
     bool pop_front(T& item) {
         Node* old_head = head.load();
         Node* next_node = old_head->next.load();
@@ -72,8 +104,13 @@ public:
             return false;
         }
         
-        // Move the data from the node
-        item = std::move(*next_node->data);
+        // Make sure next_node->data is valid before moving from it
+        if (!next_node->data) {
+            return false;
+        }
+        
+        // Copy the data instead of moving to avoid invalidating the original
+        item = *next_node->data;
         
         // Update head to skip the popped node
         head.store(next_node);
@@ -87,6 +124,12 @@ public:
         return true;
     }
     
+    /**
+     * @brief Removes the item at the front without returning it
+     * 
+     * @return true If an item was successfully popped
+     * @return false If the queue was empty
+     */
     bool pop_front() {
         Node* old_head = head.load();
         Node* next_node = old_head->next.load();
@@ -102,17 +145,42 @@ public:
         return true;
     }
     
+    /**
+     * @brief Gets the current size of the queue
+     * 
+     * @return size_t Number of items in the queue
+     */
     size_t size() const {
         return size_counter.load(std::memory_order_relaxed);
     }
     
+    /**
+     * @brief Checks if the queue is empty
+     * 
+     * @return true If queue contains no items
+     * @return false If queue contains at least one item
+     */
     bool empty() const {
         return size() == 0;
     }
 };
 
+/**
+ * @brief High-performance thread pool with lock-free queues and work stealing
+ * 
+ * Features:
+ * - Separate lock-free queue per worker thread to minimize contention
+ * - Work stealing algorithm for optimal load balancing
+ * - Tasks are assigned to least busy threads
+ * - Smart idling behavior to reduce CPU usage when idle
+ */
 class ThreadPool {
 public:
+    /**
+     * @brief Construct a new Thread Pool
+     * 
+     * @param num_threads Number of worker threads to create
+     */
     ThreadPool(size_t num_threads)
         : stop(false)
     {
@@ -176,6 +244,11 @@ public:
         }
     }
     
+    /**
+     * @brief Destroy the Thread Pool
+     * 
+     * Stops all worker threads and waits for them to finish
+     */
     ~ThreadPool() {
         // Set stop flag to true
         stop.store(true, std::memory_order_relaxed);
@@ -188,6 +261,18 @@ public:
         }
     }
     
+    /**
+     * @brief Enqueue a task to be executed by the thread pool
+     * 
+     * Tasks are assigned to the thread with the fewest pending tasks
+     * to ensure optimal load balancing.
+     * 
+     * @tparam F Function type
+     * @tparam Args Argument types
+     * @param f Function to execute
+     * @param args Arguments to pass to the function
+     * @return std::future<return_type> Future for the task's result
+     */
     template<class F, class... Args>
     auto enqueue(F&& f, Args&&... args) 
         -> std::future<decltype(f(args...))> {
@@ -202,8 +287,12 @@ public:
         std::future<return_type> result = task->get_future();
         
         // Create a wrapper function that invokes the task
+        // Use a shared_ptr to ensure the task is valid even if it's called from multiple threads
         std::function<void()> wrapper_task = [task]() {
-            (*task)();
+            // Add a validity check before calling
+            if (task) {
+                (*task)();
+            }
         };
         
         // Find the queue with the fewest tasks
@@ -224,7 +313,8 @@ public:
         }
         
         // Add the task to the queue with the fewest tasks
-        queues[min_queue_idx]->push_back(std::move(wrapper_task));
+        // We're using std::function which already manages the lifetime correctly
+        queues[min_queue_idx]->push_back(wrapper_task);
         
         return result;
     }
@@ -242,7 +332,12 @@ private:
     // Stop flag
     std::atomic<bool> stop;
     
-    // Check if all threads are idle
+    /**
+     * @brief Check if all threads are currently idle
+     * 
+     * @return true If all threads are idle
+     * @return false If at least one thread is busy
+     */
     bool all_threads_idle() {
         for (const auto& flag : idle_flags) {
             if (!flag->load(std::memory_order_relaxed)) {

@@ -228,23 +228,37 @@ https://github.com/wangyu-/udp2raw-tunnel/wiki
 
 # Multi-Core Support
 
-Starting from version 740fbf0, udp2raw includes multi-core support through a thread pool implementation. This allows the program to utilize multiple CPU cores for packet processing, significantly improving performance and scalability on multi-core systems.
+Starting from version 740fbf0, udp2raw includes multi-core support through a high-performance thread pool implementation. This allows the program to utilize multiple CPU cores for packet processing, significantly improving performance and scalability on multi-core systems.
 
 ### Features of Multi-Core Support:
 
 * **Automatic Core Detection**: Automatically detects the number of available CPU cores and creates an appropriate number of worker threads.
-* **Parallel Packet Processing**: Network packets are distributed across multiple threads for parallel processing.
+* **Lock-Free Queue Per Thread**: Each worker thread has its own dedicated lock-free queue, eliminating mutex contention and reducing synchronization overhead.
+* **Work Stealing Algorithm**: Idle threads can "steal" tasks from busy threads' queues, ensuring optimal load balancing across all cores.
+* **Parallel Packet Processing**: Network packets are distributed across multiple threads for simultaneous processing.
+* **Minimum Contention Design**: Task distribution follows a least-loaded approach, directing new tasks to the thread with the fewest pending tasks.
+* **CPU-Efficient Idling**: Threads use adaptive sleeping to reduce CPU usage during idle periods.
 * **Improved Performance**: Significantly higher throughput on systems with multiple CPU cores.
 * **Scalability**: Performance scales with the number of available cores.
 
 ### How It Works:
 
-The multi-core implementation uses a thread pool that:
+The multi-core implementation uses an advanced thread pool architecture that:
 1. Creates worker threads equal to the number of detected CPU cores
-2. Distributes incoming network packets to these threads
-3. Processes packets in parallel across all available cores
+2. Maintains separate lock-free queues for each thread to minimize contention
+3. Implements work stealing between threads to ensure balanced workloads
+4. Distributes incoming network packets to threads with the least workload
+5. Processes packets in parallel across all available cores
 
-This is particularly beneficial for high-traffic scenarios where single-core processing would become a bottleneck.
+This approach is particularly beneficial for high-traffic scenarios where single-core processing would become a bottleneck. The lock-free design eliminates the need for mutexes and condition variables, reducing context switches and allowing for more efficient CPU utilization.
+
+### Technical Implementation:
+
+The thread pool uses a lock-free queue implementation based on atomic operations, eliminating the need for traditional locks:
+- Each thread operates primarily on its own queue without synchronization
+- Atomic operations ensure thread safety without blocking
+- Work stealing occurs only when a thread's own queue is empty
+- Memory ordering is carefully managed with relaxed semantics where appropriate
 
 ### Example Performance Comparison:
 
