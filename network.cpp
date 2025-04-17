@@ -9,6 +9,11 @@
 #include "log.h"
 #include "misc.h"
 #include "thread_pool.h"
+#include <chrono>      // For std::chrono
+#include <thread>      // For std::this_thread
+#include <algorithm>   // For std::min
+#include <vector>      // For std::vector
+#include <future>      // For std::future
 
 // Platform-specific includes for memory mapping
 #ifdef __linux__
@@ -3193,4 +3198,386 @@ int recv_raw_packet_zero_copy(raw_info_t &raw_info, zero_copy_packet_t** out_pac
     
     *out_packet = packet;
     return 1;
+}
+
+// Receive multiple packets in a batch
+int recv_packet_batch(packet_batch_t& batch, int max_packets) {
+    if (max_packets > MAX_BATCH_SIZE)
+        max_packets = MAX_BATCH_SIZE;
+    
+    if (!batch.is_empty()) {
+        batch.clear();
+    }
+    
+    int total_received = 0;
+    int failed_count = 0;  // Track consecutive failures
+    
+    while (total_received < max_packets && failed_count < 3) {  // Stop after 3 consecutive failures
+        zero_copy_packet_t* packet = nullptr;
+        raw_info_t raw_info;
+        
+        int ret = recv_raw_packet_zero_copy(raw_info, &packet);
+        
+        if (ret > 0) {
+            // Successfully received a packet
+            batch.add_packet(packet, raw_info);
+            total_received++;
+            failed_count = 0;  // Reset failure counter on success
+        } 
+        else if (ret == 0) {
+            // No more packets available currently
+            failed_count++;
+        }
+        else {
+            // Error receiving packet
+            failed_count++;
+        }
+    }
+    
+    mylog(log_debug, "Received batch of %d packets\n", batch.count);
+    return batch.count;
+}
+
+// Process multiple packets in a batch
+int process_packet_batch(packet_batch_t& batch) {
+    if (batch.is_empty())
+        return 0;
+    
+    mylog(log_debug, "Processing batch of %d packets\n", batch.count);
+    
+    // Split processing across thread pool for larger batches
+    if (batch.count >= 8) {
+        // Divide work among thread pool
+        std::vector<std::future<int>> results;
+        
+        // Create worker jobs for chunks of the batch
+        int chunk_size = 4;  // Process 4 packets per thread
+        for (int i = 0; i < batch.count; i += chunk_size) {
+            int end = std::min(i + chunk_size, batch.count);
+            
+            results.push_back(g_thread_pool->enqueue([&batch, i, end]() {
+                int success_count = 0;
+                
+                for (int j = i; j < end; j++) {
+                    if (process_zero_copy_packet(batch.raw_info[j], batch.packets[j]) == 0) {
+                        success_count++;
+                    }
+                }
+                
+                return success_count;
+            }));
+        }
+        
+        // Wait for all jobs to complete and collect results
+        int total_success = 0;
+        for (auto& result : results) {
+            total_success += result.get();
+        }
+        
+        return total_success;
+    } 
+    else {
+        // For small batches, process sequentially
+        int success_count = 0;
+        for (int i = 0; i < batch.count; i++) {
+            if (process_zero_copy_packet(batch.raw_info[i], batch.packets[i]) == 0) {
+                success_count++;
+            }
+        }
+        return success_count;
+    }
+}
+
+// Send multiple packets in a batch
+int send_packet_batch(packet_batch_t& batch) {
+    if (batch.is_empty())
+        return 0;
+    
+    mylog(log_debug, "Sending batch of %d packets\n", batch.count);
+    
+    int success_count = 0;
+    
+    // For very large batches, split into multiple worker threads
+    if (batch.count > 16) {
+        std::vector<std::future<int>> results;
+        
+        // Create worker jobs for chunks of the batch
+        int chunk_size = 8;  // Send 8 packets per thread
+        for (int i = 0; i < batch.count; i += chunk_size) {
+            int end = std::min(i + chunk_size, batch.count);
+            
+            results.push_back(g_thread_pool->enqueue([&batch, i, end]() {
+                int success_count = 0;
+                
+                for (int j = i; j < end; j++) {
+                    if (send_raw_packet_zero_copy(batch.raw_info[j], batch.packets[j]) > 0) {
+                        success_count++;
+                    }
+                }
+                
+                return success_count;
+            }));
+        }
+        
+        // Wait for all jobs to complete and collect results
+        for (auto& result : results) {
+            success_count += result.get();
+        }
+    } 
+    else {
+        // For small to medium batches, use a single system call where possible
+        // This works best on Linux with packet sockets
+#ifdef __linux__
+        // Attempt to use batch system calls if possible
+        // Implementation depends on specific kernel support
+        // Fallback to individual sends otherwise
+#endif
+        // Default implementation: send packets one by one but in tight loop
+        for (int i = 0; i < batch.count; i++) {
+            if (send_raw_packet_zero_copy(batch.raw_info[i], batch.packets[i]) > 0) {
+                success_count++;
+            }
+        }
+    }
+    
+    return success_count;
+}
+
+// Add a high-performance processing loop function
+int process_packets_high_performance(int max_time_ms) {
+    // Get start time
+    auto start_time = std::chrono::steady_clock::now();
+    int total_processed = 0;
+    packet_batch_t batch;
+    
+    // Process packets in batches until time runs out
+    while (true) {
+        // Check if we've exceeded max time
+        auto current_time = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time).count();
+        if (elapsed >= max_time_ms) {
+            break;
+        }
+        
+        // Receive a batch of packets
+        int received = recv_packet_batch(batch);
+        if (received <= 0) {
+            // No packets available, small pause to avoid CPU spinning
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+            continue;
+        }
+        
+        // Process the batch
+        int processed = process_packet_batch(batch);
+        
+        // Send processed packets
+        int sent = send_packet_batch(batch);
+        
+        total_processed += sent;
+        
+        // Clear the batch for next iteration
+        batch.clear();
+    }
+    
+    return total_processed;
+}
+
+// Add a custom packet classifier for better batch processing
+enum PacketClass {
+    PACKET_TCP_HIGH_PRIO,   // Interactive TCP connections
+    PACKET_TCP_LOW_PRIO,    // Background TCP traffic
+    PACKET_UDP_HIGH_PRIO,   // Time-sensitive UDP (e.g., VoIP)
+    PACKET_UDP_LOW_PRIO,    // Regular UDP
+    PACKET_ICMP,            // ICMP traffic
+    PACKET_OTHER,           // Other protocols
+    PACKET_CLASS_COUNT      // Total count of packet classes
+};
+
+// Get packet class based on packet properties
+PacketClass classify_packet(const raw_info_t& raw_info, const zero_copy_packet_t* packet) {
+    if (raw_info.recv_info.protocol == IPPROTO_TCP) {
+        // Check for small, interactive packets (e.g., SSH, telnet, etc.)
+        if (packet->data_len < 200) {
+            return PACKET_TCP_HIGH_PRIO;
+        } else {
+            return PACKET_TCP_LOW_PRIO;
+        }
+    } 
+    else if (raw_info.recv_info.protocol == IPPROTO_UDP) {
+        // Check for likely VoIP or gaming traffic (common ports and small sizes)
+        uint16_t port = raw_info.recv_info.src_port;
+        if ((port >= 16384 && port <= 32767) ||  // WebRTC
+            port == 5060 || port == 5061 ||      // SIP
+            (port >= 3478 && port <= 3497) ||    // STUN/TURN
+            (port >= 27000 && port <= 27050) ||  // Common game ports
+            packet->data_len < 200) {            // Small packets likely real-time
+            return PACKET_UDP_HIGH_PRIO;
+        } else {
+            return PACKET_UDP_LOW_PRIO;
+        }
+    }
+    else if (raw_info.recv_info.protocol == IPPROTO_ICMP) {
+        return PACKET_ICMP;
+    }
+    else {
+        return PACKET_OTHER;
+    }
+}
+
+// Enhanced batch processing with packet classification
+int process_packets_with_classification(int max_time_ms) {
+    // Get start time
+    auto start_time = std::chrono::steady_clock::now();
+    int total_processed = 0;
+    
+    // Create batches for each packet class
+    packet_batch_t batches[PACKET_CLASS_COUNT];
+    
+    // Process packets in classified batches until time runs out
+    while (true) {
+        // Check if we've exceeded max time
+        auto current_time = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time).count();
+        if (elapsed >= max_time_ms) {
+            break;
+        }
+        
+        // Fill batches with classified packets
+        int total_received = 0;
+        int failed_count = 0;
+        
+        // Receive up to MAX_BATCH_SIZE packets and classify them
+        while (total_received < MAX_BATCH_SIZE && failed_count < 3) {
+            zero_copy_packet_t* packet = nullptr;
+            raw_info_t raw_info;
+            
+            int ret = recv_raw_packet_zero_copy(raw_info, &packet);
+            
+            if (ret > 0) {
+                // Successfully received a packet, classify it
+                PacketClass cls = classify_packet(raw_info, packet);
+                
+                // Add to appropriate batch
+                batches[cls].add_packet(packet, raw_info);
+                
+                total_received++;
+                failed_count = 0;
+            } 
+            else if (ret == 0) {
+                failed_count++;
+            }
+            else {
+                failed_count++;
+            }
+            
+            // If we've collected enough packets, stop receiving
+            if (total_received >= MAX_BATCH_SIZE/2) {
+                break;
+            }
+        }
+        
+        if (total_received == 0) {
+            // No packets available, small pause to avoid CPU spinning
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+            continue;
+        }
+        
+        // Process high priority batches first, then low priority
+        for (int cls = 0; cls < PACKET_CLASS_COUNT; cls++) {
+            if (!batches[cls].is_empty()) {
+                // Process this batch
+                process_packet_batch(batches[cls]);
+                
+                // Send processed packets
+                int sent = send_packet_batch(batches[cls]);
+                total_processed += sent;
+                
+                // Clear the batch for next iteration
+                batches[cls].clear();
+            }
+        }
+    }
+    
+    return total_processed;
+}
+
+// Implementation of process_zero_copy_packet
+int process_zero_copy_packet(raw_info_t &raw_info, zero_copy_packet_t* packet) {
+    if (packet == nullptr) return -1;
+    
+    char* ip_begin = (char*)packet->buffer + packet->offset;
+    int ip_len = packet->data_len - packet->offset;
+    
+    // Process packet information similar to recv_raw_ip
+    packet_info_t &recv_info = raw_info.recv_info;
+    
+    my_iphdr *iph;
+    my_ip6hdr *ip6h;
+
+    if (ip_len < 1) {
+        mylog(log_trace, "ip_len < 1, dropped\n");
+        return -1;
+    }
+    
+    iph = (struct my_iphdr*)(ip_begin);
+    ip6h = (struct my_ip6hdr*)(ip_begin);
+    
+    if (raw_ip_version == AF_INET) {
+        if (iph->version != 4) {
+            mylog(log_trace, "expect ipv4 packet, but got something else: %02x\n", iph->version);
+            return -1;
+        }
+        if (ip_len < (int)sizeof(my_iphdr)) {
+            mylog(log_trace, "ip_len < sizeof(iphdr)\n");
+            return -1;
+        }
+        
+        recv_info.new_src_ip.v4 = iph->saddr;
+        recv_info.new_dst_ip.v4 = iph->daddr;
+        recv_info.protocol = iph->protocol;
+        unsigned short iphdrlen = iph->ihl * 4;
+        int total_ip_len = ntohs(iph->tot_len);
+        
+        if (ip_len < total_ip_len) {
+            mylog(log_debug, "incomplete packet\n");
+            return -1;
+        }
+        
+        if (raw_info.peek == 0) {
+            u32_t ip_chk = csum((unsigned short *)ip_begin, iphdrlen);
+            if (ip_chk != 0) {
+                mylog(log_debug, "ip header checksum error %x\n", ip_chk);
+                return -1;
+            }
+        }
+        
+        // Skip the IP header in the packet
+        packet->offset += iphdrlen;
+    } else {
+        assert(raw_ip_version == AF_INET6);
+        if (ip6h->version != 6) {
+            mylog(log_trace, "expect ipv6 packet, but got something else: %02x\n", ip6h->version);
+            return -1;
+        }
+        if (ip_len < (int)sizeof(my_ip6hdr)) {
+            mylog(log_trace, "ip_len < sizeof(ip6_hdr)\n");
+            return -1;
+        }
+        
+        recv_info.new_src_ip.v6 = ip6h->src;
+        recv_info.new_dst_ip.v6 = ip6h->dst;
+        unsigned short iphdrlen = 40; // IPv6 header is 40 bytes
+        recv_info.protocol = ip6h->next_header;
+        int total_ip_len = ntohs(ip6h->payload_len) + iphdrlen;
+        
+        if (ip_len < total_ip_len) {
+            mylog(log_debug, "incomplete packet\n");
+            return -1;
+        }
+        
+        // Skip the IP header in the packet
+        packet->offset += iphdrlen;
+    }
+    
+    return 0;
 }

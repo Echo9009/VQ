@@ -8,9 +8,96 @@
 #include "fd_manager.h"
 #include "thread_pool.h"
 #include <thread>
+#include <memory>   // for std::unique_ptr
 
-// Global thread pool
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>  // for sysconf
+#endif
+
+// Global variables
 std::unique_ptr<ThreadPool> g_thread_pool;
+volatile bool program_terminated = false;  // Flag to signal program termination
+
+// Function to determine optimal thread count based on system
+unsigned int determine_optimal_thread_count() {
+    unsigned int processor_count = std::thread::hardware_concurrency();
+    
+    // If we couldn't detect, use a reasonable default
+    if (processor_count == 0) {
+        return 4;
+    }
+    
+    // For packet processing, using N or N-1 threads is usually best
+    // where N is the number of physical cores
+    if (processor_count > 4) {
+        return processor_count - 1; // Leave one core for OS and other tasks
+    }
+    
+    return processor_count;
+}
+
+// Function to adjust buffer parameters based on system capabilities
+void adjust_buffer_parameters() {
+    // Physical memory size detection
+    size_t mem_size = 0;
+    
+#ifdef _WIN32
+    MEMORYSTATUSEX status;
+    status.dwLength = sizeof(status);
+    GlobalMemoryStatusEx(&status);
+    mem_size = status.ullTotalPhys;
+#else
+    // Linux and other UNIX-like systems
+    long pages = sysconf(_SC_PHYS_PAGES);
+    long page_size = sysconf(_SC_PAGE_SIZE);
+    if (pages > 0 && page_size > 0) {
+        mem_size = pages * page_size;
+    }
+#endif
+
+    // Adjust buffer parameters based on available memory
+    // Use at most 5% of physical memory for buffers
+    size_t max_buffer_memory = mem_size * 0.05;
+    
+    // Default: 128 buffers of 8KB each = 1MB total
+    size_t buffer_size = 8192;
+    size_t buffer_count = 128;
+    
+    // For low memory systems (less than 1GB)
+    if (mem_size < 1073741824) {
+        buffer_size = 4096;
+        buffer_count = 64;
+    }
+    // For high memory systems (more than 8GB)
+    else if (mem_size > 8589934592) {
+        buffer_size = 16384;
+        buffer_count = 512;
+    }
+    
+    // Ensure we don't exceed our memory limit
+    size_t total_buffer_memory = buffer_size * buffer_count;
+    if (total_buffer_memory > max_buffer_memory) {
+        buffer_count = max_buffer_memory / buffer_size;
+        if (buffer_count < 32) {
+            buffer_count = 32; // Minimum number of buffers
+            buffer_size = max_buffer_memory / buffer_count;
+        }
+    }
+    
+    // Set the global parameters for buffer pool
+    g_zero_copy_buffer_pool.buffer_size = buffer_size;
+    g_zero_copy_buffer_pool.num_buffers = buffer_count;
+    
+    mylog(log_info, "Adjusted buffer parameters: %zu buffers of %zu bytes each (total: %.2f MB)\n", 
+          buffer_count, buffer_size, (buffer_size * buffer_count) / (1024.0 * 1024.0));
+}
+
+// Signal handler to set termination flag
+void set_program_terminated() {
+    program_terminated = true;
+}
 
 void sigpipe_cb(struct ev_loop *l, ev_signal *w, int revents) {
     mylog(log_info, "got sigpipe, ignored");
@@ -18,11 +105,13 @@ void sigpipe_cb(struct ev_loop *l, ev_signal *w, int revents) {
 
 void sigterm_cb(struct ev_loop *l, ev_signal *w, int revents) {
     mylog(log_info, "got sigterm, exit");
+    set_program_terminated();
     myexit(0);
 }
 
 void sigint_cb(struct ev_loop *l, ev_signal *w, int revents) {
     mylog(log_info, "got sigint, exit");
+    set_program_terminated();
     myexit(0);
 }
 
@@ -43,13 +132,15 @@ int main(int argc, char *argv[]) {
 
     pre_process_arg(argc, argv);
 
-    // Initialize thread pool with number of CPU cores
-    unsigned int num_threads = std::thread::hardware_concurrency();
-    if (num_threads == 0) num_threads = 4; // fallback if detection fails
+    // Optimize thread count and buffer parameters for the system
+    adjust_buffer_parameters();
+    unsigned int num_threads = determine_optimal_thread_count();
+    
+    // Initialize thread pool with optimized thread count
     g_thread_pool = std::unique_ptr<ThreadPool>(new ThreadPool(num_threads));
-    mylog(log_info, "Initialized thread pool with %u threads\n", num_threads);
+    mylog(log_info, "Initialized thread pool with %u threads (optimized for this system)\n", num_threads);
 
-    // Initialize zero-copy buffer pool
+    // Initialize zero-copy buffer pool with optimized parameters
     if (init_zero_copy_buffers(g_zero_copy_buffer_pool) != 0) {
         mylog(log_warn, "Failed to initialize zero-copy buffers, falling back to standard mode\n");
     } else {

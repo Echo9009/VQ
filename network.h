@@ -347,8 +347,47 @@ zero_copy_packet_t* get_zero_copy_buffer(zero_copy_buffer_pool_t& pool);
 void return_zero_copy_buffer(zero_copy_buffer_pool_t& pool, zero_copy_packet_t* buffer);
 int send_raw_packet_zero_copy(raw_info_t &raw_info, zero_copy_packet_t* packet);
 int recv_raw_packet_zero_copy(raw_info_t &raw_info, zero_copy_packet_t** packet);
+int process_zero_copy_packet(raw_info_t &raw_info, zero_copy_packet_t* packet);
 
 // Export global buffer pool
 extern zero_copy_buffer_pool_t g_zero_copy_buffer_pool;
+
+// Batch processing definitions
+#define MAX_BATCH_SIZE 64  // Maximum number of packets in a batch
+
+// Packet batch structure for batch processing
+struct packet_batch_t {
+    zero_copy_packet_t* packets[MAX_BATCH_SIZE];  // Array of packet pointers
+    raw_info_t raw_info[MAX_BATCH_SIZE];          // Corresponding raw_info for each packet
+    int count;                                    // Number of packets in batch
+    
+    packet_batch_t() : count(0) {}
+    
+    bool is_full() const { return count >= MAX_BATCH_SIZE; }
+    bool is_empty() const { return count == 0; }
+    
+    void add_packet(zero_copy_packet_t* packet, const raw_info_t& info) {
+        if (!is_full()) {
+            packets[count] = packet;
+            raw_info[count] = info;
+            count++;
+        }
+    }
+    
+    void clear() {
+        for (int i = 0; i < count; i++) {
+            return_zero_copy_buffer(g_zero_copy_buffer_pool, packets[i]);
+            packets[i] = nullptr;
+        }
+        count = 0;
+    }
+};
+
+// Function declarations for batch processing
+int recv_packet_batch(packet_batch_t& batch, int max_packets = MAX_BATCH_SIZE);
+int process_packet_batch(packet_batch_t& batch);
+int send_packet_batch(packet_batch_t& batch);
+int process_packets_high_performance(int max_time_ms = 100);
+int process_packets_with_classification(int max_time_ms = 100);
 
 #endif /* NETWORK_H_ */
