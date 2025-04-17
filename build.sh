@@ -3,7 +3,10 @@
 
 echo "Building udp2raw for Linux..."
 
-# Create build directory if it doesn't exist
+# Remove existing build directory to avoid cache issues
+rm -rf build
+
+# Create build directory
 mkdir -p build
 cd build
 
@@ -27,7 +30,5 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Build completed successfully!"
-echo "The executable is located at: build/udp2raw"
-
-cd ..
+echo "The executable is located at: udp2raw"
 echo "Done!" 

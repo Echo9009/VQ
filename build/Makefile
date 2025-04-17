@@ -413,30 +413,6 @@ lib/pbkdf2-sha256.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.s
 .PHONY : lib/pbkdf2-sha256.cpp.s
 
-lock_free_queue.obj: lock_free_queue.cpp.obj
-.PHONY : lock_free_queue.obj
-
-# target to build an object file
-lock_free_queue.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lock_free_queue.cpp.obj
-.PHONY : lock_free_queue.cpp.obj
-
-lock_free_queue.i: lock_free_queue.cpp.i
-.PHONY : lock_free_queue.i
-
-# target to preprocess a source file
-lock_free_queue.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lock_free_queue.cpp.i
-.PHONY : lock_free_queue.cpp.i
-
-lock_free_queue.s: lock_free_queue.cpp.s
-.PHONY : lock_free_queue.s
-
-# target to generate assembly for a file
-lock_free_queue.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/lock_free_queue.cpp.s
-.PHONY : lock_free_queue.cpp.s
-
 log.obj: log.cpp.obj
 .PHONY : log.obj
 
@@ -605,54 +581,6 @@ server.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/server.cpp.s
 .PHONY : server.cpp.s
 
-server_core.obj: server_core.cpp.obj
-.PHONY : server_core.obj
-
-# target to build an object file
-server_core.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/server_core.cpp.obj
-.PHONY : server_core.cpp.obj
-
-server_core.i: server_core.cpp.i
-.PHONY : server_core.i
-
-# target to preprocess a source file
-server_core.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/server_core.cpp.i
-.PHONY : server_core.cpp.i
-
-server_core.s: server_core.cpp.s
-.PHONY : server_core.s
-
-# target to generate assembly for a file
-server_core.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/server_core.cpp.s
-.PHONY : server_core.cpp.s
-
-worker.obj: worker.cpp.obj
-.PHONY : worker.obj
-
-# target to build an object file
-worker.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/worker.cpp.obj
-.PHONY : worker.cpp.obj
-
-worker.i: worker.cpp.i
-.PHONY : worker.i
-
-# target to preprocess a source file
-worker.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/worker.cpp.i
-.PHONY : worker.cpp.i
-
-worker.s: worker.cpp.s
-.PHONY : worker.s
-
-# target to generate assembly for a file
-worker.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\udp2raw.dir\build.make CMakeFiles/udp2raw.dir/worker.cpp.s
-.PHONY : worker.cpp.s
-
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -696,9 +624,6 @@ help:
 	@echo ... lib/pbkdf2-sha256.obj
 	@echo ... lib/pbkdf2-sha256.i
 	@echo ... lib/pbkdf2-sha256.s
-	@echo ... lock_free_queue.obj
-	@echo ... lock_free_queue.i
-	@echo ... lock_free_queue.s
 	@echo ... log.obj
 	@echo ... log.i
 	@echo ... log.s
@@ -720,12 +645,6 @@ help:
 	@echo ... server.obj
 	@echo ... server.i
 	@echo ... server.s
-	@echo ... server_core.obj
-	@echo ... server_core.i
-	@echo ... server_core.s
-	@echo ... worker.obj
-	@echo ... worker.i
-	@echo ... worker.s
 .PHONY : help
 
 

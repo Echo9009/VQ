@@ -7,8 +7,10 @@
 #include "encrypt.h"
 #include "fd_manager.h"
 #include "thread_pool.h"
-#include "lock_free_queue.h"
-#include "worker.h"
+#include <thread>
+
+// Global thread pool
+std::unique_ptr<ThreadPool> g_thread_pool;
 
 void sigpipe_cb(struct ev_loop *l, ev_signal *w, int revents) {
     mylog(log_info, "got sigpipe, ignored");
@@ -41,21 +43,11 @@ int main(int argc, char *argv[]) {
 
     pre_process_arg(argc, argv);
 
-    // Initialize the thread pool and worker systems
-    // Get available cores for parallel processing
-    size_t num_threads = std::thread::hardware_concurrency();
-    if (num_threads == 0) num_threads = 1;
-    
-    mylog(log_info, "Initializing with %zu worker threads for multi-core scaling\n", num_threads);
-    
-    // Initialize the thread pool with the number of cores
-    ThreadPool::instance(num_threads);
-    
-    // Register the main thread with the ThreadQueueManager
-    ThreadQueueManager::instance().register_thread();
-    
-    // Start the packet worker based on program mode
-    PacketWorker::instance().start(program_mode == client_mode);
+    // Initialize thread pool with number of CPU cores
+    unsigned int num_threads = std::thread::hardware_concurrency();
+    if (num_threads == 0) num_threads = 4; // fallback if detection fails
+    g_thread_pool = std::unique_ptr<ThreadPool>(new ThreadPool(num_threads));
+    mylog(log_info, "Initialized thread pool with %u threads\n", num_threads);
 
     ev_signal signal_watcher_sigpipe;
     ev_signal signal_watcher_sigterm;
@@ -119,5 +111,6 @@ int main(int argc, char *argv[]) {
 #endif
     }
 
+    // Thread pool will be automatically cleaned up when program exits
     return 0;
 }

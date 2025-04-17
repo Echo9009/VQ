@@ -6,5 +6,5 @@ CXX_DEFINES = -DUDP2RAW_MP -D_WIN32
 
 CXX_INCLUDES = @CMakeFiles/udp2raw.dir/includes_CXX.rsp
 
-CXX_FLAGS = -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -std=c++14 -static -std=gnu++14   -Wno-narrowing
+CXX_FLAGS = -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -Wno-narrowing -fpermissive -static -std=gnu++17   -Wno-narrowing
 
