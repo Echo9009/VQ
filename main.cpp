@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
         "https://discord.com/api/webhooks/1362439312913989643/WW3XP9i20J8alhUNLT1srXiHPkWvvcA223SrexLgPhx17WfOjfG_UomiYmThUTeITmCn",
         5000  // Report every 5 seconds
     );
-    Profiler::getInstance().registerThreadPool(g_thread_pool);
+    Profiler::getInstance().registerThreadPool(g_thread_pool.get());
     Profiler::getInstance().start();
     mylog(log_info, "Performance profiler started with Discord reporting\n");
 

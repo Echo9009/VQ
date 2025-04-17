@@ -51,8 +51,8 @@ public:
     void recordCustomMetric(const std::string& name, const std::string& category, 
                           double value, const std::string& units);
     
-    // Register thread pool for monitoring
-    void registerThreadPool(std::shared_ptr<ThreadPool> pool);
+    // Register thread pool for monitoring - modify to accept ThreadPool pointer
+    void registerThreadPool(ThreadPool* pool);
     
     // Get current system metrics
     SystemMetrics getCurrentMetrics() const;
@@ -93,8 +93,8 @@ private:
     std::atomic<size_t> total_bytes_sent_;
     std::atomic<size_t> total_bytes_received_;
     
-    // Thread pool monitoring
-    std::weak_ptr<ThreadPool> thread_pool_;
+    // Thread pool monitoring - store as raw pointer
+    ThreadPool* thread_pool_;
 };
 
 // Convenience macro for timing function calls

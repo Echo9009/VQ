@@ -101,7 +101,8 @@ inline ThreadPool::~ThreadPool() {
 }
 
 inline size_t ThreadPool::getQueueSize() const {
-    std::unique_lock<std::mutex> lock(queue_mutex);
+    // Use const_cast to allow locking a const mutex - this is safe because we're only reading
+    std::unique_lock<std::mutex> lock(*const_cast<std::mutex*>(&queue_mutex));
     return tasks.size();
 }
 

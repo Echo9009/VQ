@@ -41,7 +41,8 @@ Profiler::Profiler()
       total_packets_processed_(0),
       total_packets_dropped_(0),
       total_bytes_sent_(0),
-      total_bytes_received_(0) {
+      total_bytes_received_(0),
+      thread_pool_(nullptr) {
     // Initialize CURL globally
     curl_global_init(CURL_GLOBAL_ALL);
 }
@@ -207,7 +208,7 @@ void Profiler::recordCustomMetric(const std::string& name, const std::string& ca
     recent_metrics_.push_back(metric);
 }
 
-void Profiler::registerThreadPool(std::shared_ptr<ThreadPool> pool) {
+void Profiler::registerThreadPool(ThreadPool* pool) {
     thread_pool_ = pool;
 }
 
@@ -329,10 +330,10 @@ void Profiler::collectSystemMetrics() {
     metrics.network_rx_bytes = total_bytes_received_;
     
     // Thread pool info if available
-    if (auto pool = thread_pool_.lock()) {
+    if (thread_pool_ != nullptr) {
         // Record thread pool metrics
-        int busy_threads = pool->getBusyThreadCount();
-        int total_threads = pool->getThreadCount();
+        int busy_threads = thread_pool_->getBusyThreadCount();
+        int total_threads = thread_pool_->getThreadCount();
         
         recordCustomMetric("thread_pool_utilization", "threads", 
                          100.0 * busy_threads / std::max(1, total_threads), "%");
@@ -515,10 +516,9 @@ std::string Profiler::formatDiscordMessage() {
     });
     
     // Thread pool status if available
-    auto pool = thread_pool_.lock();
-    if (pool) {
-        int busy = pool->getBusyThreadCount();
-        int total = pool->getThreadCount();
+    if (thread_pool_ != nullptr) {
+        int busy = thread_pool_->getBusyThreadCount();
+        int total = thread_pool_->getThreadCount();
         double utilization = 100.0 * busy / std::max(1, total);
         
         std::stringstream thread_ss;
