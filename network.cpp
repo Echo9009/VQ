@@ -9,9 +9,24 @@
 #include "log.h"
 #include "misc.h"
 #include "thread_pool.h"
-#include "batch_processor.h"
+
+// Platform-specific includes for memory mapping
+#ifdef __linux__
+#include <sys/mman.h>
+#include <fcntl.h>
+#elif defined(_WIN32) || defined(__MINGW32__)
+#include <windows.h>
+#include <io.h>
+#include <fcntl.h>
+#else
+#include <sys/mman.h>
+#include <fcntl.h>
+#endif
 
 extern std::unique_ptr<ThreadPool> g_thread_pool;
+
+// Initialize the global zero-copy buffer pool
+zero_copy_buffer_pool_t g_zero_copy_buffer_pool(8192, 128);
 
 int g_fix_gro = 0;
 
@@ -2823,9 +2838,359 @@ int client_bind_to_a_new_port2(int &fd, const address_t &address)  // find a fre
 }
 
 int process_packet_in_thread_pool(raw_info_t &raw_info, const char *payload, int payloadlen) {
-    // Instead of processing each packet individually, add it to the batch processor
-    g_packet_batch_processor->addPacket(payload, payloadlen, raw_info);
-    
-    // We return 0 for success here since the actual processing happens asynchronously
+    return g_thread_pool->enqueue([&raw_info, payload, payloadlen]() {
+        char *processed_payload = new char[payloadlen];
+        memcpy(processed_payload, payload, payloadlen);
+        
+        // Process packet based on protocol
+        int ret = 0;
+        switch(raw_info.send_info.protocol) {
+            case IPPROTO_TCP:
+                ret = send_raw_tcp(raw_info, processed_payload, payloadlen);
+                break;
+            case IPPROTO_UDP:
+                ret = send_raw_udp(raw_info, processed_payload, payloadlen);
+                break;
+            case IPPROTO_ICMP:
+                ret = send_raw_icmp(raw_info, processed_payload, payloadlen);
+                break;
+            default:
+                mylog(log_warn, "Unknown protocol: %d\n", raw_info.send_info.protocol);
+                ret = -1;
+        }
+        
+        delete[] processed_payload;
+        return ret;
+    }).get();
+}
+
+int init_zero_copy_buffers(zero_copy_buffer_pool_t& pool) {
+    pthread_mutex_lock(&pool.mutex);
+
+    mylog(log_info, "Initializing zero-copy buffer pool with %zu buffers of size %zu\n", 
+          pool.num_buffers, pool.buffer_size);
+
+    pool.buffers.resize(pool.num_buffers);
+
+    for (size_t i = 0; i < pool.num_buffers; i++) {
+        // Create shared memory file descriptor with platform-specific approach
+        #ifdef __linux__
+        // Linux-specific implementation using memfd_create
+        pool.buffers[i].fd = memfd_create("udp2raw_buffer", 0);
+        if (pool.buffers[i].fd == -1) {
+            // Fallback for older Linux kernels
+            char tmpname[256];
+            snprintf(tmpname, sizeof(tmpname), "/tmp/udp2raw_buffer_%lu", (unsigned long)i);
+            pool.buffers[i].fd = open(tmpname, O_RDWR | O_CREAT | O_EXCL, 0600);
+            if (pool.buffers[i].fd != -1) {
+                unlink(tmpname); // Remove the file so it's not accessible from other processes
+            }
+        }
+        #elif defined(_WIN32) || defined(__MINGW32__)
+        // Windows implementation using memory mapping
+        char tmpname[256];
+        snprintf(tmpname, sizeof(tmpname), "udp2raw_buffer_%lu", (unsigned long)i);
+        
+        // Create temporary file in Windows method
+        pool.buffers[i].win_handle = CreateFileMappingA(
+            INVALID_HANDLE_VALUE,    // Use paging file
+            NULL,                    // Default security
+            PAGE_READWRITE,          // Read/write access
+            0,                       // Maximum object size (high-order DWORD)
+            pool.buffer_size,        // Maximum object size (low-order DWORD)
+            tmpname);                // Name of mapping object
+            
+        if (pool.buffers[i].win_handle == NULL) {
+            mylog(log_error, "Failed to create file mapping: %lu\n", GetLastError());
+            pthread_mutex_unlock(&pool.mutex);
+            return -1;
+        }
+        
+        pool.buffers[i].fd = -1; // Not used in Windows
+        #else
+        // Fallback for other platforms
+        char tmpname[256];
+        snprintf(tmpname, sizeof(tmpname), "/tmp/udp2raw_buffer_%lu", (unsigned long)i);
+        pool.buffers[i].fd = open(tmpname, O_RDWR | O_CREAT | O_EXCL, 0600);
+        if (pool.buffers[i].fd != -1) {
+            unlink(tmpname); // Remove the file
+        }
+        #endif
+
+        if (
+            #ifdef _WIN32
+            pool.buffers[i].win_handle == NULL
+            #else
+            pool.buffers[i].fd == -1
+            #endif
+        ) {
+            mylog(log_error, "Failed to create memory file descriptor: %s\n", strerror(errno));
+            pthread_mutex_unlock(&pool.mutex);
+            return -1;
+        }
+
+        #ifndef _WIN32
+        // Set the size of the file (not needed for Windows)
+        if (ftruncate(pool.buffers[i].fd, pool.buffer_size) == -1) {
+            mylog(log_error, "Failed to set buffer size: %s\n", strerror(errno));
+            close(pool.buffers[i].fd);
+            pthread_mutex_unlock(&pool.mutex);
+            return -1;
+        }
+        #endif
+
+        // Map the file into memory
+        #ifdef _WIN32
+        pool.buffers[i].buffer = MapViewOfFile(
+            pool.buffers[i].win_handle,   // Handle to map object
+            FILE_MAP_ALL_ACCESS,          // Read/write permission
+            0,                            // High-order DWORD of offset
+            0,                            // Low-order DWORD of offset
+            pool.buffer_size);            // Number of bytes to map
+            
+        if (pool.buffers[i].buffer == NULL) {
+            mylog(log_error, "Failed to map buffer: %lu\n", GetLastError());
+            CloseHandle(pool.buffers[i].win_handle);
+            pthread_mutex_unlock(&pool.mutex);
+            return -1;
+        }
+        #else
+        pool.buffers[i].buffer = mmap(NULL, pool.buffer_size, PROT_READ | PROT_WRITE, 
+                                    MAP_SHARED, pool.buffers[i].fd, 0);
+        
+        if (pool.buffers[i].buffer == MAP_FAILED) {
+            mylog(log_error, "Failed to mmap buffer: %s\n", strerror(errno));
+            close(pool.buffers[i].fd);
+            pthread_mutex_unlock(&pool.mutex);
+            return -1;
+        }
+        #endif
+
+        pool.buffers[i].buffer_size = pool.buffer_size;
+        pool.buffers[i].data_len = 0;
+        pool.buffers[i].offset = 0;
+        pool.buffers[i].in_use = false;
+
+        mylog(log_debug, "Buffer %lu initialized at %p\n", (unsigned long)i, pool.buffers[i].buffer);
+    }
+
+    pthread_mutex_unlock(&pool.mutex);
+    mylog(log_info, "Zero-copy buffer pool initialization complete\n");
     return 0;
+}
+
+void cleanup_zero_copy_buffers(zero_copy_buffer_pool_t& pool) {
+    pthread_mutex_lock(&pool.mutex);
+    
+    for (auto& buffer : pool.buffers) {
+        #ifdef _WIN32
+        if (buffer.buffer != nullptr) {
+            UnmapViewOfFile(buffer.buffer);
+            if (buffer.win_handle != NULL) {
+                CloseHandle(buffer.win_handle);
+            }
+        }
+        #else
+        if (buffer.buffer != nullptr && buffer.buffer != MAP_FAILED) {
+            munmap(buffer.buffer, buffer.buffer_size);
+            if (buffer.fd >= 0) {
+                close(buffer.fd);
+            }
+        }
+        #endif
+    }
+    
+    pool.buffers.clear();
+    pthread_mutex_unlock(&pool.mutex);
+    mylog(log_info, "Zero-copy buffer pool cleaned up\n");
+}
+
+zero_copy_packet_t* get_zero_copy_buffer(zero_copy_buffer_pool_t& pool) {
+    pthread_mutex_lock(&pool.mutex);
+    
+    for (auto& buffer : pool.buffers) {
+        if (!buffer.in_use) {
+            buffer.in_use = true;
+            buffer.data_len = 0;
+            buffer.offset = 0;
+            pthread_mutex_unlock(&pool.mutex);
+            return &buffer;
+        }
+    }
+    
+    // No free buffers available
+    pthread_mutex_unlock(&pool.mutex);
+    mylog(log_warn, "No free zero-copy buffers available\n");
+    return nullptr;
+}
+
+void return_zero_copy_buffer(zero_copy_buffer_pool_t& pool, zero_copy_packet_t* buffer) {
+    if (buffer == nullptr) return;
+    
+    pthread_mutex_lock(&pool.mutex);
+    buffer->in_use = false;
+    pthread_mutex_unlock(&pool.mutex);
+}
+
+int send_raw_packet_zero_copy(raw_info_t &raw_info, zero_copy_packet_t* packet) {
+    if (packet == nullptr || packet->buffer == nullptr) {
+        mylog(log_error, "Invalid zero-copy packet or buffer\n");
+        return -1;
+    }
+
+    int ret;
+    const char* buffer_ptr = static_cast<const char*>(packet->buffer);
+
+#ifdef UDP2RAW_LINUX
+    if (raw_send_fd == -1) return -1;
+    
+    if (lower_level) {
+        if (lower_level_manual) {
+            struct sockaddr_ll addr = {0};
+            addr.sll_family = AF_PACKET;
+            addr.sll_ifindex = ifindex;
+            addr.sll_halen = 6;
+            memcpy(addr.sll_addr, dest_hw_addr, 6);
+            ret = sendto(raw_send_fd, buffer_ptr, packet->data_len, 0, 
+                         (struct sockaddr *)&addr, sizeof(addr));
+        } else {
+            ret = send(raw_send_fd, buffer_ptr, packet->data_len, 0);
+        }
+    } else {
+        if (raw_ip_version == AF_INET) {
+            struct sockaddr_in sin = {0};
+            sin.sin_family = AF_INET;
+            sin.sin_addr.s_addr = raw_info.send_info.new_dst_ip.v4;
+            ret = sendto(raw_send_fd, buffer_ptr, packet->data_len, 0, 
+                         (struct sockaddr *)&sin, sizeof(sin));
+        } else {
+            struct sockaddr_in6 sin = {0};
+            sin.sin6_family = AF_INET6;
+            sin.sin6_addr = raw_info.send_info.new_dst_ip.v6;
+            ret = sendto(raw_send_fd, buffer_ptr, packet->data_len, 0, 
+                         (struct sockaddr *)&sin, sizeof(sin));
+        }
+    }
+#else
+    if (raw_ip_version == AF_INET) {
+        struct sockaddr_in sin = {0};
+        sin.sin_family = AF_INET;
+        sin.sin_addr.s_addr = raw_info.send_info.new_dst_ip.v4;
+        ret = sendto(raw_send_fd, buffer_ptr, packet->data_len, 0, 
+                     (struct sockaddr *)&sin, sizeof(sin));
+    } else {
+        struct sockaddr_in6 sin = {0};
+        sin.sin6_family = AF_INET6;
+        sin.sin6_addr = raw_info.send_info.new_dst_ip.v6;
+        ret = sendto(raw_send_fd, buffer_ptr, packet->data_len, 0, 
+                     (struct sockaddr *)&sin, sizeof(sin));
+    }
+#endif
+
+    return ret;
+}
+
+int recv_raw_packet_zero_copy(raw_info_t &raw_info, zero_copy_packet_t** out_packet) {
+    zero_copy_packet_t* packet = get_zero_copy_buffer(g_zero_copy_buffer_pool);
+    if (packet == nullptr) {
+        mylog(log_error, "Failed to get zero-copy buffer\n");
+        return -1;
+    }
+
+    sockaddr_storage saddr;
+    socklen_t saddr_size = sizeof(saddr);
+    
+    // Platform specific implementation for receiving packets
+    int ret;
+    
+#if defined(_WIN32) || defined(__MINGW32__)
+    // Windows implementation using regular recv
+    ret = recv(raw_recv_fd, (char*)packet->buffer, (int)packet->buffer_size, 0);
+    
+    if (ret < 0) {
+        int error = WSAGetLastError();
+        if (error == WSAEWOULDBLOCK) {
+            // No data available
+            return_zero_copy_buffer(g_zero_copy_buffer_pool, packet);
+            return 0;
+        }
+        mylog(log_trace, "recv_raw_packet_zero_copy recv() failed: %d\n", error);
+        return_zero_copy_buffer(g_zero_copy_buffer_pool, packet);
+        return -1;
+    }
+#else
+    // Unix/Linux specific implementation with iovec and msghdr
+    
+    // iovec structure for scatter/gather I/O
+    struct iovec iov;
+    iov.iov_base = packet->buffer;
+    iov.iov_len = packet->buffer_size;
+    
+    // Message header for recvmsg
+    struct msghdr msg;
+    memset(&msg, 0, sizeof(msg));
+    msg.msg_name = &saddr;
+    msg.msg_namelen = saddr_size;
+    msg.msg_iov = &iov;
+    msg.msg_iovlen = 1;
+    
+    ret = recvmsg(raw_recv_fd, &msg, MSG_DONTWAIT);
+    
+    if (ret < 0) {
+        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            // No data available
+            return_zero_copy_buffer(g_zero_copy_buffer_pool, packet);
+            return 0;
+        }
+        mylog(log_trace, "recv_raw_packet_zero_copy recvmsg() failed: %s\n", strerror(errno));
+        return_zero_copy_buffer(g_zero_copy_buffer_pool, packet);
+        return -1;
+    }
+    
+    // Check if message was truncated (Linux only)
+    if (msg.msg_flags & MSG_TRUNC) {
+        mylog(log_warn, "Received packet was truncated (too large for buffer)\n");
+        return_zero_copy_buffer(g_zero_copy_buffer_pool, packet);
+        return -1;
+    }
+#endif
+    
+    if (ret == 0) {
+        // Connection closed
+        return_zero_copy_buffer(g_zero_copy_buffer_pool, packet);
+        return -1;
+    }
+    
+    packet->data_len = ret;
+    
+#ifdef UDP2RAW_LINUX
+    if (lower_level) {
+        memcpy(&g_sockaddr.ll, &saddr, sizeof(sockaddr_ll));
+        g_sockaddr_len = sizeof(sockaddr_ll);
+    }
+#endif
+
+    if (ret < (int)link_level_header_len) {
+        mylog(log_trace, "Packet len %d shorter than link_level_header_len %d\n", 
+              ret, int(link_level_header_len));
+        return_zero_copy_buffer(g_zero_copy_buffer_pool, packet);
+        return -1;
+    }
+
+    if (link_level_header_len == 14) {
+        unsigned char a = ((char*)packet->buffer)[12];
+        unsigned char b = ((char*)packet->buffer)[13];
+
+        if (!((a == 0x08 && b == 0x00) || (a == 0x86 && b == 0xdd))) {
+            mylog(log_trace, "Not an IPv4 or IPv6 packet!\n");
+            return_zero_copy_buffer(g_zero_copy_buffer_pool, packet);
+            return -1;
+        }
+    }
+
+    // Adjust offset to skip link-level header
+    packet->offset = link_level_header_len;
+    
+    *out_packet = packet;
+    return 1;
 }

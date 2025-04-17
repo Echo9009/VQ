@@ -7,8 +7,6 @@
 #include "encrypt.h"
 #include "fd_manager.h"
 #include "thread_pool.h"
-#include "memory_pool.h"
-#include "batch_processor.h"
 #include <thread>
 
 // Global thread pool
@@ -51,16 +49,12 @@ int main(int argc, char *argv[]) {
     g_thread_pool = std::unique_ptr<ThreadPool>(new ThreadPool(num_threads));
     mylog(log_info, "Initialized thread pool with %u threads\n", num_threads);
 
-    // Initialize memory pool - use 8KB chunks to accommodate most packet sizes
-    init_memory_pool(8192, 64);
-    mylog(log_info, "Initialized memory pool with 8KB chunks\n");
-
-    // Initialize batch processor - configure batch size and delay
-    init_batch_processor(
-        64,                            // Process up to 64 packets at once
-        std::chrono::milliseconds(5),  // Process every 5ms even if batch not full
-        num_threads / 2 + 1            // Use (cores/2 + 1) worker threads
-    );
+    // Initialize zero-copy buffer pool
+    if (init_zero_copy_buffers(g_zero_copy_buffer_pool) != 0) {
+        mylog(log_warn, "Failed to initialize zero-copy buffers, falling back to standard mode\n");
+    } else {
+        mylog(log_info, "Zero-copy buffer mode enabled for improved performance\n");
+    }
 
     ev_signal signal_watcher_sigpipe;
     ev_signal signal_watcher_sigterm;
@@ -125,5 +119,6 @@ int main(int argc, char *argv[]) {
     }
 
     // Thread pool will be automatically cleaned up when program exits
+    cleanup_zero_copy_buffers(g_zero_copy_buffer_pool);
     return 0;
 }

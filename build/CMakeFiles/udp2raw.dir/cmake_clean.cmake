@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/udp2raw.dir/batch_processor.cpp.obj"
-  "CMakeFiles/udp2raw.dir/batch_processor.cpp.obj.d"
   "CMakeFiles/udp2raw.dir/client.cpp.obj"
   "CMakeFiles/udp2raw.dir/client.cpp.obj.d"
   "CMakeFiles/udp2raw.dir/common.cpp.obj"
@@ -25,8 +23,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/udp2raw.dir/log.cpp.obj.d"
   "CMakeFiles/udp2raw.dir/main.cpp.obj"
   "CMakeFiles/udp2raw.dir/main.cpp.obj.d"
-  "CMakeFiles/udp2raw.dir/memory_pool.cpp.obj"
-  "CMakeFiles/udp2raw.dir/memory_pool.cpp.obj.d"
   "CMakeFiles/udp2raw.dir/misc.cpp.obj"
   "CMakeFiles/udp2raw.dir/misc.cpp.obj.d"
   "CMakeFiles/udp2raw.dir/my_ev.cpp.obj"

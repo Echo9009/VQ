@@ -8,10 +8,6 @@
 #ifndef UDP2RAW_NETWORK_H_
 #define UDP2RAW_NETWORK_H_
 
-// Remove these includes from here - we'll add them at the end of the file
-// #include "memory_pool.h"
-// #include "batch_processor.h"
-
 extern int raw_recv_fd;
 extern int raw_send_fd;
 extern int use_tcp_dummy_socket;
@@ -313,5 +309,46 @@ int after_recv_raw0(raw_info_t &raw_info);
 
 // Thread pool packet processing function
 int process_packet_in_thread_pool(raw_info_t &raw_info, const char *payload, int payloadlen);
+
+// Zero-copy packet buffer structure
+struct zero_copy_packet_t {
+    void* buffer;          // Pointer to memory-mapped buffer
+    size_t buffer_size;    // Total size of buffer
+    size_t data_len;       // Actual data length
+    size_t offset;         // Current offset in buffer
+    int fd;                // File descriptor for mmap (UNIX/Linux)
+    #ifdef _WIN32
+    HANDLE win_handle;     // Windows handle for file mapping
+    #endif
+    bool in_use;           // Flag to indicate if buffer is currently in use
+};
+
+// Zero-copy buffer pool
+struct zero_copy_buffer_pool_t {
+    vector<zero_copy_packet_t> buffers;
+    size_t buffer_size;
+    size_t num_buffers;
+    pthread_mutex_t mutex;
+    
+    zero_copy_buffer_pool_t(size_t size = 4096, size_t count = 64) 
+        : buffer_size(size), num_buffers(count) {
+        pthread_mutex_init(&mutex, NULL);
+    }
+
+    ~zero_copy_buffer_pool_t() {
+        pthread_mutex_destroy(&mutex);
+    }
+};
+
+// Function declarations for zero-copy packet handling
+int init_zero_copy_buffers(zero_copy_buffer_pool_t& pool);
+void cleanup_zero_copy_buffers(zero_copy_buffer_pool_t& pool);
+zero_copy_packet_t* get_zero_copy_buffer(zero_copy_buffer_pool_t& pool);
+void return_zero_copy_buffer(zero_copy_buffer_pool_t& pool, zero_copy_packet_t* buffer);
+int send_raw_packet_zero_copy(raw_info_t &raw_info, zero_copy_packet_t* packet);
+int recv_raw_packet_zero_copy(raw_info_t &raw_info, zero_copy_packet_t** packet);
+
+// Export global buffer pool
+extern zero_copy_buffer_pool_t g_zero_copy_buffer_pool;
 
 #endif /* NETWORK_H_ */
