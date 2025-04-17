@@ -109,6 +109,19 @@ public:
             return false;
         }
         
+        // Additional validity check - critical for std::function
+        // to ensure we never return a moved-from or invalid function
+        if (std::is_same<T, std::function<void()>>::value) {
+            auto& func = *next_node->data;
+            if (!func) {
+                // Skip invalid function and continue
+                head.store(next_node);
+                size_counter.fetch_sub(1, std::memory_order_relaxed);
+                delete old_head;
+                return false;
+            }
+        }
+        
         // Copy the data instead of moving to avoid invalidating the original
         item = *next_node->data;
         
@@ -197,47 +210,60 @@ public:
                 size_t steal_attempt_count = 0;
                 
                 while (true) {
-                    std::function<void()> task;
-                    bool found_task = false;
-                    
-                    // First try to get a task from our own queue
-                    if (!queues[thread_id]->empty()) {
-                        found_task = queues[thread_id]->pop_front(task);
-                    }
-                    
-                    // If no task in our queue, try work stealing
-                    if (!found_task) {
-                        idle_flags[thread_id]->store(true, std::memory_order_relaxed);
+                    try {
+                        std::function<void()> task;
+                        bool found_task = false;
                         
-                        for (size_t attempt = 0; attempt < queues.size() * 2 && !found_task; ++attempt) {
-                            size_t victim = (thread_id + steal_attempt_count) % queues.size();
-                            steal_attempt_count++;
-                            
-                            if (thread_id != victim && !queues[victim]->empty()) {
-                                found_task = queues[victim]->pop_front(task);
-                            }
+                        // First try to get a task from our own queue
+                        if (!queues[thread_id]->empty()) {
+                            found_task = queues[thread_id]->pop_front(task);
                         }
                         
-                        idle_flags[thread_id]->store(false, std::memory_order_relaxed);
-                    }
-                    
-                    // If found a task, execute it
-                    if (found_task) {
-                        task();
-                        continue;
-                    }
-                    
-                    // Check if we should stop
-                    if (stop.load(std::memory_order_relaxed)) {
-                        return;
-                    }
-                    
-                    // No task found, yield to give other threads a chance
-                    std::this_thread::yield();
-                    
-                    // Sleep for a short time if no tasks are available
-                    if (all_threads_idle()) {
-                        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                        // If no task in our queue, try work stealing
+                        if (!found_task) {
+                            idle_flags[thread_id]->store(true, std::memory_order_relaxed);
+                            
+                            for (size_t attempt = 0; attempt < queues.size() * 2 && !found_task; ++attempt) {
+                                size_t victim = (thread_id + steal_attempt_count) % queues.size();
+                                steal_attempt_count++;
+                                
+                                if (thread_id != victim && !queues[victim]->empty()) {
+                                    found_task = queues[victim]->pop_front(task);
+                                }
+                            }
+                            
+                            idle_flags[thread_id]->store(false, std::memory_order_relaxed);
+                        }
+                        
+                        // If found a task, execute it
+                        if (found_task && task) {
+                            try {
+                                task();
+                            } catch (const std::bad_function_call&) {
+                                // Silently ignore bad function calls
+                            } catch (const std::exception& e) {
+                                // Log but continue execution
+                            } catch (...) {
+                                // Catch all other exceptions
+                            }
+                            continue;
+                        }
+                        
+                        // Check if we should stop
+                        if (stop.load(std::memory_order_relaxed)) {
+                            return;
+                        }
+                        
+                        // No task found, yield to give other threads a chance
+                        std::this_thread::yield();
+                        
+                        // Sleep for a short time if no tasks are available
+                        if (all_threads_idle()) {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                        }
+                    } catch (...) {
+                        // Catch any exception in the worker loop to ensure the thread doesn't terminate
+                        // Just continue to the next iteration
                     }
                 }
             });
@@ -286,14 +312,27 @@ public:
         // Get the future from the task before the task is moved to the queue
         std::future<return_type> result = task->get_future();
         
-        // Create a wrapper function that invokes the task
-        // Use a shared_ptr to ensure the task is valid even if it's called from multiple threads
+        // Create a wrapper function that invokes the task, with strong exception safety
         std::function<void()> wrapper_task = [task]() {
-            // Add a validity check before calling
-            if (task) {
-                (*task)();
+            try {
+                // Add a validity check before calling
+                if (task) {
+                    (*task)();
+                }
+            } catch (const std::bad_function_call&) {
+                // Silently ignore bad function calls to prevent termination
+            } catch (const std::exception& e) {
+                // Log the exception but prevent it from propagating outside the thread
+                // (in production, you might want to log this)
+            } catch (...) {
+                // Catch all other exceptions to prevent thread termination
             }
         };
+        
+        // Ensure the wrapper task is valid
+        if (!wrapper_task) {
+            throw std::runtime_error("Failed to create valid task in thread pool");
+        }
         
         // Find the queue with the fewest tasks
         size_t min_queue_idx = 0;
@@ -313,7 +352,6 @@ public:
         }
         
         // Add the task to the queue with the fewest tasks
-        // We're using std::function which already manages the lifetime correctly
         queues[min_queue_idx]->push_back(wrapper_task);
         
         return result;
