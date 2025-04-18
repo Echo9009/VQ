@@ -1,8 +1,4 @@
 @echo off
-REM Clean CMake cache and files to avoid build path issues
-IF EXIST "build\\CMakeCache.txt" del /f /q "build\\CMakeCache.txt"
-IF EXIST "build\\CMakeFiles" rmdir /s /q "build\\CMakeFiles"
-
 REM Build script for udp2raw on Windows
 
 ECHO Building udp2raw for Windows...

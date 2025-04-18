@@ -6,11 +6,6 @@
 #include "lib/md5.h"
 #include "encrypt.h"
 #include "fd_manager.h"
-#include "thread_pool.h"
-#include <thread>
-
-// Global thread pool
-std::unique_ptr<ThreadPool> g_thread_pool;
 
 void sigpipe_cb(struct ev_loop *l, ev_signal *w, int revents) {
     mylog(log_info, "got sigpipe, ignored");
@@ -42,12 +37,6 @@ int main(int argc, char *argv[]) {
     dup2(1, 2);  // redirect stderr to stdout
 
     pre_process_arg(argc, argv);
-
-    // Initialize thread pool with number of CPU cores
-    unsigned int num_threads = std::thread::hardware_concurrency();
-    if (num_threads == 0) num_threads = 4; // fallback if detection fails
-    g_thread_pool = std::unique_ptr<ThreadPool>(new ThreadPool(num_threads));
-    mylog(log_info, "Initialized thread pool with %u threads\n", num_threads);
 
     ev_signal signal_watcher_sigpipe;
     ev_signal signal_watcher_sigterm;
@@ -111,6 +100,5 @@ int main(int argc, char *argv[]) {
 #endif
     }
 
-    // Thread pool will be automatically cleaned up when program exits
     return 0;
 }

@@ -5,15 +5,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(udp2raw)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# Enable optimizations
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-
-# Enable multi-threading
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 # Define platform-specific variables and settings
 if(WIN32)

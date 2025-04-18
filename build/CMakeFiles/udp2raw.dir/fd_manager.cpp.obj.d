@@ -1,5 +1,5 @@
-CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: G:\VQ\VQ\fd_manager.cpp \
- G:\VQ\VQ\fd_manager.h G:\VQ\VQ\common.h \
+CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: G:\UDPX\fd_manager.cpp \
+ G:\UDPX\fd_manager.h G:\UDPX\common.h \
  c:\mingw64\x86_64-w64-mingw32\include\inttypes.h \
  c:\mingw64\x86_64-w64-mingw32\include\crtdefs.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt.h \
@@ -24,7 +24,6 @@ CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: G:\VQ\VQ\fd_manager.cpp \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\c++config.h \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\os_defines.h \
  c:\mingw64\include\c++\12.2.0\x86_64-w64-mingw32\bits\cpu_defines.h \
- c:\mingw64\include\c++\12.2.0\pstl\pstl_config.h \
  c:\mingw64\x86_64-w64-mingw32\include\stdlib.h \
  c:\mingw64\x86_64-w64-mingw32\include\corecrt_wstdlib.h \
  c:\mingw64\lib\gcc\x86_64-w64-mingw32\12.2.0\include-fixed\limits.h \
@@ -59,8 +58,8 @@ CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: G:\VQ\VQ\fd_manager.cpp \
  c:\mingw64\x86_64-w64-mingw32\include\signal.h \
  c:\mingw64\x86_64-w64-mingw32\include\pthread_signal.h \
  c:\mingw64\x86_64-w64-mingw32\include\pthread_compat.h \
- g:\vq\vq\pcap_wrapper.h g:\vq\vq\my_ev.h g:\vq\vq\my_ev_common.h \
- g:\vq\vq\ev_fixes.h c:\mingw64\x86_64-w64-mingw32\include\winsock2.h \
+ g:\udpx\pcap_wrapper.h g:\udpx\my_ev.h g:\udpx\my_ev_common.h \
+ g:\udpx\ev_fixes.h c:\mingw64\x86_64-w64-mingw32\include\winsock2.h \
  c:\mingw64\x86_64-w64-mingw32\include\_mingw_unicode.h \
  c:\mingw64\x86_64-w64-mingw32\include\windows.h \
  c:\mingw64\x86_64-w64-mingw32\include\sdkddkver.h \
@@ -286,7 +285,7 @@ CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: G:\VQ\VQ\fd_manager.cpp \
  c:\mingw64\x86_64-w64-mingw32\include\psdk_inc\_wsadata.h \
  c:\mingw64\x86_64-w64-mingw32\include\ws2def.h \
  c:\mingw64\x86_64-w64-mingw32\include\psdk_inc\_wsa_errnos.h \
- c:\mingw64\x86_64-w64-mingw32\include\qos.h G:/VQ/VQ/libev/ev.h \
+ c:\mingw64\x86_64-w64-mingw32\include\qos.h G:/UDPX/libev/ev.h \
  c:\mingw64\x86_64-w64-mingw32\include\ws2ipdef.h \
  c:\mingw64\x86_64-w64-mingw32\include\in6addr.h \
  c:\mingw64\include\c++\12.2.0\unordered_map \
@@ -329,7 +328,6 @@ CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: G:\VQ\VQ\fd_manager.cpp \
  c:\mingw64\include\c++\12.2.0\debug\debug.h \
  c:\mingw64\include\c++\12.2.0\bits\predefined_ops.h \
  c:\mingw64\include\c++\12.2.0\bits\enable_special_members.h \
- c:\mingw64\include\c++\12.2.0\bits\node_handle.h \
  c:\mingw64\include\c++\12.2.0\bits\unordered_map.h \
  c:\mingw64\include\c++\12.2.0\bits\range_access.h \
  c:\mingw64\include\c++\12.2.0\bits\erase_if.h \
@@ -364,8 +362,6 @@ CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: G:\VQ\VQ\fd_manager.cpp \
  c:\mingw64\include\c++\12.2.0\bits\cxxabi_forced.h \
  c:\mingw64\include\c++\12.2.0\bits\refwrap.h \
  c:\mingw64\include\c++\12.2.0\bits\basic_string.h \
- c:\mingw64\include\c++\12.2.0\string_view \
- c:\mingw64\include\c++\12.2.0\bits\string_view.tcc \
  c:\mingw64\include\c++\12.2.0\ext\string_conversions.h \
  c:\mingw64\include\c++\12.2.0\cstdio \
  c:\mingw64\include\c++\12.2.0\cerrno \
@@ -408,5 +404,5 @@ CMakeFiles/udp2raw.dir/fd_manager.cpp.obj: G:\VQ\VQ\fd_manager.cpp \
  c:\mingw64\include\c++\12.2.0\list \
  c:\mingw64\include\c++\12.2.0\bits\stl_list.h \
  c:\mingw64\include\c++\12.2.0\bits\allocated_ptr.h \
- c:\mingw64\include\c++\12.2.0\bits\list.tcc G:\VQ\VQ\connection.h \
- G:\VQ\VQ\log.h G:\VQ\VQ\network.h G:\VQ\VQ\misc.h
+ c:\mingw64\include\c++\12.2.0\bits\list.tcc G:\UDPX\connection.h \
+ G:\UDPX\log.h G:\UDPX\network.h G:\UDPX\misc.h
